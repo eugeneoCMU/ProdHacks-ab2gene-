@@ -1,0 +1,151 @@
+.search-view .search-bar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  max-width: 520px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  color: #1f2937;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+.search-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.search-error {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  max-width: 520px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+}
+
+.search-results {
+  width: 100%;
+  max-width: 640px;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.search-results-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+.opportunity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.opportunity-card {
+  padding: 1.25rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  transition: box-shadow 0.2s ease;
+}
+
+.opportunity-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.opportunity-title {
+  display: block;
+  font-size: 1rem;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.opportunity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.opportunity-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.opportunity-link:hover {
+  color: inherit;
+}
+
+.opportunity-link-hint {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6366f1;
+}
+
+.opportunity-link:hover .opportunity-link-hint {
+  text-decoration: underline;
+}
+
+@media (prefers-color-scheme: dark) {
+  .search-input {
+    background: #1f2937;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+
+  .search-input::placeholder {
+    color: #6b7280;
+  }
+
+  .search-error {
+    background: #450a0a;
+    color: #fca5a5;
+  }
+
+  .search-results-title {
+    color: #f9fafb;
+  }
+
+  .opportunity-card {
+    background: #1f2937;
+    border-color: #4b5563;
+  }
+
+  .opportunity-title {
+    color: #f9fafb;
+  }
+
+  .opportunity-meta {
+    color: #9ca3af;
+  }
+}
