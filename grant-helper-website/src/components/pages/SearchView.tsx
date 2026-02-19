@@ -71,8 +71,8 @@ export default function SearchView() {
                 <>
                   <strong className="opportunity-title">{opp.opportunity_title}</strong>
                   <div className="opportunity-meta">
-                    {opp.post_date && <span>Posted: {opp.post_date}</span>}
-                    <span>Closes: {opp.close_date ?? 'No deadline'}</span>
+                    {opp.summary?.post_date && <span>Posted: {opp.summary.post_date}</span>}
+                    <span>Closes: {opp.summary?.close_date ?? 'No deadline'}</span>
                   </div>
                   {url && <span className="opportunity-link-hint">View on Grants.gov →</span>}
                 </>

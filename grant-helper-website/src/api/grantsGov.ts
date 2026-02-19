@@ -13,8 +13,14 @@ export interface GrantsGovOpportunity {
   opportunity_id?: string;
   opportunity_number?: string;
   opportunity_title: string;
-  post_date?: string;
-  close_date?: string | null;
+  summary?: {
+    post_date?: string;
+    close_date?: string | null;
+    award_ceiling?: number;
+    award_floor?: number;
+    summary_description?: string;
+    [key: string]: unknown;
+  };
   [key: string]: unknown;
 }
 

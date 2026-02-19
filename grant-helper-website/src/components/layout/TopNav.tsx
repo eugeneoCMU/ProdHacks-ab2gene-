@@ -14,7 +14,7 @@ export default function TopNav({ currentView }: TopNavProps) {
   return (
     <header className="topnav">
       <div className="topnav-content">
-        <h2 className="topnav-title">{viewTitles[currentView] || 'GrantHelper'}</h2>
+        <h2 className="topnav-title">{viewTitles[currentView] || 'GrantFlow'}</h2>
 
         <div className="topnav-actions">
           <button className="icon-button" title="Notifications">

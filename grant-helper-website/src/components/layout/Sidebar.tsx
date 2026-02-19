@@ -21,7 +21,7 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <h1 className="sidebar-logo">💡 GrantHelper</h1>
+        <h1 className="sidebar-logo">💡 GrantFlow</h1>
         <p className="sidebar-tagline">AI-Powered Grant Writing</p>
       </div>
 
