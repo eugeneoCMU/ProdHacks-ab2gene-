@@ -1,10 +1,10 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createRequire } from 'module';
+// import { createRequire } from 'module';
 import dotenv from 'dotenv';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const require = createRequire(import.meta.url);
+// const require = createRequire(import.meta.url);
 // Load .env from project root (cwd when run via "npm run dev:server"), then try next to server/
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 if (!process.env.GEMINI_API_KEY) {
@@ -17,8 +17,6 @@ import multer from 'multer';
 import mammoth from 'mammoth';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-
-const pdfParse = require('pdf-parse') as (buffer: Buffer) => Promise<{ text: string }>;
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -96,13 +94,34 @@ async function generateAnswerForQuestion(context: string, question: string, word
   return (text ?? '').trim();
 }
 
+/** Extract text from PDF using pdfjs-dist directly (avoids Buffer vs Uint8Array issues in pdf-parse). */
+async function extractTextFromPdf(buffer: Buffer): Promise<string> {
+  const data = Uint8Array.from(buffer);
+  const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+  const loadingTask = pdfjs.getDocument({ data });
+  const doc = await loadingTask.promise;
+  const numPages = doc.numPages;
+  const parts: string[] = [];
+  for (let i = 1; i <= numPages; i++) {
+    const page = await doc.getPage(i);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items
+      .map((item) => ('str' in item ? String(item.str ?? '') : ''))
+      .join(' ');
+    parts.push(pageText);
+    page.cleanup();
+  }
+  await doc.destroy();
+  return parts.join('\n\n');
+}
+
 async function extractTextFromFile(buffer: Buffer, mimeType: string, filename: string): Promise<string> {
+
   if (mimeType === 'text/plain') {
     return buffer.toString('utf-8');
   }
   if (mimeType === 'application/pdf') {
-    const data = await pdfParse(buffer);
-    return data.text || '';
+    return await extractTextFromPdf(buffer);
   }
   if (
     mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||

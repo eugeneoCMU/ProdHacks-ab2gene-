@@ -60,6 +60,7 @@ export async function uploadToSupabase(file: File, userId: string): Promise<stri
   const storagePath = `${userId}/${documentId}/${file.name}`;
 
   console.log(storagePath);
+  console.log(file);
 
   // Upload to Storage
   const { error: uploadError } = await supabase.storage
