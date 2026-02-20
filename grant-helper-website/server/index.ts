@@ -18,9 +18,8 @@ import mammoth from 'mammoth';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// pdf-parse is a CommonJS module, import as namespace
-import * as pdfParseModule from 'pdf-parse';
-const pdfParse = (pdfParseModule as any) as (buffer: Buffer) => Promise<{ text: string }>;
+// PDF parsing disabled for demo - use TXT or DOC files instead
+// const pdfParse = require('pdf-parse');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -103,8 +102,8 @@ async function extractTextFromFile(buffer: Buffer, mimeType: string, filename: s
     return buffer.toString('utf-8');
   }
   if (mimeType === 'application/pdf') {
-    const data = await pdfParse(buffer);
-    return data.text || '';
+    // PDF parsing temporarily disabled - use TXT or DOC files for demo
+    return '[PDF parsing is currently unavailable. Please use TXT or DOC/DOCX files instead.]';
   }
   if (
     mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
