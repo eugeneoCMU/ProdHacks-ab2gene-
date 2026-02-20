@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { extractDocuments } from '../../api/extractDocuments';
+import { supabase, uploadToSupabase } from '../../config/supabase';
 import './EmptyState.css';
 import './ProfileView.css';
 
@@ -221,11 +222,41 @@ export default function ProfileView({onOrganizationProfileChange,
                 setExtractError(null);
                 setExtracting(true);
                 try {
+                  // Ensure we have a user for Supabase (anonymous if needed) so uploads can be saved
+                  let { data: { session } } = await supabase.auth.getSession();
+                  const supabaseConfigured = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
+                  if (!session?.user && supabaseConfigured) {
+                    const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously();
+                    if (anonErr) {
+                      setExtractError(
+                        `Documents could not be saved to Supabase: ${anonErr.message}. Enable Anonymous sign-in in Supabase Dashboard → Authentication → Providers.`
+                      );
+                      // Continue to extraction below so profile still works
+                    }
+                    if (anon?.session) session = anon.session;
+                  }
+                  const userId = session?.user?.id;
+
+                  // Upload each file to Supabase Storage + documents table when user is available
+                  if (userId) {
+                    for (const { file } of files) {
+                      try {
+                        await uploadToSupabase(file, userId);
+                      } catch (uploadErr) {
+                        console.warn('Supabase upload failed for', file.name, uploadErr);
+                        setExtractError(
+                          uploadErr instanceof Error ? uploadErr.message + ". This is the first issue." : 'One or more files could not be saved to your account. Extraction will continue.'
+                        );
+                      }
+                    }
+                  }
+
                   const { text } = await extractDocuments(files.map((f) => f.file));
                   onOrganizationProfileChange(text);
                   setShowUpload(false);
                 } catch (err) {
-                  setExtractError(err instanceof Error ? err.message : 'Failed to extract text from documents');
+                  console.warn('Supabase upload failed for', err);
+                  setExtractError(err instanceof Error ? err.message + ". This is the second issue." : 'Failed to extract text from documents');
                 } finally {
                   setExtracting(false);
                 }
