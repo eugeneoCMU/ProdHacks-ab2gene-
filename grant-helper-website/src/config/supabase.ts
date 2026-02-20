@@ -43,7 +43,7 @@ function getSupabase(): SupabaseClient {
     realtime: {} as SupabaseClient['realtime'],
     removeChannel: () => ({}),
     getChannels: () => ([]),
-    channel: () => ({} as ReturnType<SupabaseClient['channel']>),
+    channel: () => ({} as any),
   } as unknown as SupabaseClient;
 }
 

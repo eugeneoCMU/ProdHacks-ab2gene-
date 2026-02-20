@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../../config/supabase';
 import './EmptyState.css';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 /**
  * Demo: Manually enter your Google Form ID and entry IDs here.
@@ -49,60 +48,10 @@ export default function WorkspaceView({ organizationProfile = '', userId }: Work
         resolvedUserId = session?.user?.id ?? undefined;
       }
 
-      const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({
-        model: 'gemini-2.0-flash',
-        systemInstruction: `You are a helpful grant writing assistant. You are given a list of questions and a context. You need to answer the questions based on the context. Do not make up any information and do not include any other text than the answers to the questions. Do not go over the word limit specified within the quesiton.`,
-      });
-
-      async function generateAnswer(question: string): Promise<string> {
-        const prompt = `
-          You are writing a strong, professional nonprofit grant application.
-          
-          Answer the following question clearly, persuasively, and concisely.
-          
-          Question:
-          ${question}
-          `;
-      
-        const result = await model.generateContent(prompt);
-      
-        return result.response.text().trim();
-      }
-      
-      async function generateFormAnswers(): Promise<URLSearchParams> {
-        const params = new URLSearchParams();
-      
-        const entries = Object.keys(GOOGLE_FORM_ENTRY_IDS);
-      
-        const answers = await Promise.all(
-          entries.map(async (key) => {
-            const question = GOOGLE_FORM_QUESTIONS[key];
-            const entryId = GOOGLE_FORM_ENTRY_IDS[key];
-      
-            const answer = await generateAnswer(question);
-      
-            return { entryId, answer };
-          })
-        );
-      
-        for (const { entryId, answer } of answers) {
-          params.append(entryId, answer);
-        }
-      
-        return params;
-      }
-
-      const answers = new URLSearchParams({
-        'entry.216607139': organizationProfile,
-        'entry.1232879177': '15000',
-        'entry.76808297': '30000',
-        'entry.344212770': '15000'
-      });
-
-      // POST: form config + questions; server uses Gemini + Supabase docs to fill URLSearchParams and returns pre-fill URL
-      const res = await fetch('https://docs.google.com/forms/d/e/1FAIpQLSeqewu_zjiu7TnUiAyRCT57i9lkeRbALArLXi6DdO43OhL5Wg/formResponse', {
+      // Call backend API to generate AI-powered answers from user's uploaded documents
+      const res = await fetch('/api/google-form/prefill', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           formId: GOOGLE_FORM_ID,
           organizationProfile: organizationProfile || undefined,
@@ -111,16 +60,24 @@ export default function WorkspaceView({ organizationProfile = '', userId }: Work
           ...(resolvedUserId ? { userId: resolvedUserId } : {}),
         }),
       });
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error((data as { error?: string }).error || `Request failed: ${res.status}`);
       }
-      const { url } = (await res.json()) as { url?: string };
+
+      const { url, answers } = (await res.json()) as { url?: string; answers?: Record<string, string> };
       if (!url) throw new Error('No pre-fill URL returned');
-      // Open the pre-filled form in a new tab (GET)
+
+      // Log generated answers for debugging
+      if (answers) {
+        console.log('Generated answers:', answers);
+      }
+
+      // Open the pre-filled Google Form in a new tab
       window.open(url, '_blank', 'noopener,noreferrer');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to open form');
+      setError(err instanceof Error ? err.message : 'Failed to generate application');
     } finally {
       setLoading(false);
     }
