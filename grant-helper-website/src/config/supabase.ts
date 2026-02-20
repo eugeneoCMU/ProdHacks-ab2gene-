@@ -36,14 +36,14 @@ function getSupabase(): SupabaseClient {
       signOut: async () => ({ error: null }),
       signUp: async () => ({ data: null, error: new Error('Supabase not configured') }),
     },
-    storage: {} as ReturnType<SupabaseClient['storage']>,
-    from: () => ({} as ReturnType<SupabaseClient['from']>),
-    rpc: () => ({} as ReturnType<SupabaseClient['rpc']>),
-    rest: {} as ReturnType<SupabaseClient['rest']>,
-    realtime: {} as ReturnType<SupabaseClient['realtime']>,
+    storage: {} as any,
+    from: () => ({} as any),
+    rpc: () => ({} as any),
+    rest: {} as any,
+    realtime: {} as any,
     removeChannel: () => ({}),
     getChannels: () => ([]),
-    channel: () => ({} as ReturnType<SupabaseClient['channel']>),
+    channel: () => ({} as any),
   } as unknown as SupabaseClient;
 }
 
