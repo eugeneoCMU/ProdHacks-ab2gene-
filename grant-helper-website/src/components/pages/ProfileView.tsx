@@ -221,8 +221,29 @@ export default function ProfileView({onOrganizationProfileChange,
                 setExtractError(null);
                 setExtracting(true);
                 try {
+                  // Extract text from documents
                   const { text } = await extractDocuments(files.map((f) => f.file));
                   onOrganizationProfileChange(text);
+
+                  // Extract structured organization profile for smart matching
+                  try {
+                    const profileResponse = await fetch('/api/profile/extract', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ text }),
+                    });
+
+                    if (profileResponse.ok) {
+                      const { profile } = await profileResponse.json();
+                      console.log('Extracted organization profile:', profile);
+                      // Save to localStorage for future use
+                      localStorage.setItem('organizationProfile', JSON.stringify(profile));
+                    }
+                  } catch (profileErr) {
+                    console.warn('Failed to extract structured profile:', profileErr);
+                    // Continue anyway - this is optional enhancement
+                  }
+
                   setShowUpload(false);
                 } catch (err) {
                   setExtractError(err instanceof Error ? err.message : 'Failed to extract text from documents');
@@ -231,7 +252,7 @@ export default function ProfileView({onOrganizationProfileChange,
                 }
               }}
             >
-              {extracting ? 'Extracting…' : '✨ Analyze with AI'}
+              {extracting ? 'Analyzing with AI…' : '✨ Analyze with AI'}
             </button>
             {extractError && (
               <p className="upload-error" role="alert">

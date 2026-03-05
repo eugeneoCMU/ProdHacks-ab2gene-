@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 // Load .env from project root (cwd when run via "npm run dev:server"), then try next to server/
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
-if (!process.env.GEMINI_API_KEY) {
+if (!process.env.OPENAI_API_KEY) {
   dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 }
 
@@ -15,7 +15,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import mammoth from 'mammoth';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // PDF parsing disabled for demo - use TXT or DOC files instead
@@ -34,22 +34,22 @@ app.use(express.json());
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-if (!GEMINI_API_KEY) {
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+if (!OPENAI_API_KEY) {
   console.error(
-    'Missing GEMINI_API_KEY. Add GEMINI_API_KEY=your_key to a .env file in the project root (grant-helper-website/.env).'
+    'Missing OPENAI_API_KEY. Add OPENAI_API_KEY=your_key to a .env file in the project root (grant-helper-website/.env).'
   );
   process.exit(1);
 }
 
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 const RAG_SYSTEM_INSTRUCTION = `You are a helpful grant application assistant. Answer questions using (1) the applicant's organization profile as base context, and (2) the grant opportunity details for grant-specific answers. If something cannot be found in the context, say so. Keep answers concise and practical. Do not make up deadlines, amounts, or eligibility.
 
 `;
 
 interface ChatMessage {
-  role: 'user' | 'model';
+  role: 'user' | 'assistant' | 'model'; // 'model' for backwards compatibility
   content: string;
 }
 
@@ -85,16 +85,132 @@ async function fetchUserDocumentContext(userId: string): Promise<string> {
   return data.map((r) => r.content).filter(Boolean).join('\n\n');
 }
 
-/** Generate one grant-application answer using Gemini from context and question. */
-async function generateAnswerForQuestion(context: string, question: string, wordLimit?: number): Promise<string> {
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
-    systemInstruction: `You are a grant writer. Answer the grant application question using ONLY the provided organization documents and profile. Be specific and cite details from the documents. Do not invent information. If the documents do not contain enough information, say so briefly and suggest what the applicant could add.${wordLimit ? ` Keep your answer within ${wordLimit} words.` : ''}`,
+/** Extract structured organization profile from documents using LLM */
+async function extractOrganizationProfile(documentText: string): Promise<Record<string, unknown>> {
+  const systemPrompt = `You are a nonprofit grant consultant's data extraction assistant. Extract comprehensive information from organization documents to enable precise grant matching.`;
+  const userPrompt = `Extract the following information from this nonprofit organization document. Return ONLY valid JSON with no additional text.
+
+Document:
+${documentText}
+
+Extract into this JSON structure (use null for missing values, be thorough):
+{
+  "name": "Organization name",
+  "annualBudget": 0,
+  "location": {
+    "city": "City name",
+    "state": "Two-letter state code (e.g., PA, NY, TX)",
+    "county": "County name if mentioned",
+    "region": "Region (Northeast, Southeast, Midwest, Southwest, West)",
+    "serviceArea": "local, regional, statewide, or national"
+  },
+  "focusAreas": ["primary focus area", "secondary areas"],
+  "targetPopulation": "Specific demographics served (age, income level, etc.)",
+  "organizationType": "501(c)(3), 501(c)(4), government, etc.",
+  "staffSize": 0,
+  "yearsOperating": 0,
+  "programCapacity": "small/medium/large based on staff and budget"
+}`;
+
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ],
+    temperature: 0.3,
+    response_format: { type: 'json_object' }
   });
-  const prompt = `Context from the organization's documents and profile:\n\n${context}\n\nQuestion to answer:\n${question}\n\nProvide a direct, concise answer suitable for pasting into a grant form.`;
-  const result = await model.generateContent(prompt);
-  const text = result.response.text();
-  return (text ?? '').trim();
+
+  const result = completion.choices[0]?.message?.content?.trim() ?? '{}';
+  return JSON.parse(result);
+}
+
+/** Score and rank a grant's relevance to an organization */
+async function scoreGrantMatch(orgProfile: Record<string, unknown>, grantData: Record<string, unknown>): Promise<{ score: number; explanation: string }> {
+  const systemPrompt = `You are an expert grant consultant with 15+ years of experience matching nonprofits to funding opportunities. Score how well a grant matches an organization on a scale of 0-100 using a rigorous, multi-factor analysis.`;
+
+  const userPrompt = `Organization Profile:
+${JSON.stringify(orgProfile, null, 2)}
+
+Grant Opportunity:
+${JSON.stringify(grantData, null, 2)}
+
+Analyze this match using the following weighted criteria:
+
+1. ELIGIBILITY (Pass/Fail - if fail, score must be ≤25):
+   - Organization type (501c3, government, etc.)
+   - Geographic restrictions (state-specific vs national)
+   - Organization size/budget requirements
+   - Years in operation requirements
+
+2. BUDGET ALIGNMENT (Weight: 25%):
+   - Grant amount vs org's annual budget (ideal: 10-50% of budget)
+   - Award floor/ceiling vs org's capacity
+   - Matching requirements vs org's resources
+   Score: 100 if perfect fit, 50 if workable, 0 if unrealistic
+
+3. GEOGRAPHIC FIT (Weight: 30%):
+   - HIGHEST PRIORITY: State/local grants matching org's location
+   - MEDIUM: Regional grants that include org's state
+   - LOWER: National grants (more competition)
+   - Consider: Does grant explicitly target org's city/county/state?
+   Score: 100 for local/state match, 70 for regional, 50 for national eligible, 0 if restricted elsewhere
+
+4. MISSION ALIGNMENT (Weight: 35%):
+   - Does grant's focus area directly match org's programs?
+   - Are target populations aligned?
+   - Do activities/outcomes match org's expertise?
+   Score: 100 for perfect mission match, 70 for strong overlap, 40 for partial, 0 for no alignment
+
+5. COMPETITION & FEASIBILITY (Weight: 10%):
+   - Application complexity vs org's staff capacity
+   - Likely competition level
+   - Timeline to deadline
+   Score: 100 for good fit, 50 for challenging, 0 if not feasible
+
+SCORING GUIDANCE:
+- 90-100: Excellent match - highly recommend applying
+- 75-89: Strong match - good fit, worth pursuing
+- 60-74: Moderate match - consider if capacity allows
+- 40-59: Weak match - only if no better options
+- 0-39: Poor match - not recommended
+
+Return JSON with:
+{
+  "score": <0-100>,
+  "explanation": "<2-3 sentence explanation covering eligibility, budget fit, geographic priority, and mission alignment>"
+}`;
+
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ],
+    temperature: 0.3,
+    response_format: { type: 'json_object' }
+  });
+
+  const result = completion.choices[0]?.message?.content?.trim() ?? '{"score": 0, "explanation": "Unable to score"}';
+  return JSON.parse(result);
+}
+
+/** Generate one grant-application answer using OpenAI from context and question. */
+async function generateAnswerForQuestion(context: string, question: string, wordLimit?: number): Promise<string> {
+  const systemPrompt = `You are a grant writer. Answer the grant application question using ONLY the provided organization documents and profile. Be specific and cite details from the documents. Do not invent information. If the documents do not contain enough information, say so briefly and suggest what the applicant could add.${wordLimit ? ` Keep your answer within ${wordLimit} words.` : ''}`;
+  const userPrompt = `Context from the organization's documents and profile:\n\n${context}\n\nQuestion to answer:\n${question}\n\nProvide a direct, concise answer suitable for pasting into a grant form.`;
+
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ],
+    temperature: 0.7,
+  });
+
+  return completion.choices[0]?.message?.content?.trim() ?? '';
 }
 
 async function extractTextFromFile(buffer: Buffer, mimeType: string, filename: string): Promise<string> {
@@ -159,33 +275,31 @@ app.post('/api/chat', async (req: Request, res: Response): Promise<void> => {
     }
     const profile = typeof profileContext === 'string' ? profileContext : '';
 
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
-      systemInstruction: buildSystemInstruction(profile, grantContext),
+    const systemInstruction = buildSystemInstruction(profile, grantContext);
+    const valid = (messages as ChatMessage[]).filter((m) => m.role && m.content);
+
+    // Convert messages to OpenAI format
+    const openaiMessages = [
+      { role: 'system' as const, content: systemInstruction },
+      ...valid.map((m) => ({
+        role: (m.role === 'model' ? 'assistant' : m.role) as 'user' | 'assistant',
+        content: m.content
+      }))
+    ];
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: openaiMessages,
+      temperature: 0.7,
     });
 
-    const valid = (messages as ChatMessage[]).filter((m) => m.role && m.content);
-    const history = valid.slice(0, -1).map((m) => ({
-      role: (m.role === 'model' ? 'model' : 'user') as 'user' | 'model',
-      parts: [{ text: m.content }],
-    }));
-    const lastMessage = valid[valid.length - 1];
-    const toSend =
-      lastMessage?.role === 'user'
-        ? lastMessage.content
-        : 'Say you are ready to answer questions about this grant.';
-
-    const chat = model.startChat({ history });
-    const result = await chat.sendMessage(toSend);
-    const response = result.response;
-    const text = response.text();
-
-    res.json({ reply: text ?? '' });
+    const reply = completion.choices[0]?.message?.content ?? '';
+    res.json({ reply });
   } catch (err) {
     const status = (err as { status?: number })?.status;
     const message =
       status === 429
-        ? "Rate limit exceeded. Please wait a minute and try again, or check your Gemini API quota."
+        ? "Rate limit exceeded. Please wait a minute and try again, or check your OpenAI API quota."
         : err instanceof Error
           ? err.message
           : 'Failed to get reply from assistant';
@@ -197,7 +311,7 @@ app.post('/api/chat', async (req: Request, res: Response): Promise<void> => {
 /** POST /api/google-form/prefill
  * Body: { formId, organizationProfile?, entryIds, questions?, userId? }
  * - entryIds: maps field names to Google Form entry IDs (e.g. "impact" -> "entry.216607139" or "216607139").
- * - questions: optional Record<fieldName, questionText>. If provided, answers are generated with Gemini using
+ * - questions: optional Record<fieldName, questionText>. If provided, answers are generated with OpenAI using
  *   context = organizationProfile + (if userId) document_chunks from Supabase; then URLSearchParams are filled.
  * - userId: optional; when set and Supabase is configured, document_chunks for this user are used as context.
  * Returns: { url: string, answers?: Record<string, string> } — pre-fill URL and optionally the generated answers.
@@ -297,6 +411,105 @@ app.get('/api/google-form/prefill-url', (req: Request, res: Response): void => {
   }
   const url = `${base}?${params.toString()}`;
   res.redirect(302, url);
+});
+
+/** POST /api/grants/smart-match
+ * Body: { organizationProfile: string, grants: array, topN?: number }
+ * Extracts org metadata, scores each grant, returns top matches with explanations
+ */
+interface SmartMatchRequestBody {
+  organizationProfile?: string;
+  grants?: unknown[];
+  topN?: number;
+}
+
+app.post('/api/grants/smart-match', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { organizationProfile, grants, topN = 10 } = req.body as SmartMatchRequestBody;
+
+    if (!organizationProfile || typeof organizationProfile !== 'string') {
+      res.status(400).json({ error: 'organizationProfile is required and must be a string' });
+      return;
+    }
+    if (!Array.isArray(grants) || grants.length === 0) {
+      res.status(400).json({ error: 'grants must be a non-empty array' });
+      return;
+    }
+
+    // Extract structured organization profile
+    const orgProfile = await extractOrganizationProfile(organizationProfile);
+
+    // Score each grant sequentially to avoid rate limits (3 requests/min on free tier)
+    const scoredGrants: Array<Record<string, unknown> & { matchScore: number; matchExplanation: string }> = [];
+    for (let i = 0; i < grants.length; i++) {
+      const grant = grants[i];
+      try {
+        // Add delay between requests (except first) to respect rate limits
+        if (i > 0) {
+          await new Promise(resolve => setTimeout(resolve, 25000)); // 25 second delay to stay under 3 RPM
+        }
+
+        const { score, explanation } = await scoreGrantMatch(orgProfile, grant as Record<string, unknown>);
+        scoredGrants.push({
+          ...grant,
+          matchScore: score,
+          matchExplanation: explanation
+        });
+      } catch (err) {
+        console.error(`Failed to score grant ${i}:`, err);
+        // Continue with next grant even if one fails
+        scoredGrants.push({
+          ...grant,
+          matchScore: 0,
+          matchExplanation: 'Failed to score this grant due to an error.'
+        });
+      }
+    }
+
+    // Sort by score and return top N
+    const topMatches = scoredGrants
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .slice(0, topN);
+
+    res.json({
+      organizationProfile: orgProfile,
+      matches: topMatches,
+      totalScored: grants.length
+    });
+  } catch (err) {
+    console.error('Smart match error:', err);
+    res.status(500).json({
+      error: err instanceof Error ? err.message : 'Failed to match grants',
+    });
+  }
+});
+
+/** POST /api/profile/extract
+ * Body: { text: string }
+ * Extracts structured organization metadata from document text
+ * Returns: { profile: OrganizationProfile }
+ */
+interface ExtractProfileBody {
+  text?: string;
+}
+
+app.post('/api/profile/extract', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { text } = req.body as ExtractProfileBody;
+
+    if (!text || typeof text !== 'string') {
+      res.status(400).json({ error: 'text is required and must be a string' });
+      return;
+    }
+
+    const profile = await extractOrganizationProfile(text);
+    res.json({ profile });
+  } catch (err) {
+    console.error('Profile extraction error:', err);
+    res.status(500).json({
+      error: err instanceof Error ? err.message : 'Failed to extract profile',
+    });
+  }
 });
 
 const PORT = Number(process.env.PORT) || 3001;
