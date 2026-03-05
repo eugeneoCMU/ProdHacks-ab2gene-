@@ -11,6 +11,7 @@ interface SearchViewProps {
 interface MatchedOpportunity extends GrantsGovOpportunity {
   matchScore?: number;
   matchExplanation?: string;
+  applicationTips?: string;
 }
 
 export default function SearchView({ organizationProfile = '' }: SearchViewProps) {
@@ -172,6 +173,35 @@ export default function SearchView({ organizationProfile = '' }: SearchViewProps
                     }}>
                       {opp.matchExplanation}
                     </p>
+                  )}
+                  {opp.applicationTips && (
+                    <div style={{
+                      margin: '12px 0',
+                      padding: '12px',
+                      backgroundColor: '#f0f9ff',
+                      border: '1px solid #0ea5e9',
+                      borderRadius: '8px'
+                    }}>
+                      <div style={{
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        color: '#0369a1',
+                        marginBottom: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}>
+                        💡 Application Tips
+                      </div>
+                      <div style={{
+                        fontSize: '13px',
+                        color: '#475569',
+                        lineHeight: '1.6',
+                        whiteSpace: 'pre-line'
+                      }}>
+                        {opp.applicationTips}
+                      </div>
+                    </div>
                   )}
                   <div className="opportunity-meta">
                     {opp.summary?.post_date && <span>Posted: {opp.summary.post_date}</span>}

@@ -1,0 +1,747 @@
+{
+  "stats": {
+    "totalTests": 3,
+    "scoreDistribution": {
+      "excellent": 1,
+      "good": 3,
+      "fair": 1,
+      "poor": 4
+    },
+    "avgScoreByProfile": {
+      "micro-edu-rural": "45.7",
+      "small-health-urban": "46.0",
+      "medium-stem-suburban": "60.0"
+    },
+    "topMatchesByProfile": {
+      "micro-edu-rural": [
+        {
+          "title": "Fiscal Year (FY) 2026 AmeriCorps State and National Competitive Grants",
+          "score": 72,
+          "explanation": "The Rural Education Initiative is eligible as a 501(c)(3) for the AmeriCorps grant, which is nationa..."
+        },
+        {
+          "title": "Next Gen STEM (NGS) NASA Aerospace Skilled Technical Workforce Hubs (NAS_Hub)",
+          "score": 45,
+          "explanation": "The Rural Education Initiative is eligible as a 501(c)(3), but the grant's focus on aerospace techni..."
+        },
+        {
+          "title": "Senior Medicare Patrol State Project Grants - Pennsylvania",
+          "score": 20,
+          "explanation": "The Rural Education Initiative is a 501(c)(3) and eligible to apply, but the grant is specifically f..."
+        }
+      ],
+      "small-health-urban": [
+        {
+          "title": "Fiscal Year (FY) 2026 AmeriCorps State and National Competitive Grants",
+          "score": 78,
+          "explanation": "The Community Health Access Project is eligible as a 501(c)(3) nonprofit, and there are no geographi..."
+        },
+        {
+          "title": "Next Gen STEM (NGS) NASA Aerospace Skilled Technical Workforce Hubs (NAS_Hub)",
+          "score": 35,
+          "explanation": "The Community Health Access Project is eligible as a 501(c)(3) nonprofit, but the NASA grant's focus..."
+        },
+        {
+          "title": "Senior Medicare Patrol State Project Grants - Pennsylvania",
+          "score": 25,
+          "explanation": "The grant is not a suitable match for the Community Health Access Project. While the organization is..."
+        }
+      ],
+      "medium-stem-suburban": [
+        {
+          "title": "Next Gen STEM (NGS) NASA Aerospace Skilled Technical Workforce Hubs (NAS_Hub)",
+          "score": 82,
+          "explanation": "The STEM Future Foundation is eligible as a 501(c)(3) nonprofit, meeting the grant's requirements. T..."
+        },
+        {
+          "title": "Fiscal Year (FY) 2026 AmeriCorps State and National Competitive Grants",
+          "score": 78,
+          "explanation": "The STEM Future Foundation is eligible as a 501(c)(3) nonprofit for the AmeriCorps grant, which is n..."
+        },
+        {
+          "title": "Senior Medicare Patrol State Project Grants - Pennsylvania",
+          "score": 20,
+          "explanation": "The STEM Future Foundation is a 501(c)(3) nonprofit, which meets the basic eligibility requirement. ..."
+        }
+      ]
+    },
+    "issuesFound": []
+  },
+  "allResults": [
+    {
+      "profileId": "micro-edu-rural",
+      "matches": [
+        {
+          "agency": "AC",
+          "agency_code": "AC",
+          "agency_name": "AmeriCorps",
+          "category": "discretionary",
+          "category_explanation": null,
+          "legacy_opportunity_id": 361222,
+          "opportunity_assistance_listings": [
+            {
+              "assistance_listing_number": "94.006",
+              "program_title": "AmeriCorps State and National 94.006"
+            }
+          ],
+          "opportunity_id": "02326e51-73f5-495c-9825-5e4a67c42367",
+          "opportunity_number": "AC-01-31-26",
+          "opportunity_status": "posted",
+          "opportunity_title": "Fiscal Year (FY) 2026 AmeriCorps State and National Competitive Grants",
+          "summary": {
+            "additional_info_url": "https://www.americorps.gov/funding-opportunity/fy-2026-americorps-state-national-grants",
+            "additional_info_url_description": "Full competition information and resources",
+            "agency_contact_description": "americorpsgrants@americorps.gov",
+            "agency_email_address": "americorpsgrants@americorps.gov",
+            "agency_email_address_description": "Competition Inbox",
+            "applicant_eligibility_description": "State Service Commission and/or States and US Territories",
+            "applicant_types": [
+              "nonprofits_non_higher_education_without_501c3",
+              "private_institutions_of_higher_education",
+              "county_governments",
+              "other_native_american_tribal_organizations",
+              "other",
+              "special_district_governments",
+              "state_governments",
+              "city_or_township_governments",
+              "nonprofits_non_higher_education_with_501c3",
+              "federally_recognized_native_american_tribal_governments"
+            ],
+            "archive_date": "2026-04-30",
+            "award_ceiling": null,
+            "award_floor": null,
+            "close_date": "2026-03-31",
+            "close_date_description": "",
+            "created_at": "2026-01-30T22:31:29+00:00",
+            "estimated_total_program_funding": null,
+            "expected_number_of_awards": null,
+            "fiscal_year": null,
+            "forecasted_award_date": null,
+            "forecasted_close_date": null,
+            "forecasted_close_date_description": null,
+            "forecasted_post_date": null,
+            "forecasted_project_start_date": null,
+            "funding_categories": [
+              "community_development",
+              "disaster_prevention_and_relief",
+              "education",
+              "employment_labor_and_training",
+              "environment",
+              "food_and_nutrition",
+              "health",
+              "housing",
+              "other"
+            ],
+            "funding_category_description": "Economic Opportunity; Veterans and Military Families",
+            "funding_instruments": [
+              "grant"
+            ],
+            "is_cost_sharing": true,
+            "is_forecast": false,
+            "post_date": "2026-01-30",
+            "summary_description": "<p>AmeriCorps improves lives, strengthens communities, and fosters civic engagement through service and volunteering. AmeriCorps brings people together to tackle some of the country’s most pressing challenges through national service and volunteerism. AmeriCorps members serve with organizations dedicated to the improvement of communities and those serving. AmeriCorps grants are awarded to eligible organizations that engage AmeriCorps members in evidence-based or evidence-informed interventions to strengthen communities. An AmeriCorps member is a person who does community service through AmeriCorps. Members may receive a living allowance and other benefits. After successful completion of their service, members earn a Segal AmeriCorps Education Award they can use to pay for higher education expenses or apply to qualified student loans.</p>",
+            "updated_at": "2026-01-30T22:42:53+00:00",
+            "version_number": 1
+          },
+          "top_level_agency_code": "AC",
+          "top_level_agency_name": "AmeriCorps",
+          "matchScore": 72,
+          "matchExplanation": "The Rural Education Initiative is eligible as a 501(c)(3) for the AmeriCorps grant, which is national and thus more competitive. The grant's focus on education aligns well with the organization's literacy programs, but the broad target population may dilute the match. The budget alignment is challenging due to unspecified award amounts and cost-sharing requirements. With a small staff, the complexity of the application could be demanding, but it remains a moderate match worth considering if resources allow."
+        },
+        {
+          "agency": "NASA",
+          "agency_code": "NASA",
+          "agency_name": "National Aeronautics and Space Administration",
+          "category": "discretionary",
+          "category_explanation": null,
+          "legacy_opportunity_id": 361254,
+          "opportunity_assistance_listings": [
+            {
+              "assistance_listing_number": "43.008",
+              "program_title": "Office of Stem Engagement (OSTEM)"
+            }
+          ],
+          "opportunity_id": "ea0703a2-6949-4673-9fc7-ce16758e09d9",
+          "opportunity_number": "NNH26ZHA001C",
+          "opportunity_status": "posted",
+          "opportunity_title": "Next Gen STEM (NGS) NASA Aerospace Skilled Technical Workforce Hubs (NAS_Hub)",
+          "summary": {
+            "additional_info_url": "https://nspires.nasaprs.com/external/solicitations/summary!init.do?solId=%7b25B0D1A3-18D8-8B39-964A-860257D9B49F%7d&path=open",
+            "additional_info_url_description": "NAS_Hub NSPIRES Landing Page",
+            "agency_contact_description": "Maria Arredondo, \r\nProgram Manager",
+            "agency_email_address": "NAS_Hub@nasaprs.com",
+            "agency_email_address_description": "NAS_Hub Contact Email",
+            "applicant_eligibility_description": "",
+            "applicant_types": [
+              "private_institutions_of_higher_education",
+              "federally_recognized_native_american_tribal_governments",
+              "independent_school_districts",
+              "special_district_governments",
+              "for_profit_organizations_other_than_small_businesses",
+              "public_and_state_institutions_of_higher_education",
+              "small_businesses",
+              "other_native_american_tribal_organizations",
+              "nonprofits_non_higher_education_without_501c3",
+              "city_or_township_governments",
+              "county_governments",
+              "nonprofits_non_higher_education_with_501c3",
+              "state_governments"
+            ],
+            "archive_date": "2026-04-19",
+            "award_ceiling": 1500000,
+            "award_floor": 0,
+            "close_date": "2026-03-20",
+            "close_date_description": "",
+            "created_at": "2026-02-06T18:44:16+00:00",
+            "estimated_total_program_funding": 12000000,
+            "expected_number_of_awards": 8,
+            "fiscal_year": null,
+            "forecasted_award_date": null,
+            "forecasted_close_date": null,
+            "forecasted_close_date_description": null,
+            "forecasted_post_date": null,
+            "forecasted_project_start_date": null,
+            "funding_categories": [
+              "education"
+            ],
+            "funding_category_description": null,
+            "funding_instruments": [
+              "cooperative_agreement"
+            ],
+            "is_cost_sharing": false,
+            "is_forecast": false,
+            "post_date": "2026-02-06",
+            "summary_description": "<p>NASA Aerospace Skilled Technical Workforce Hubs (NAS_Hub) funding opportunity. This cooperative agreement solicitation seeks proposals to establish state or regionally focused hubs that address critical shortages in the aerospace skilled technical workforce and strengthen alignment between education, workforce systems, industry, and NASA missions.</p><p><br></p><p>NAS_Hubs will serve as strategic centers that coordinate aerospace employers, career and technical education (CTE) programs at community colleges and high schools, state or regional workforce development boards, economic development agencies, and NASA Centers or facilities. The initiative focuses on developing clear pathways for students and jobseekers into high-demand, entry-level aerospace technical careers that do not require a bachelor’s degree.</p><p><br></p><p>Approximately $12 million is anticipated to be available over a three-year period, with an expected eight awards of approximately $1.5 million each (up to $500,000 annually). Cost sharing is not required. Eligible applicants include government entities, institutions of higher education, nonprofit and for-profit organizations, and small businesses. Awards will be made as cooperative agreements and evaluated based on relevance to NASA, intrinsic merit, and budget reasonableness. Proposals must be submitted electronically through NASA’s NSPIRES system by the published deadline.</p>",
+            "updated_at": "2026-02-06T18:46:18+00:00",
+            "version_number": 1
+          },
+          "top_level_agency_code": "NASA",
+          "top_level_agency_name": "National Aeronautics and Space Administration",
+          "matchScore": 45,
+          "matchExplanation": "The Rural Education Initiative is eligible as a 501(c)(3), but the grant's focus on aerospace technical workforce development does not align with the organization's mission of literacy and rural education. The grant amount far exceeds the organization's annual budget, posing a significant challenge. While the grant is national, increasing competition, the complexity of the application may be beyond the capacity of the small staff. Overall, the mission misalignment and budget disparity make this a weak match."
+        },
+        {
+          "agency": "HHS-ACL",
+          "agency_code": "HHS-ACL",
+          "agency_name": "Administration for Community Living",
+          "category": "discretionary",
+          "category_explanation": null,
+          "legacy_opportunity_id": 361003,
+          "opportunity_assistance_listings": [
+            {
+              "assistance_listing_number": "93.048",
+              "program_title": "Special Programs for the Aging, Title IV, and Title II, Discretionary Projects"
+            }
+          ],
+          "opportunity_id": "cb917fc6-762e-4778-a751-6b139c6aa2e1",
+          "opportunity_number": "HHS-2026-ACL-CIP-MPPG-0020",
+          "opportunity_status": "posted",
+          "opportunity_title": "Senior Medicare Patrol State Project Grants - Pennsylvania",
+          "summary": {
+            "additional_info_url": "https://acl.gov/grants/open-opportunities",
+            "additional_info_url_description": "https://acl.gov/grants/open-opportunities",
+            "agency_contact_description": "Rebecca Kinney\nrebecca.kinney@acl.hhs.gov",
+            "agency_email_address": "rebecca.kinney@acl.hhs.gov",
+            "agency_email_address_description": "Government email",
+            "applicant_eligibility_description": "Foreign entities are not eligible to compete for, or receive, awards made under this announcement. Faith-based and community organizations that meet the eligibility requirements are eligible to receive awards under this funding opportunity announcement.",
+            "applicant_types": [
+              "other_native_american_tribal_organizations",
+              "state_governments",
+              "nonprofits_non_higher_education_with_501c3",
+              "city_or_township_governments",
+              "county_governments",
+              "for_profit_organizations_other_than_small_businesses",
+              "private_institutions_of_higher_education",
+              "special_district_governments",
+              "federally_recognized_native_american_tribal_governments",
+              "public_and_state_institutions_of_higher_education",
+              "nonprofits_non_higher_education_without_501c3",
+              "unrestricted"
+            ],
+            "archive_date": "2027-06-01",
+            "award_ceiling": 1100000,
+            "award_floor": 0,
+            "close_date": "2026-04-13",
+            "close_date_description": "Electronically submitted applications must be submitted no later than 11:59 p.m., ET, on the listed application due date.",
+            "created_at": "2026-02-10T16:00:50+00:00",
+            "estimated_total_program_funding": 1100000,
+            "expected_number_of_awards": 1,
+            "fiscal_year": null,
+            "forecasted_award_date": null,
+            "forecasted_close_date": null,
+            "forecasted_close_date_description": null,
+            "forecasted_post_date": null,
+            "forecasted_project_start_date": null,
+            "funding_categories": [
+              "income_security_and_social_services"
+            ],
+            "funding_category_description": null,
+            "funding_instruments": [
+              "cooperative_agreement"
+            ],
+            "is_cost_sharing": false,
+            "is_forecast": false,
+            "post_date": "2026-02-10",
+            "summary_description": "The mission of the Administration for Community Living (ACL) Senior Medicare Patrol (SMP) program is to empower and assist Medicare beneficiaries, their families, and caregivers to prevent, detect, and report health care fraud, errors, and abuse. Through outreach, counseling, and education, the SMP program increases awareness and understanding of health care programs to protect Medicare beneficiaries from the economic and health-related consequences associated with Medicare fraud, errors, and abuse. ACL currently provides grant funding to support 54 SMP state projects, including grantees in all 50 states, the District of Columbia, Puerto Rico, Guam, and the US Virgin Islands. The SMP projects use this funding to provide local outreach, education, and assistance to Medicare beneficiaries through a trained workforce, many of which are volunteers. SMP projects teach Medicare beneficiaries to protect their Medicare numbers, to detect billing discrepancies on their Medicare statements, and to report suspicious activity for further investigation. In addition, SMP projects actively disseminate fraud prevention and identification information through the media, outreach campaigns, and community events. As a result of these efforts, beneficiaries contact the SMP projects with inquiries and complaints regarding potential Medicare fraud, errors, and abuse. SMPs provide in-depth counseling and assistance to help beneficiaries who present with questions and issues. With this funding opportunity, ACL anticipates awarding up to 1 cooperative agreement to support the SMP project in Pennsylvania.",
+            "updated_at": "2026-02-10T16:00:50+00:00",
+            "version_number": 1
+          },
+          "top_level_agency_code": "HHS",
+          "top_level_agency_name": "Department of Health and Human Services",
+          "matchScore": 20,
+          "matchExplanation": "The Rural Education Initiative is a 501(c)(3) and eligible to apply, but the grant is specifically for a Senior Medicare Patrol project in Pennsylvania, which does not align geographically with the organization's location in Kentucky. Additionally, the mission of the grant focuses on Medicare fraud prevention, which does not align with the organization's focus on literacy programs for rural children. The grant amount is significantly higher than the organization's annual budget, making it unrealistic for their capacity. Overall, this grant is a poor match for the organization."
+        }
+      ]
+    },
+    {
+      "profileId": "small-health-urban",
+      "matches": [
+        {
+          "agency": "AC",
+          "agency_code": "AC",
+          "agency_name": "AmeriCorps",
+          "category": "discretionary",
+          "category_explanation": null,
+          "legacy_opportunity_id": 361222,
+          "opportunity_assistance_listings": [
+            {
+              "assistance_listing_number": "94.006",
+              "program_title": "AmeriCorps State and National 94.006"
+            }
+          ],
+          "opportunity_id": "02326e51-73f5-495c-9825-5e4a67c42367",
+          "opportunity_number": "AC-01-31-26",
+          "opportunity_status": "posted",
+          "opportunity_title": "Fiscal Year (FY) 2026 AmeriCorps State and National Competitive Grants",
+          "summary": {
+            "additional_info_url": "https://www.americorps.gov/funding-opportunity/fy-2026-americorps-state-national-grants",
+            "additional_info_url_description": "Full competition information and resources",
+            "agency_contact_description": "americorpsgrants@americorps.gov",
+            "agency_email_address": "americorpsgrants@americorps.gov",
+            "agency_email_address_description": "Competition Inbox",
+            "applicant_eligibility_description": "State Service Commission and/or States and US Territories",
+            "applicant_types": [
+              "nonprofits_non_higher_education_without_501c3",
+              "private_institutions_of_higher_education",
+              "county_governments",
+              "other_native_american_tribal_organizations",
+              "other",
+              "special_district_governments",
+              "state_governments",
+              "city_or_township_governments",
+              "nonprofits_non_higher_education_with_501c3",
+              "federally_recognized_native_american_tribal_governments"
+            ],
+            "archive_date": "2026-04-30",
+            "award_ceiling": null,
+            "award_floor": null,
+            "close_date": "2026-03-31",
+            "close_date_description": "",
+            "created_at": "2026-01-30T22:31:29+00:00",
+            "estimated_total_program_funding": null,
+            "expected_number_of_awards": null,
+            "fiscal_year": null,
+            "forecasted_award_date": null,
+            "forecasted_close_date": null,
+            "forecasted_close_date_description": null,
+            "forecasted_post_date": null,
+            "forecasted_project_start_date": null,
+            "funding_categories": [
+              "community_development",
+              "disaster_prevention_and_relief",
+              "education",
+              "employment_labor_and_training",
+              "environment",
+              "food_and_nutrition",
+              "health",
+              "housing",
+              "other"
+            ],
+            "funding_category_description": "Economic Opportunity; Veterans and Military Families",
+            "funding_instruments": [
+              "grant"
+            ],
+            "is_cost_sharing": true,
+            "is_forecast": false,
+            "post_date": "2026-01-30",
+            "summary_description": "<p>AmeriCorps improves lives, strengthens communities, and fosters civic engagement through service and volunteering. AmeriCorps brings people together to tackle some of the country’s most pressing challenges through national service and volunteerism. AmeriCorps members serve with organizations dedicated to the improvement of communities and those serving. AmeriCorps grants are awarded to eligible organizations that engage AmeriCorps members in evidence-based or evidence-informed interventions to strengthen communities. An AmeriCorps member is a person who does community service through AmeriCorps. Members may receive a living allowance and other benefits. After successful completion of their service, members earn a Segal AmeriCorps Education Award they can use to pay for higher education expenses or apply to qualified student loans.</p>",
+            "updated_at": "2026-01-30T22:42:53+00:00",
+            "version_number": 1
+          },
+          "top_level_agency_code": "AC",
+          "top_level_agency_name": "AmeriCorps",
+          "matchScore": 78,
+          "matchExplanation": "The Community Health Access Project is eligible as a 501(c)(3) nonprofit, and there are no geographic restrictions, allowing them to apply for this national AmeriCorps grant. The grant's focus on community development and health aligns well with the organization's mental health and substance abuse services, although it is a national grant, which increases competition. The budget alignment is workable, but the cost-sharing requirement may be challenging given the organization's small budget. Overall, it's a strong match worth pursuing if resources allow."
+        },
+        {
+          "agency": "NASA",
+          "agency_code": "NASA",
+          "agency_name": "National Aeronautics and Space Administration",
+          "category": "discretionary",
+          "category_explanation": null,
+          "legacy_opportunity_id": 361254,
+          "opportunity_assistance_listings": [
+            {
+              "assistance_listing_number": "43.008",
+              "program_title": "Office of Stem Engagement (OSTEM)"
+            }
+          ],
+          "opportunity_id": "ea0703a2-6949-4673-9fc7-ce16758e09d9",
+          "opportunity_number": "NNH26ZHA001C",
+          "opportunity_status": "posted",
+          "opportunity_title": "Next Gen STEM (NGS) NASA Aerospace Skilled Technical Workforce Hubs (NAS_Hub)",
+          "summary": {
+            "additional_info_url": "https://nspires.nasaprs.com/external/solicitations/summary!init.do?solId=%7b25B0D1A3-18D8-8B39-964A-860257D9B49F%7d&path=open",
+            "additional_info_url_description": "NAS_Hub NSPIRES Landing Page",
+            "agency_contact_description": "Maria Arredondo, \r\nProgram Manager",
+            "agency_email_address": "NAS_Hub@nasaprs.com",
+            "agency_email_address_description": "NAS_Hub Contact Email",
+            "applicant_eligibility_description": "",
+            "applicant_types": [
+              "private_institutions_of_higher_education",
+              "federally_recognized_native_american_tribal_governments",
+              "independent_school_districts",
+              "special_district_governments",
+              "for_profit_organizations_other_than_small_businesses",
+              "public_and_state_institutions_of_higher_education",
+              "small_businesses",
+              "other_native_american_tribal_organizations",
+              "nonprofits_non_higher_education_without_501c3",
+              "city_or_township_governments",
+              "county_governments",
+              "nonprofits_non_higher_education_with_501c3",
+              "state_governments"
+            ],
+            "archive_date": "2026-04-19",
+            "award_ceiling": 1500000,
+            "award_floor": 0,
+            "close_date": "2026-03-20",
+            "close_date_description": "",
+            "created_at": "2026-02-06T18:44:16+00:00",
+            "estimated_total_program_funding": 12000000,
+            "expected_number_of_awards": 8,
+            "fiscal_year": null,
+            "forecasted_award_date": null,
+            "forecasted_close_date": null,
+            "forecasted_close_date_description": null,
+            "forecasted_post_date": null,
+            "forecasted_project_start_date": null,
+            "funding_categories": [
+              "education"
+            ],
+            "funding_category_description": null,
+            "funding_instruments": [
+              "cooperative_agreement"
+            ],
+            "is_cost_sharing": false,
+            "is_forecast": false,
+            "post_date": "2026-02-06",
+            "summary_description": "<p>NASA Aerospace Skilled Technical Workforce Hubs (NAS_Hub) funding opportunity. This cooperative agreement solicitation seeks proposals to establish state or regionally focused hubs that address critical shortages in the aerospace skilled technical workforce and strengthen alignment between education, workforce systems, industry, and NASA missions.</p><p><br></p><p>NAS_Hubs will serve as strategic centers that coordinate aerospace employers, career and technical education (CTE) programs at community colleges and high schools, state or regional workforce development boards, economic development agencies, and NASA Centers or facilities. The initiative focuses on developing clear pathways for students and jobseekers into high-demand, entry-level aerospace technical careers that do not require a bachelor’s degree.</p><p><br></p><p>Approximately $12 million is anticipated to be available over a three-year period, with an expected eight awards of approximately $1.5 million each (up to $500,000 annually). Cost sharing is not required. Eligible applicants include government entities, institutions of higher education, nonprofit and for-profit organizations, and small businesses. Awards will be made as cooperative agreements and evaluated based on relevance to NASA, intrinsic merit, and budget reasonableness. Proposals must be submitted electronically through NASA’s NSPIRES system by the published deadline.</p>",
+            "updated_at": "2026-02-06T18:46:18+00:00",
+            "version_number": 1
+          },
+          "top_level_agency_code": "NASA",
+          "top_level_agency_name": "National Aeronautics and Space Administration",
+          "matchScore": 35,
+          "matchExplanation": "The Community Health Access Project is eligible as a 501(c)(3) nonprofit, but the NASA grant's focus on aerospace workforce development does not align with the organization's mission in mental health and substance abuse. The grant is national, increasing competition, and the grant amount is significantly larger than the organization's annual budget, posing feasibility challenges. Overall, the mission misalignment and budget mismatch make this a poor fit."
+        },
+        {
+          "agency": "HHS-ACL",
+          "agency_code": "HHS-ACL",
+          "agency_name": "Administration for Community Living",
+          "category": "discretionary",
+          "category_explanation": null,
+          "legacy_opportunity_id": 361003,
+          "opportunity_assistance_listings": [
+            {
+              "assistance_listing_number": "93.048",
+              "program_title": "Special Programs for the Aging, Title IV, and Title II, Discretionary Projects"
+            }
+          ],
+          "opportunity_id": "cb917fc6-762e-4778-a751-6b139c6aa2e1",
+          "opportunity_number": "HHS-2026-ACL-CIP-MPPG-0020",
+          "opportunity_status": "posted",
+          "opportunity_title": "Senior Medicare Patrol State Project Grants - Pennsylvania",
+          "summary": {
+            "additional_info_url": "https://acl.gov/grants/open-opportunities",
+            "additional_info_url_description": "https://acl.gov/grants/open-opportunities",
+            "agency_contact_description": "Rebecca Kinney\nrebecca.kinney@acl.hhs.gov",
+            "agency_email_address": "rebecca.kinney@acl.hhs.gov",
+            "agency_email_address_description": "Government email",
+            "applicant_eligibility_description": "Foreign entities are not eligible to compete for, or receive, awards made under this announcement. Faith-based and community organizations that meet the eligibility requirements are eligible to receive awards under this funding opportunity announcement.",
+            "applicant_types": [
+              "other_native_american_tribal_organizations",
+              "state_governments",
+              "nonprofits_non_higher_education_with_501c3",
+              "city_or_township_governments",
+              "county_governments",
+              "for_profit_organizations_other_than_small_businesses",
+              "private_institutions_of_higher_education",
+              "special_district_governments",
+              "federally_recognized_native_american_tribal_governments",
+              "public_and_state_institutions_of_higher_education",
+              "nonprofits_non_higher_education_without_501c3",
+              "unrestricted"
+            ],
+            "archive_date": "2027-06-01",
+            "award_ceiling": 1100000,
+            "award_floor": 0,
+            "close_date": "2026-04-13",
+            "close_date_description": "Electronically submitted applications must be submitted no later than 11:59 p.m., ET, on the listed application due date.",
+            "created_at": "2026-02-10T16:00:50+00:00",
+            "estimated_total_program_funding": 1100000,
+            "expected_number_of_awards": 1,
+            "fiscal_year": null,
+            "forecasted_award_date": null,
+            "forecasted_close_date": null,
+            "forecasted_close_date_description": null,
+            "forecasted_post_date": null,
+            "forecasted_project_start_date": null,
+            "funding_categories": [
+              "income_security_and_social_services"
+            ],
+            "funding_category_description": null,
+            "funding_instruments": [
+              "cooperative_agreement"
+            ],
+            "is_cost_sharing": false,
+            "is_forecast": false,
+            "post_date": "2026-02-10",
+            "summary_description": "The mission of the Administration for Community Living (ACL) Senior Medicare Patrol (SMP) program is to empower and assist Medicare beneficiaries, their families, and caregivers to prevent, detect, and report health care fraud, errors, and abuse. Through outreach, counseling, and education, the SMP program increases awareness and understanding of health care programs to protect Medicare beneficiaries from the economic and health-related consequences associated with Medicare fraud, errors, and abuse. ACL currently provides grant funding to support 54 SMP state projects, including grantees in all 50 states, the District of Columbia, Puerto Rico, Guam, and the US Virgin Islands. The SMP projects use this funding to provide local outreach, education, and assistance to Medicare beneficiaries through a trained workforce, many of which are volunteers. SMP projects teach Medicare beneficiaries to protect their Medicare numbers, to detect billing discrepancies on their Medicare statements, and to report suspicious activity for further investigation. In addition, SMP projects actively disseminate fraud prevention and identification information through the media, outreach campaigns, and community events. As a result of these efforts, beneficiaries contact the SMP projects with inquiries and complaints regarding potential Medicare fraud, errors, and abuse. SMPs provide in-depth counseling and assistance to help beneficiaries who present with questions and issues. With this funding opportunity, ACL anticipates awarding up to 1 cooperative agreement to support the SMP project in Pennsylvania.",
+            "updated_at": "2026-02-10T16:00:50+00:00",
+            "version_number": 1
+          },
+          "top_level_agency_code": "HHS",
+          "top_level_agency_name": "Department of Health and Human Services",
+          "matchScore": 25,
+          "matchExplanation": "The grant is not a suitable match for the Community Health Access Project. While the organization is a 501(c)(3) and eligible to apply, the grant is specifically targeted for the Senior Medicare Patrol project in Pennsylvania, which does not align with the organization's location in Detroit, MI. Additionally, the grant's focus on Medicare fraud prevention does not align with the organization's mission of providing mental health and substance abuse services to adults in urban Detroit. Given these factors, the geographic and mission misalignment results in a poor match score."
+        }
+      ]
+    },
+    {
+      "profileId": "medium-stem-suburban",
+      "matches": [
+        {
+          "agency": "NASA",
+          "agency_code": "NASA",
+          "agency_name": "National Aeronautics and Space Administration",
+          "category": "discretionary",
+          "category_explanation": null,
+          "legacy_opportunity_id": 361254,
+          "opportunity_assistance_listings": [
+            {
+              "assistance_listing_number": "43.008",
+              "program_title": "Office of Stem Engagement (OSTEM)"
+            }
+          ],
+          "opportunity_id": "ea0703a2-6949-4673-9fc7-ce16758e09d9",
+          "opportunity_number": "NNH26ZHA001C",
+          "opportunity_status": "posted",
+          "opportunity_title": "Next Gen STEM (NGS) NASA Aerospace Skilled Technical Workforce Hubs (NAS_Hub)",
+          "summary": {
+            "additional_info_url": "https://nspires.nasaprs.com/external/solicitations/summary!init.do?solId=%7b25B0D1A3-18D8-8B39-964A-860257D9B49F%7d&path=open",
+            "additional_info_url_description": "NAS_Hub NSPIRES Landing Page",
+            "agency_contact_description": "Maria Arredondo, \r\nProgram Manager",
+            "agency_email_address": "NAS_Hub@nasaprs.com",
+            "agency_email_address_description": "NAS_Hub Contact Email",
+            "applicant_eligibility_description": "",
+            "applicant_types": [
+              "private_institutions_of_higher_education",
+              "federally_recognized_native_american_tribal_governments",
+              "independent_school_districts",
+              "special_district_governments",
+              "for_profit_organizations_other_than_small_businesses",
+              "public_and_state_institutions_of_higher_education",
+              "small_businesses",
+              "other_native_american_tribal_organizations",
+              "nonprofits_non_higher_education_without_501c3",
+              "city_or_township_governments",
+              "county_governments",
+              "nonprofits_non_higher_education_with_501c3",
+              "state_governments"
+            ],
+            "archive_date": "2026-04-19",
+            "award_ceiling": 1500000,
+            "award_floor": 0,
+            "close_date": "2026-03-20",
+            "close_date_description": "",
+            "created_at": "2026-02-06T18:44:16+00:00",
+            "estimated_total_program_funding": 12000000,
+            "expected_number_of_awards": 8,
+            "fiscal_year": null,
+            "forecasted_award_date": null,
+            "forecasted_close_date": null,
+            "forecasted_close_date_description": null,
+            "forecasted_post_date": null,
+            "forecasted_project_start_date": null,
+            "funding_categories": [
+              "education"
+            ],
+            "funding_category_description": null,
+            "funding_instruments": [
+              "cooperative_agreement"
+            ],
+            "is_cost_sharing": false,
+            "is_forecast": false,
+            "post_date": "2026-02-06",
+            "summary_description": "<p>NASA Aerospace Skilled Technical Workforce Hubs (NAS_Hub) funding opportunity. This cooperative agreement solicitation seeks proposals to establish state or regionally focused hubs that address critical shortages in the aerospace skilled technical workforce and strengthen alignment between education, workforce systems, industry, and NASA missions.</p><p><br></p><p>NAS_Hubs will serve as strategic centers that coordinate aerospace employers, career and technical education (CTE) programs at community colleges and high schools, state or regional workforce development boards, economic development agencies, and NASA Centers or facilities. The initiative focuses on developing clear pathways for students and jobseekers into high-demand, entry-level aerospace technical careers that do not require a bachelor’s degree.</p><p><br></p><p>Approximately $12 million is anticipated to be available over a three-year period, with an expected eight awards of approximately $1.5 million each (up to $500,000 annually). Cost sharing is not required. Eligible applicants include government entities, institutions of higher education, nonprofit and for-profit organizations, and small businesses. Awards will be made as cooperative agreements and evaluated based on relevance to NASA, intrinsic merit, and budget reasonableness. Proposals must be submitted electronically through NASA’s NSPIRES system by the published deadline.</p>",
+            "updated_at": "2026-02-06T18:46:18+00:00",
+            "version_number": 1
+          },
+          "top_level_agency_code": "NASA",
+          "top_level_agency_name": "National Aeronautics and Space Administration",
+          "matchScore": 82,
+          "matchExplanation": "The STEM Future Foundation is eligible as a 501(c)(3) nonprofit, meeting the grant's requirements. The grant amount of up to $500,000 annually is a good fit for the organization's $500,000 budget. While the grant is national, increasing competition, it aligns well with the organization's focus on STEM education and target population. The complexity of the application is manageable given the foundation's staff size and experience, making this a strong match worth pursuing."
+        },
+        {
+          "agency": "AC",
+          "agency_code": "AC",
+          "agency_name": "AmeriCorps",
+          "category": "discretionary",
+          "category_explanation": null,
+          "legacy_opportunity_id": 361222,
+          "opportunity_assistance_listings": [
+            {
+              "assistance_listing_number": "94.006",
+              "program_title": "AmeriCorps State and National 94.006"
+            }
+          ],
+          "opportunity_id": "02326e51-73f5-495c-9825-5e4a67c42367",
+          "opportunity_number": "AC-01-31-26",
+          "opportunity_status": "posted",
+          "opportunity_title": "Fiscal Year (FY) 2026 AmeriCorps State and National Competitive Grants",
+          "summary": {
+            "additional_info_url": "https://www.americorps.gov/funding-opportunity/fy-2026-americorps-state-national-grants",
+            "additional_info_url_description": "Full competition information and resources",
+            "agency_contact_description": "americorpsgrants@americorps.gov",
+            "agency_email_address": "americorpsgrants@americorps.gov",
+            "agency_email_address_description": "Competition Inbox",
+            "applicant_eligibility_description": "State Service Commission and/or States and US Territories",
+            "applicant_types": [
+              "nonprofits_non_higher_education_without_501c3",
+              "private_institutions_of_higher_education",
+              "county_governments",
+              "other_native_american_tribal_organizations",
+              "other",
+              "special_district_governments",
+              "state_governments",
+              "city_or_township_governments",
+              "nonprofits_non_higher_education_with_501c3",
+              "federally_recognized_native_american_tribal_governments"
+            ],
+            "archive_date": "2026-04-30",
+            "award_ceiling": null,
+            "award_floor": null,
+            "close_date": "2026-03-31",
+            "close_date_description": "",
+            "created_at": "2026-01-30T22:31:29+00:00",
+            "estimated_total_program_funding": null,
+            "expected_number_of_awards": null,
+            "fiscal_year": null,
+            "forecasted_award_date": null,
+            "forecasted_close_date": null,
+            "forecasted_close_date_description": null,
+            "forecasted_post_date": null,
+            "forecasted_project_start_date": null,
+            "funding_categories": [
+              "community_development",
+              "disaster_prevention_and_relief",
+              "education",
+              "employment_labor_and_training",
+              "environment",
+              "food_and_nutrition",
+              "health",
+              "housing",
+              "other"
+            ],
+            "funding_category_description": "Economic Opportunity; Veterans and Military Families",
+            "funding_instruments": [
+              "grant"
+            ],
+            "is_cost_sharing": true,
+            "is_forecast": false,
+            "post_date": "2026-01-30",
+            "summary_description": "<p>AmeriCorps improves lives, strengthens communities, and fosters civic engagement through service and volunteering. AmeriCorps brings people together to tackle some of the country’s most pressing challenges through national service and volunteerism. AmeriCorps members serve with organizations dedicated to the improvement of communities and those serving. AmeriCorps grants are awarded to eligible organizations that engage AmeriCorps members in evidence-based or evidence-informed interventions to strengthen communities. An AmeriCorps member is a person who does community service through AmeriCorps. Members may receive a living allowance and other benefits. After successful completion of their service, members earn a Segal AmeriCorps Education Award they can use to pay for higher education expenses or apply to qualified student loans.</p>",
+            "updated_at": "2026-01-30T22:42:53+00:00",
+            "version_number": 1
+          },
+          "top_level_agency_code": "AC",
+          "top_level_agency_name": "AmeriCorps",
+          "matchScore": 78,
+          "matchExplanation": "The STEM Future Foundation is eligible as a 501(c)(3) nonprofit for the AmeriCorps grant, which is national and thus has higher competition. The grant's focus on community development and education aligns well with the organization's mission to support STEM education for underrepresented students. However, the lack of specific award amounts and the requirement for cost-sharing may pose challenges for budget alignment. Given the complexity of the application and the foundation's medium program capacity, this is a strong match worth pursuing if resources allow."
+        },
+        {
+          "agency": "HHS-ACL",
+          "agency_code": "HHS-ACL",
+          "agency_name": "Administration for Community Living",
+          "category": "discretionary",
+          "category_explanation": null,
+          "legacy_opportunity_id": 361003,
+          "opportunity_assistance_listings": [
+            {
+              "assistance_listing_number": "93.048",
+              "program_title": "Special Programs for the Aging, Title IV, and Title II, Discretionary Projects"
+            }
+          ],
+          "opportunity_id": "cb917fc6-762e-4778-a751-6b139c6aa2e1",
+          "opportunity_number": "HHS-2026-ACL-CIP-MPPG-0020",
+          "opportunity_status": "posted",
+          "opportunity_title": "Senior Medicare Patrol State Project Grants - Pennsylvania",
+          "summary": {
+            "additional_info_url": "https://acl.gov/grants/open-opportunities",
+            "additional_info_url_description": "https://acl.gov/grants/open-opportunities",
+            "agency_contact_description": "Rebecca Kinney\nrebecca.kinney@acl.hhs.gov",
+            "agency_email_address": "rebecca.kinney@acl.hhs.gov",
+            "agency_email_address_description": "Government email",
+            "applicant_eligibility_description": "Foreign entities are not eligible to compete for, or receive, awards made under this announcement. Faith-based and community organizations that meet the eligibility requirements are eligible to receive awards under this funding opportunity announcement.",
+            "applicant_types": [
+              "other_native_american_tribal_organizations",
+              "state_governments",
+              "nonprofits_non_higher_education_with_501c3",
+              "city_or_township_governments",
+              "county_governments",
+              "for_profit_organizations_other_than_small_businesses",
+              "private_institutions_of_higher_education",
+              "special_district_governments",
+              "federally_recognized_native_american_tribal_governments",
+              "public_and_state_institutions_of_higher_education",
+              "nonprofits_non_higher_education_without_501c3",
+              "unrestricted"
+            ],
+            "archive_date": "2027-06-01",
+            "award_ceiling": 1100000,
+            "award_floor": 0,
+            "close_date": "2026-04-13",
+            "close_date_description": "Electronically submitted applications must be submitted no later than 11:59 p.m., ET, on the listed application due date.",
+            "created_at": "2026-02-10T16:00:50+00:00",
+            "estimated_total_program_funding": 1100000,
+            "expected_number_of_awards": 1,
+            "fiscal_year": null,
+            "forecasted_award_date": null,
+            "forecasted_close_date": null,
+            "forecasted_close_date_description": null,
+            "forecasted_post_date": null,
+            "forecasted_project_start_date": null,
+            "funding_categories": [
+              "income_security_and_social_services"
+            ],
+            "funding_category_description": null,
+            "funding_instruments": [
+              "cooperative_agreement"
+            ],
+            "is_cost_sharing": false,
+            "is_forecast": false,
+            "post_date": "2026-02-10",
+            "summary_description": "The mission of the Administration for Community Living (ACL) Senior Medicare Patrol (SMP) program is to empower and assist Medicare beneficiaries, their families, and caregivers to prevent, detect, and report health care fraud, errors, and abuse. Through outreach, counseling, and education, the SMP program increases awareness and understanding of health care programs to protect Medicare beneficiaries from the economic and health-related consequences associated with Medicare fraud, errors, and abuse. ACL currently provides grant funding to support 54 SMP state projects, including grantees in all 50 states, the District of Columbia, Puerto Rico, Guam, and the US Virgin Islands. The SMP projects use this funding to provide local outreach, education, and assistance to Medicare beneficiaries through a trained workforce, many of which are volunteers. SMP projects teach Medicare beneficiaries to protect their Medicare numbers, to detect billing discrepancies on their Medicare statements, and to report suspicious activity for further investigation. In addition, SMP projects actively disseminate fraud prevention and identification information through the media, outreach campaigns, and community events. As a result of these efforts, beneficiaries contact the SMP projects with inquiries and complaints regarding potential Medicare fraud, errors, and abuse. SMPs provide in-depth counseling and assistance to help beneficiaries who present with questions and issues. With this funding opportunity, ACL anticipates awarding up to 1 cooperative agreement to support the SMP project in Pennsylvania.",
+            "updated_at": "2026-02-10T16:00:50+00:00",
+            "version_number": 1
+          },
+          "top_level_agency_code": "HHS",
+          "top_level_agency_name": "Department of Health and Human Services",
+          "matchScore": 20,
+          "matchExplanation": "The STEM Future Foundation is a 501(c)(3) nonprofit, which meets the basic eligibility requirement. However, the grant is specifically for a Senior Medicare Patrol project in Pennsylvania, while the organization is based in Texas and focuses on STEM education for students. The mission alignment is poor as the grant targets healthcare fraud prevention for Medicare beneficiaries, not STEM education. Additionally, the geographic fit is non-existent as the grant is restricted to Pennsylvania. Overall, this grant is not a suitable match for the organization's focus and location."
+        }
+      ]
+    }
+  ]
+}
