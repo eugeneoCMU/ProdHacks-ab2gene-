@@ -257,9 +257,6 @@ Supabase Storage Bucket: user-docs (private)
 npm install
 
 # Add API keys to .env
-VITE_GRANT_API=aqkUnWCC1fVlk2YPe9XV4BcQl
-GEMINI_API_KEY=AIzaSyC0P3f4ZyiXxiKxTWeaIIyplnLhxnwynoA
-
 # Run both servers
 npm run dev:all
 # OR separately:

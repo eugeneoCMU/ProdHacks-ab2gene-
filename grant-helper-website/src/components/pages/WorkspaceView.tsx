@@ -30,10 +30,16 @@ interface WorkspaceViewProps {
 }
 
 export default function WorkspaceView({ organizationProfile = '', userId }: WorkspaceViewProps) {
+  const [showDemoBox, setShowDemoBox] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCreateNewApplication = async () => {
+  const handleCreateNewApplication = () => {
+    setError(null);
+    setShowDemoBox(true);
+  };
+
+  const handleGenerateAndOpenForm = async () => {
     if (!GOOGLE_FORM_ID?.trim()) {
       setError('Please set GOOGLE_FORM_ID in WorkspaceView.tsx for this demo.');
       return;
@@ -41,14 +47,12 @@ export default function WorkspaceView({ organizationProfile = '', userId }: Work
     setError(null);
     setLoading(true);
     try {
-      // Resolve userId: prop or Supabase session (for document context)
       let resolvedUserId = userId;
       if (!resolvedUserId) {
         const { data: { session } } = await supabase.auth.getSession();
         resolvedUserId = session?.user?.id ?? undefined;
       }
 
-      // Call backend API to generate AI-powered answers from user's uploaded documents
       const res = await fetch('/api/google-form/prefill', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -69,12 +73,10 @@ export default function WorkspaceView({ organizationProfile = '', userId }: Work
       const { url, answers } = (await res.json()) as { url?: string; answers?: Record<string, string> };
       if (!url) throw new Error('No pre-fill URL returned');
 
-      // Log generated answers for debugging
       if (answers) {
         console.log('Generated answers:', answers);
       }
 
-      // Open the pre-filled Google Form in a new tab
       window.open(url, '_blank', 'noopener,noreferrer');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate application');
@@ -96,12 +98,24 @@ export default function WorkspaceView({ organizationProfile = '', userId }: Work
         <button
           className="btn-primary"
           onClick={handleCreateNewApplication}
-          disabled={loading}
         >
-          {loading ? 'Generating answers…' : 'Create New Application'}
+          Create New Application
         </button>
-        <button className="btn-secondary">View Templates</button>
+        {/* <button className="btn-secondary">View Templates</button> */}
       </div>
+      {showDemoBox && (
+        <div className="demo-grant-box" style={{ marginTop: 20, padding: 20, border: '1px solid #e5e7eb', borderRadius: 12, backgroundColor: '#f9fafb', maxWidth: 400 }}>
+          <p style={{ margin: '0 0 12px 0', fontWeight: 600, color: '#1f2937' }}>Demo grant form</p>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={handleGenerateAndOpenForm}
+            disabled={loading}
+          >
+            {loading ? 'Generating answers…' : 'Generate answers & open form'}
+          </button>
+        </div>
+      )}
       {error && (
         <p className="upload-error" role="alert" style={{ marginTop: 12 }}>
           {error}

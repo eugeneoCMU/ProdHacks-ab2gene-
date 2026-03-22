@@ -1,10 +1,10 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createRequire } from 'module';
+// import { createRequire } from 'module';
 import dotenv from 'dotenv';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const require = createRequire(import.meta.url);
+// const require = createRequire(import.meta.url);
 // Load .env from project root (cwd when run via "npm run dev:server"), then try next to server/
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 if (!process.env.OPENAI_API_KEY) {
@@ -18,14 +18,11 @@ import mammoth from 'mammoth';
 import OpenAI from 'openai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// PDF parsing disabled for demo - use TXT or DOC files instead
-// const pdfParse = require('pdf-parse');
-
-const SUPABASE_URL = process.env.SUPABASE_URL || '';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || '';
 let supabaseAdmin: SupabaseClient | null = null;
-if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
-  supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+  supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
 const app = express();
@@ -44,8 +41,26 @@ if (!OPENAI_API_KEY) {
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-const RAG_SYSTEM_INSTRUCTION = `You are a helpful grant application assistant. Answer questions using (1) the applicant's organization profile as base context, and (2) the grant opportunity details for grant-specific answers. If something cannot be found in the context, say so. Keep answers concise and practical. Do not make up deadlines, amounts, or eligibility.
+const RAG_SYSTEM_INSTRUCTION = `You are the founder or program director of the organization applying for this grant.
+You are personally completing this grant application. All information provided represents your organization's real operations, programs, impact, and plans.
+Answer each question in a natural, professional tone as a human applicant would. Write in first person plural ("we") when referring to the organization.
 
+Never mention context, documents, files, sources, or any external materials. Do not imply that you are referencing anything. The information is part of your own knowledge and experience as the organization.
+
+Do not use phrases such as:
+- 'based on the provided information'
+- 'according to the document [file_name]'
+- 'from the context'
+- 'the materials state'
+- ([file_name].pdf, [file_name].txt, etc.)
+- or anything similar
+
+Do not include disclaimers, uncertainty statements, or references to missing information.
+
+If specific details are not explicitly available, provide a reasonable, truthful, and professional response consistent with the organization's mission, scale, and activities. Do not fabricate precise metrics, dates, or financial figures unless they are explicitly provided.
+
+Use clear, natural paragraphs only. Do not use bullet points or numbered lists.
+Keep the tone confident, professional, and human.
 `;
 
 interface ChatMessage {
@@ -311,13 +326,34 @@ async function generateAnswerForQuestion(context: string, question: string, word
   return completion.choices[0]?.message?.content?.trim() ?? '';
 }
 
+/** Extract text from PDF using pdfjs-dist directly (avoids Buffer vs Uint8Array issues in pdf-parse). */
+async function extractTextFromPdf(buffer: Buffer): Promise<string> {
+  const data = Uint8Array.from(buffer);
+  const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+  const loadingTask = pdfjs.getDocument({ data });
+  const doc = await loadingTask.promise;
+  const numPages = doc.numPages;
+  const parts: string[] = [];
+  for (let i = 1; i <= numPages; i++) {
+    const page = await doc.getPage(i);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items
+      .map((item) => ('str' in item ? String(item.str ?? '') : ''))
+      .join(' ');
+    parts.push(pageText);
+    page.cleanup();
+  }
+  await doc.destroy();
+  return parts.join('\n\n');
+}
+
 async function extractTextFromFile(buffer: Buffer, mimeType: string, filename: string): Promise<string> {
+
   if (mimeType === 'text/plain') {
     return buffer.toString('utf-8');
   }
   if (mimeType === 'application/pdf') {
-    // PDF parsing temporarily disabled - use TXT or DOC files for demo
-    return '[PDF parsing is currently unavailable. Please use TXT or DOC/DOCX files instead.]';
+    return await extractTextFromPdf(buffer);
   }
   if (
     mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -555,7 +591,7 @@ app.post('/api/grants/smart-match', async (req: Request, res: Response): Promise
         } else {
           // Mark ineligible grants with low score
           ineligibleGrants.push({
-            ...grant,
+            ...(grant as Record<string, unknown>),
             matchScore: 10,
             matchExplanation: reason || 'Does not meet basic eligibility requirements.'
           });
