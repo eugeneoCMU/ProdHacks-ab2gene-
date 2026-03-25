@@ -1,0 +1,323 @@
+{
+  "organization_name": [
+    "Org Name",
+    "Organization",
+    "Organization Name",
+    "Applicant Name",
+    "Applicant Organization",
+    "Legal Name",
+    "Nonprofit Name"
+  ],
+  "ein": [
+    "EIN",
+    "Tax ID",
+    "Tax ID Number",
+    "Federal Tax ID",
+    "TIN",
+    "EIN / Tax ID"
+  ],
+  "uei": [
+    "UEI",
+    "Unique Entity Identifier",
+    "SAM UEI"
+  ],
+  "duns": [
+    "DUNS",
+    "DUNS Number"
+  ],
+  "website": [
+    "Website",
+    "Web Site",
+    "Organization Website",
+    "Website URL"
+  ],
+  "year_founded": [
+    "Year Founded",
+    "Year Established",
+    "Founded Year"
+  ],
+  "address_line_1": [
+    "Address",
+    "Address 1",
+    "Address Line 1",
+    "Street Address",
+    "Mailing Address"
+  ],
+  "address_line_2": [
+    "Address 2",
+    "Address Line 2",
+    "Suite",
+    "Unit",
+    "Apartment"
+  ],
+  "city": [
+    "City",
+    "Town"
+  ],
+  "state": [
+    "State",
+    "Province",
+    "Region",
+    "State / Province"
+  ],
+  "zip": [
+    "ZIP",
+    "ZIP Code",
+    "Postal Code",
+    "Postcode"
+  ],
+  "country": [
+    "Country",
+    "Nation"
+  ],
+  "county": [
+    "County",
+    "Parish",
+    "Borough"
+  ],
+  "first_name": [
+    "First Name",
+    "Given Name"
+  ],
+  "middle_initial": [
+    "Middle Initial",
+    "Middle Name",
+    "MI"
+  ],
+  "last_name": [
+    "Last Name",
+    "Surname",
+    "Family Name"
+  ],
+  "contact_name": [
+    "Contact Name",
+    "Primary Contact",
+    "Point of Contact",
+    "Authorized Official",
+    "Contact Person"
+  ],
+  "email": [
+    "Email",
+    "E-mail",
+    "Email Address",
+    "Organization Email"
+  ],
+  "phone": [
+    "Phone",
+    "Telephone",
+    "Primary Phone Number",
+    "Telephone Number",
+    "Organization Phone"
+  ],
+  "mobile_phone": [
+    "Mobile Phone",
+    "Mobile Phone Number",
+    "Cell Phone",
+    "Mobile Number"
+  ],
+  "job_title": [
+    "Job Title",
+    "Title",
+    "Role",
+    "Position"
+  ],
+  "executive_officer_name": [
+    "Executive Director",
+    "Executive Officer",
+    "CEO Name"
+  ],
+  "principal_investigator_name": [
+    "Principal Investigator",
+    "PD/PI",
+    "Program Director / Principal Investigator"
+  ],
+  "authorized_representative_name": [
+    "Authorized Representative",
+    "Authorized Official",
+    "AOR Name",
+    "Authorized Organization Representative"
+  ],
+  "project_title": [
+    "Project Title",
+    "Proposal Title",
+    "Application Title",
+    "Program Title",
+    "Grant Title"
+  ],
+  "project_summary": [
+    "Project Summary",
+    "Project Description",
+    "Executive Summary",
+    "Narrative",
+    "Proposal Summary"
+  ],
+  "project_abstract": [
+    "Project Abstract",
+    "Abstract",
+    "Research Abstract"
+  ],
+  "mission_statement": [
+    "Mission Statement",
+    "Organization Mission",
+    "Mission and Purpose"
+  ],
+  "organization_description": [
+    "Organization Description",
+    "About Your Organization",
+    "Organizational Background"
+  ],
+  "organization_history": [
+    "Organization History",
+    "Organizational History",
+    "History of Organization"
+  ],
+  "need_statement": [
+    "Statement of Need",
+    "Need Statement",
+    "Community Need",
+    "Problem Statement"
+  ],
+  "target_population": [
+    "Target Population",
+    "Population Served",
+    "Beneficiaries",
+    "Participants Served"
+  ],
+  "geographic_area_served": [
+    "Geographic Area Served",
+    "Service Area",
+    "Area Served"
+  ],
+  "project_goals": [
+    "Project Goals",
+    "Objectives",
+    "Aims",
+    "Specific Aims"
+  ],
+  "program_description": [
+    "Program Description",
+    "Program Overview",
+    "Services Provided"
+  ],
+  "impact_statement": [
+    "Impact",
+    "Community Impact",
+    "Impact Statement"
+  ],
+  "outcomes": [
+    "Outcomes",
+    "Expected Outcomes",
+    "Anticipated Outcomes"
+  ],
+  "evaluation_plan": [
+    "Evaluation Plan",
+    "Evaluation Methods",
+    "How Will You Evaluate"
+  ],
+  "sustainability_plan": [
+    "Sustainability Plan",
+    "Continuation Plan",
+    "Long-Term Sustainability"
+  ],
+  "implementation_timeline": [
+    "Implementation Timeline",
+    "Project Timeline",
+    "Schedule of Activities"
+  ],
+  "methods_approach": [
+    "Methods",
+    "Approach",
+    "Implementation Plan",
+    "Activities"
+  ],
+  "staffing_plan": [
+    "Staffing Plan",
+    "Project Staff",
+    "Key Personnel"
+  ],
+  "partnerships": [
+    "Partnerships",
+    "Collaborators",
+    "Community Partners",
+    "Partner Organizations"
+  ],
+  "dei_statement": [
+    "Diversity Equity Inclusion",
+    "DEI",
+    "Equity Statement"
+  ],
+  "organizational_capacity": [
+    "Organizational Capacity",
+    "Capacity",
+    "Ability to Implement"
+  ],
+  "board_governance": [
+    "Board Governance",
+    "Board of Directors",
+    "Governance Structure"
+  ],
+  "funding_amount": [
+    "Funding Amount",
+    "Amount Requested",
+    "Grant Amount Requested",
+    "Requested Amount"
+  ],
+  "federal_request_amount": [
+    "Federal Funds Requested",
+    "Federal Request",
+    "Federal Amount Requested"
+  ],
+  "non_federal_match_amount": [
+    "Matching Funds",
+    "Cost Share",
+    "Cost Sharing",
+    "Non-Federal Match"
+  ],
+  "total_project_cost": [
+    "Total Project Cost",
+    "Total Budget",
+    "Total Project Budget"
+  ],
+  "personnel_costs": [
+    "Personnel",
+    "Personnel Costs",
+    "Salaries and Wages"
+  ],
+  "fringe_benefits": [
+    "Fringe Benefits",
+    "Fringe"
+  ],
+  "travel_costs": [
+    "Travel",
+    "Travel Costs"
+  ],
+  "equipment_costs": [
+    "Equipment",
+    "Equipment Costs"
+  ],
+  "supplies_costs": [
+    "Supplies",
+    "Supplies Costs"
+  ],
+  "contractual_costs": [
+    "Contractual",
+    "Contractual Costs",
+    "Subawards",
+    "Subcontracts"
+  ],
+  "consultant_costs": [
+    "Consultant",
+    "Consultant Costs"
+  ],
+  "other_direct_costs": [
+    "Other Direct Costs",
+    "Other Direct",
+    "Other Costs"
+  ],
+  "indirect_costs": [
+    "Indirect Costs",
+    "Facilities and Administration",
+    "F&A",
+    "Overhead"
+  ]
+}

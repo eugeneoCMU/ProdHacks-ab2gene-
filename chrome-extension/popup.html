@@ -17,10 +17,25 @@
           <li>Scan all visible <code>input</code>, <code>textarea</code>, and <code>select</code> elements</li>
           <li>Extract label, id, name, placeholder, and ARIA metadata</li>
           <li>Map fields to canonical grant-profile schema keys</li>
-          <li>Flag low-confidence or unknown fields for manual review</li>
+          <li>Flag low-confidence or unknown fields for manual mapping fallback</li>
         </ul>
       </section>
-      <button id="scan-button" type="button">Scan current page</button>
+      <section class="task-card">
+        <p class="task-label">Platform Connection</p>
+        <label class="input-label" for="platform-url">Platform URL</label>
+        <input id="platform-url" class="config-input" type="text" value="http://localhost:5173" />
+        <div class="button-row">
+          <button id="open-platform-button" type="button" class="secondary-button">Open platform</button>
+          <button id="connect-platform-button" type="button" class="secondary-button">Login / connect</button>
+        </div>
+        <div id="profile-summary" class="profile-summary-card">
+          <p class="field-meta">Not connected yet. Open the platform, upload profile docs there, then connect from the extension.</p>
+        </div>
+      </section>
+      <div class="button-stack">
+        <button id="scan-button" type="button">Scan current page</button>
+        <button id="autofill-button" type="button" class="secondary-button">Trigger autofill prep</button>
+      </div>
       <p id="status" class="status">Ready.</p>
       <div id="results" class="results"></div>
     </main>

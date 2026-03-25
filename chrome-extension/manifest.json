@@ -5,6 +5,7 @@
   "description": "Detect likely grant form fields on any website.",
   "permissions": [
     "activeTab",
+    "storage",
     "tabs",
     "scripting"
   ],

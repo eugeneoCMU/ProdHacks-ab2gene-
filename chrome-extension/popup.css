@@ -78,6 +78,61 @@ button:hover {
   background: #ef4444;
 }
 
+.button-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.secondary-button {
+  background: #2b2b2b;
+  border: 1px solid #3b3b3b;
+}
+
+.secondary-button:hover {
+  background: #363636;
+}
+
+.input-label {
+  display: block;
+  margin: 10px 0 6px;
+  font-size: 12px;
+  color: #d4d4d4;
+  font-weight: 600;
+}
+
+.config-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #3a3a3a;
+  border-radius: 10px;
+  background: #111111;
+  color: #f5f5f5;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.profile-summary-card {
+  margin-top: 10px;
+  border: 1px solid #2f2f2f;
+  border-radius: 12px;
+  padding: 10px;
+  background: #111111;
+}
+
+.profile-summary-title {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: #f5f5f5;
+}
+
 .status {
   margin: 10px 0 14px;
   font-size: 12px;
@@ -111,6 +166,43 @@ button:hover {
   background: #1f1f1f;
 }
 
+.group-card {
+  border: 1px solid #2f2f2f;
+  border-radius: 14px;
+  padding: 10px;
+  background: #181818;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.group-title {
+  margin: 0;
+  font-size: 14px;
+  color: #f5f5f5;
+}
+
+.group-count {
+  min-width: 22px;
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: #262626;
+  color: #fca5a5;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.group-fields {
+  display: grid;
+  gap: 10px;
+}
+
 .field-card--high {
   border-color: #14532d;
 }
@@ -123,7 +215,7 @@ button:hover {
   border-color: #7f1d1d;
 }
 
-.field-card h2 {
+.field-card h3 {
   margin: 0 0 4px;
   font-size: 14px;
 }

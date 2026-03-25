@@ -36,20 +36,26 @@
       ],
       autocomplete: ["name"]
     },
+    { key: "contact_prefix", aliases: ["prefix", "name prefix", "honorific"] },
     { key: "first_name", aliases: ["first name", "given name"], autocomplete: ["given-name"] },
     { key: "last_name", aliases: ["last name", "surname", "family name"], autocomplete: ["family-name"] },
     { key: "middle_initial", aliases: ["middle initial", "middle name", "mi"] },
+    { key: "contact_suffix", aliases: ["suffix", "name suffix"] },
+    { key: "department", aliases: ["department", "department name", "academic department"] },
+    { key: "division", aliases: ["division", "division name", "unit"] },
     { key: "password", aliases: ["password", "create password", "confirm password", "new password"], inputTypes: ["password"] },
     { key: "confirm_password", aliases: ["confirm password", "re enter password", "reenter password", "verify password"], inputTypes: ["password"] },
     { key: "username", aliases: ["username", "user name", "login name", "account username"] },
     { key: "email", aliases: ["email", "e mail", "email address"], autocomplete: ["email"] },
     { key: "phone", aliases: ["phone", "telephone", "phone number", "telephone number", "primary phone number", "organization phone"], autocomplete: ["tel", "tel-national"] },
     { key: "mobile_phone", aliases: ["mobile phone", "mobile phone number", "cell phone", "mobile number", "confirm mobile phone number"], autocomplete: ["tel", "tel-national"] },
+    { key: "fax", aliases: ["fax", "fax number"] },
     { key: "job_title", aliases: ["job title", "title", "role", "position"], autocomplete: ["organization-title"] },
     { key: "website", aliases: ["website", "web site", "website url", "organization website"], autocomplete: ["url"] },
     { key: "uei", aliases: ["uei", "unique entity identifier", "unique entity id", "sam uei"] },
     { key: "duns", aliases: ["duns", "duns number", "dun and bradstreet", "duns #"] },
     { key: "ein", aliases: ["ein", "tin", "tax id", "taxpayer identification", "federal tax id", "tax id number", "ein tax id"] },
+    { key: "type_of_applicant", aliases: ["type of applicant", "applicant type", "organization type", "entity type"] },
     { key: "year_founded", aliases: ["year founded", "founded year", "organization founded", "year established", "date founded"] },
     { key: "address_line_1", aliases: ["address line 1", "street address", "mailing address", "address", "address 1", "street 1"] },
     { key: "address_line_2", aliases: ["address line 2", "suite", "unit", "apartment", "apt", "address 2", "suite number"] },
@@ -58,14 +64,72 @@
     { key: "zip", aliases: ["zip", "zip code", "zipcode", "postal code", "postal", "postal zip"], autocomplete: ["postal-code"] },
     { key: "country", aliases: ["country", "nation"], autocomplete: ["country", "country-name"] },
     { key: "county", aliases: ["county", "parish", "borough"] },
+    { key: "congressional_district_applicant", aliases: ["congressional district of applicant", "applicant congressional district"] },
+    { key: "congressional_district_project", aliases: ["congressional district of project", "project congressional district"] },
+    { key: "assistance_listing_number", aliases: ["assistance listing number", "cfda number", "assistance number"] },
+    { key: "assistance_listing_title", aliases: ["assistance listing title", "cfda title"] },
+    { key: "funding_opportunity_number", aliases: ["funding opportunity number", "foa number", "opportunity number", "notice of funding opportunity number"] },
+    { key: "agency_routing_identifier", aliases: ["agency routing identifier", "agency tracking number"] },
+    { key: "federal_identifier", aliases: ["federal identifier", "federal award identifier"] },
     { key: "project_title", aliases: ["project title", "proposal title", "application title", "program title", "grant title"] },
     {
       key: "project_summary",
       aliases: ["project summary", "project description", "summary", "abstract", "description", "narrative", "proposal summary", "executive summary", "project narrative"]
     },
+    { key: "project_abstract", aliases: ["project abstract", "abstract summary", "research abstract"] },
+    { key: "project_goals", aliases: ["project goals", "goals", "project objectives", "objectives", "aims", "specific aims"] },
+    { key: "need_statement", aliases: ["statement of need", "need statement", "community need", "problem statement"] },
+    { key: "target_population", aliases: ["target population", "population served", "beneficiaries", "participants served"] },
+    { key: "geographic_area_served", aliases: ["geographic area served", "service area", "area served"] },
+    { key: "mission_statement", aliases: ["mission statement", "organization mission", "our mission", "mission and purpose"] },
+    { key: "organization_history", aliases: ["organization history", "organizational history", "background of organization", "history of organization"] },
+    { key: "program_description", aliases: ["program description", "program overview", "describe your program", "services provided"] },
+    { key: "impact_statement", aliases: ["impact statement", "impact", "community impact", "organizational impact"] },
+    { key: "outcomes", aliases: ["outcomes", "expected outcomes", "anticipated outcomes", "project outcomes"] },
+    { key: "evaluation_plan", aliases: ["evaluation plan", "measure success", "evaluation methods", "how will you evaluate"] },
+    { key: "sustainability_plan", aliases: ["sustainability plan", "long term sustainability", "how will you sustain", "continuation plan"] },
+    { key: "implementation_timeline", aliases: ["implementation timeline", "project timeline", "timeline", "schedule of activities"] },
+    { key: "methods_approach", aliases: ["methods", "approach", "project approach", "implementation plan", "activities"] },
+    { key: "staffing_plan", aliases: ["staffing plan", "project staff", "staff roles", "key personnel"] },
+    { key: "partnerships", aliases: ["partnerships", "collaborators", "community partners", "partner organizations"] },
+    { key: "dei_statement", aliases: ["diversity equity inclusion", "dei", "equity statement", "equity and inclusion"] },
+    { key: "financial_need", aliases: ["financial need", "why funding is needed", "need for funding"] },
+    { key: "organizational_capacity", aliases: ["organizational capacity", "capacity", "ability to implement", "organizational strengths"] },
+    { key: "board_governance", aliases: ["board governance", "board of directors", "governance structure"] },
+    { key: "success_metrics", aliases: ["success metrics", "performance measures", "indicators of success", "metrics"] },
     { key: "funding_amount", aliases: ["amount requested", "funding amount", "request amount", "budget", "requested amount", "grant amount requested", "total project budget"] },
+    { key: "federal_request_amount", aliases: ["federal funds requested", "federal request", "federal amount requested"] },
+    { key: "non_federal_match_amount", aliases: ["non federal funds", "matching funds", "match amount", "cost share", "cost sharing", "non federal match"] },
+    { key: "total_project_cost", aliases: ["total project cost", "total costs", "total budget", "total project budget"] },
+    { key: "personnel_costs", aliases: ["personnel", "salary", "salaries and wages", "personnel costs"] },
+    { key: "fringe_benefits", aliases: ["fringe benefits", "fringe"] },
+    { key: "travel_costs", aliases: ["travel", "travel costs"] },
+    { key: "equipment_costs", aliases: ["equipment", "equipment costs"] },
+    { key: "supplies_costs", aliases: ["supplies", "supplies costs"] },
+    { key: "contractual_costs", aliases: ["contractual", "contractual costs", "subawards", "subcontracts"] },
+    { key: "consultant_costs", aliases: ["consultant", "consultant costs"] },
+    { key: "other_direct_costs", aliases: ["other direct costs", "other direct", "other costs"] },
+    { key: "indirect_costs", aliases: ["indirect costs", "facilities and administration", "f and a", "overhead"] },
     { key: "start_date", aliases: ["start date", "project start", "proposed start date"] },
     { key: "end_date", aliases: ["end date", "project end", "proposed end date"] },
+    { key: "performance_site_name", aliases: ["performance site", "project site", "performance site name", "site name"] },
+    { key: "performance_site_address_1", aliases: ["performance site street1", "performance site address", "project site address"] },
+    { key: "performance_site_city", aliases: ["performance site city", "project site city"] },
+    { key: "performance_site_state", aliases: ["performance site state", "project site state"] },
+    { key: "performance_site_zip", aliases: ["performance site zip", "project site zip"] },
+    { key: "performance_site_country", aliases: ["performance site country", "project site country"] },
+    { key: "principal_investigator_name", aliases: ["principal investigator", "pi name", "pd pi", "program director principal investigator"] },
+    { key: "principal_investigator_email", aliases: ["principal investigator email", "pi email"] },
+    { key: "principal_investigator_phone", aliases: ["principal investigator phone", "pi phone"] },
+    { key: "authorized_representative_name", aliases: ["authorized representative", "authorized official", "aor name", "authorized organization representative"] },
+    { key: "authorized_representative_email", aliases: ["authorized representative email", "authorized official email", "aor email"] },
+    { key: "authorized_representative_phone", aliases: ["authorized representative phone", "authorized official phone", "aor phone"] },
+    { key: "executive_officer_name", aliases: ["executive officer", "executive director", "chief executive officer", "ceo name"] },
+    { key: "executive_officer_email", aliases: ["executive officer email", "executive director email", "ceo email"] },
+    { key: "executive_officer_phone", aliases: ["executive officer phone", "executive director phone", "ceo phone"] },
+    { key: "era_commons_id", aliases: ["era commons id", "credential", "nih credential", "commons username"] },
+    { key: "request_type", aliases: ["request type", "support type", "grant type"] },
+    { key: "organization_description", aliases: ["organization description", "about your organization", "organizational background", "mission statement"] },
     { key: "birth_month", aliases: ["birth month", "month of birth", "date of birth month"] },
     { key: "birth_day", aliases: ["birth day", "day of birth", "date of birth day"] }
   ];
@@ -75,6 +139,7 @@
     "textarea",
     "select"
   ].join(", ");
+  const HIGHLIGHT_STYLE_ID = "grant-helper-highlight-style";
 
   function normalizeText(value) {
     return (value || "")
@@ -390,6 +455,31 @@
     const reasons = [];
     const tagName = element.tagName.toLowerCase();
     const type = signals.type;
+    const narrativeKeys = new Set([
+      "project_summary",
+      "project_abstract",
+      "project_goals",
+      "need_statement",
+      "target_population",
+      "geographic_area_served",
+      "mission_statement",
+      "organization_history",
+      "program_description",
+      "impact_statement",
+      "outcomes",
+      "evaluation_plan",
+      "sustainability_plan",
+      "implementation_timeline",
+      "methods_approach",
+      "staffing_plan",
+      "partnerships",
+      "dei_statement",
+      "financial_need",
+      "organizational_capacity",
+      "board_governance",
+      "success_metrics",
+      "organization_description"
+    ]);
 
     definition.aliases.forEach((alias) => {
       signals.labels.direct.forEach((label) => {
@@ -524,6 +614,10 @@
     if (definition.key === "project_summary" && element.tagName.toLowerCase() === "textarea") {
       score += 0.12;
       reasons.push("textarea bias");
+    }
+    if (narrativeKeys.has(definition.key) && tagName === "textarea") {
+      score += 0.18;
+      reasons.push("narrative textarea bias");
     }
     if (definition.key === "funding_amount" && (type === "number" || signals.descriptor.includes("amount") || signals.descriptor.includes("budget"))) {
       score += 0.22;
@@ -816,12 +910,78 @@
     return dampenDuplicateMatches(results).sort((a, b) => b.confidence - a.confidence);
   }
 
+  function ensureHighlightStyle() {
+    if (document.getElementById(HIGHLIGHT_STYLE_ID)) {
+      return;
+    }
+
+    const style = document.createElement("style");
+    style.id = HIGHLIGHT_STYLE_ID;
+    style.textContent = `
+      [data-grant-helper-match="high"] {
+        outline: 3px solid rgba(34, 197, 94, 0.9) !important;
+        outline-offset: 2px !important;
+      }
+
+      [data-grant-helper-match="review"] {
+        outline: 3px solid rgba(250, 204, 21, 0.95) !important;
+        outline-offset: 2px !important;
+      }
+
+      [data-grant-helper-match="low"] {
+        outline: 3px solid rgba(239, 68, 68, 0.9) !important;
+        outline-offset: 2px !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function clearHighlights() {
+    document.querySelectorAll("[data-grant-helper-match]").forEach((node) => {
+      node.removeAttribute("data-grant-helper-match");
+      node.removeAttribute("data-grant-helper-key");
+    });
+  }
+
+  function applyHighlights(fields) {
+    ensureHighlightStyle();
+    clearHighlights();
+
+    const elements = Array.from(document.querySelectorAll(INPUT_SELECTOR));
+    fields.forEach((field) => {
+      const element = elements[field.index];
+      if (!(element instanceof HTMLElement)) {
+        return;
+      }
+
+      const matchType = field.confidenceBucket === "high"
+        ? "high"
+        : field.confidenceBucket === "review"
+          ? "review"
+          : "low";
+
+      element.setAttribute("data-grant-helper-match", matchType);
+      element.setAttribute("data-grant-helper-key", field.fieldKey);
+    });
+  }
+
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message?.type === "GRANT_HELPER_SCAN_FIELDS") {
       sendResponse({
         url: window.location.href,
         title: document.title,
         fields: scanFields()
+      });
+      return true;
+    }
+
+    if (message?.type === "GRANT_HELPER_PREPARE_AUTOFILL") {
+      const fields = scanFields();
+      applyHighlights(fields);
+      sendResponse({
+        url: window.location.href,
+        title: document.title,
+        fields
       });
       return true;
     }

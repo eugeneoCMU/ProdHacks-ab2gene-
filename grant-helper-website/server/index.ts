@@ -21,7 +21,14 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || '';
 let supabaseAdmin: SupabaseClient | null = null;
-if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+const hasValidSupabaseUrl = (() => {
+  try {
+    return !!SUPABASE_URL && /^https?:\/\//i.test(SUPABASE_URL) && Boolean(new URL(SUPABASE_URL));
+  } catch {
+    return false;
+  }
+})();
+if (hasValidSupabaseUrl && SUPABASE_ANON_KEY) {
   supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
