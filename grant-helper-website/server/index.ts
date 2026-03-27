@@ -38,15 +38,18 @@ app.use(express.json());
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-if (!GEMINI_API_KEY) {
+if (!OPENAI_API_KEY && !GEMINI_API_KEY) {
   console.error(
-    'Missing GEMINI_API_KEY. Add GEMINI_API_KEY=your_key to a .env file in the project root (grant-helper-website/.env).'
+    'Missing API key. Add OPENAI_API_KEY=your_key or GEMINI_API_KEY=your_key to grant-helper-website/.env.'
   );
   process.exit(1);
 }
 
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 
 const RAG_SYSTEM_INSTRUCTION = `You are the founder or program director of the organization applying for this grant.
 You are personally completing this grant application. All information provided represents your organization's real operations, programs, impact, and plans.
@@ -109,14 +112,69 @@ async function fetchUserDocumentContext(userId: string): Promise<string> {
 
 /** Generate one grant-application answer using Gemini from context and question. */
 async function generateAnswerForQuestion(context: string, question: string, wordLimit?: number): Promise<string> {
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
-    systemInstruction: RAG_SYSTEM_INSTRUCTION + (wordLimit ? ` Keep your answer within ${wordLimit} words.` : ''),
-  });
+  const instructions = RAG_SYSTEM_INSTRUCTION + (wordLimit ? ` Keep your answer within ${wordLimit} words.` : '');
   const prompt = `Context from the organization's documents and profile:\n\n${context}\n\nQuestion to answer:\n${question}\n\nProvide a direct, concise answer suitable for pasting into a grant form.`;
+  return await generateModelText(instructions, prompt);
+}
+
+async function generateOpenAIText(instructions: string, messages: Array<{ role: 'developer' | 'user' | 'assistant'; content: string }>): Promise<string> {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: OPENAI_MODEL,
+      messages: [
+        { role: 'developer', content: instructions },
+        ...messages,
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text().catch(() => '');
+    throw new Error(`OpenAI request failed: ${response.status} ${errorBody}`.trim());
+  }
+
+  const json = await response.json() as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+
+  return json.choices?.[0]?.message?.content?.trim() || '';
+}
+
+async function generateGeminiText(instructions: string, prompt: string): Promise<string> {
+  if (!genAI) {
+    throw new Error('Gemini client is not configured.');
+  }
+
+  const model = genAI.getGenerativeModel({
+    model: GEMINI_MODEL,
+    systemInstruction: instructions,
+  });
   const result = await model.generateContent(prompt);
-  const text = result.response.text();
-  return (text ?? '').trim();
+  return (result.response.text() ?? '').trim();
+}
+
+async function generateModelText(
+  instructions: string,
+  prompt: string,
+  history: Array<{ role: 'user' | 'model'; content: string }> = []
+): Promise<string> {
+  if (OPENAI_API_KEY) {
+    const messages = [
+      ...history.map((message) => ({
+        role: message.role === 'model' ? 'assistant' as const : 'user' as const,
+        content: message.content,
+      })),
+      { role: 'user' as const, content: prompt },
+    ];
+    return await generateOpenAIText(instructions, messages);
+  }
+
+  return await generateGeminiText(instructions, prompt);
 }
 
 /** Extract text from PDF using pdfjs-dist directly (avoids Buffer vs Uint8Array issues in pdf-parse). */
@@ -202,26 +260,22 @@ app.post('/api/chat', async (req: Request, res: Response): Promise<void> => {
     }
     const profile = typeof profileContext === 'string' ? profileContext : '';
 
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
-      systemInstruction: buildSystemInstruction(profile, grantContext),
-    });
-
     const valid = (messages as ChatMessage[]).filter((m) => m.role && m.content);
-    const history = valid.slice(0, -1).map((m) => ({
-      role: (m.role === 'model' ? 'model' : 'user') as 'user' | 'model',
-      parts: [{ text: m.content }],
-    }));
     const lastMessage = valid[valid.length - 1];
     const toSend =
       lastMessage?.role === 'user'
         ? lastMessage.content
         : 'Say you are ready to answer questions about this grant.';
+    const priorHistory = valid.slice(0, -1).map((m) => ({
+      role: (m.role === 'model' ? 'model' : 'user') as 'user' | 'model',
+      content: m.content,
+    }));
 
-    const chat = model.startChat({ history });
-    const result = await chat.sendMessage(toSend);
-    const response = result.response;
-    const text = response.text();
+    const text = await generateModelText(
+      buildSystemInstruction(profile, grantContext),
+      toSend,
+      priorHistory
+    );
 
     res.json({ reply: text ?? '' });
   } catch (err) {
