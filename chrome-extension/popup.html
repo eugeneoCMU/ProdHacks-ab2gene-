@@ -24,6 +24,8 @@
         <p class="task-label">Platform Connection</p>
         <label class="input-label" for="platform-url">Platform URL</label>
         <input id="platform-url" class="config-input" type="text" value="http://localhost:5173" />
+        <label class="input-label" for="backend-url">Backend URL</label>
+        <input id="backend-url" class="config-input" type="text" value="http://localhost:3001" />
         <div class="button-row">
           <button id="open-platform-button" type="button" class="secondary-button">Open platform</button>
           <button id="connect-platform-button" type="button" class="secondary-button">Login / connect</button>
@@ -34,7 +36,7 @@
       </section>
       <div class="button-stack">
         <button id="scan-button" type="button">Scan current page</button>
-        <button id="autofill-button" type="button" class="secondary-button">Trigger autofill prep</button>
+        <button id="autofill-button" type="button" class="secondary-button">Autofill with backend</button>
       </div>
       <p id="status" class="status">Ready.</p>
       <div id="results" class="results"></div>

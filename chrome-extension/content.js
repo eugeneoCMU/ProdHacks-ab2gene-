@@ -965,6 +965,66 @@
     });
   }
 
+  function fillElementValue(element, value) {
+    const normalizedValue = String(value ?? "").trim();
+    const tagName = element.tagName.toLowerCase();
+    const inputType = (element.getAttribute("type") || "").toLowerCase();
+
+    if (tagName === "select") {
+      const options = Array.from(element.options || []);
+      const exact = options.find((option) =>
+        normalizeText(option.value) === normalizeText(normalizedValue) ||
+        normalizeText(option.textContent) === normalizeText(normalizedValue)
+      );
+      const partial = options.find((option) =>
+        normalizeText(option.textContent).includes(normalizeText(normalizedValue)) ||
+        normalizeText(normalizedValue).includes(normalizeText(option.textContent || ""))
+      );
+      const chosen = exact || partial;
+      if (!chosen) {
+        return false;
+      }
+      element.value = chosen.value;
+    } else if (inputType === "checkbox" || inputType === "radio") {
+      return false;
+    } else {
+      element.value = normalizedValue;
+    }
+
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+    element.dispatchEvent(new Event("change", { bubbles: true }));
+    return true;
+  }
+
+  function autofillFields(fills) {
+    const elements = Array.from(document.querySelectorAll(INPUT_SELECTOR));
+    const applied = [];
+    const skipped = [];
+
+    (fills || []).forEach((fill) => {
+      const element = elements[fill.index];
+      if (!(element instanceof HTMLElement)) {
+        skipped.push({ ...fill, reason: "element not found" });
+        return;
+      }
+
+      const ok = fillElementValue(element, fill.value);
+      if (ok) {
+        const matchType = fill.confidence === "high"
+          ? "high"
+          : fill.confidence === "medium"
+            ? "review"
+            : "low";
+        element.setAttribute("data-grant-helper-match", matchType);
+        applied.push(fill);
+      } else {
+        skipped.push({ ...fill, reason: "field type unsupported or option not found" });
+      }
+    });
+
+    return { applied, skipped };
+  }
+
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message?.type === "GRANT_HELPER_SCAN_FIELDS") {
       sendResponse({
@@ -983,6 +1043,12 @@
         title: document.title,
         fields
       });
+      return true;
+    }
+
+    if (message?.type === "GRANT_HELPER_AUTOFILL_FIELDS") {
+      const result = autofillFields(message.fills);
+      sendResponse(result);
       return true;
     }
 

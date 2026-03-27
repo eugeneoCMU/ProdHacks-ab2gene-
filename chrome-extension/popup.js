@@ -5,10 +5,13 @@ const autofillButton = document.getElementById("autofill-button");
 const openPlatformButton = document.getElementById("open-platform-button");
 const connectPlatformButton = document.getElementById("connect-platform-button");
 const platformUrlInput = document.getElementById("platform-url");
+const backendUrlInput = document.getElementById("backend-url");
 const profileSummaryNode = document.getElementById("profile-summary");
 
 const PLATFORM_URL_STORAGE_KEY = "grantflow.extension.platformUrl";
+const BACKEND_URL_STORAGE_KEY = "grantflow.extension.backendUrl";
 const PLATFORM_PROFILE_STORAGE_KEY = "grantflow.extension.profileSummary";
+const PLATFORM_PROFILE_TEXT_STORAGE_KEY = "grantflow.extension.profileText";
 const PROFILE_STORAGE_KEY = "grantflow.organizationProfile";
 const PROFILE_SUMMARY_STORAGE_KEY = "grantflow.profileSummary";
 
@@ -232,9 +235,16 @@ function summarizeFields(fields) {
 }
 
 async function initializePopup() {
-  const saved = await chrome.storage.local.get([PLATFORM_URL_STORAGE_KEY, PLATFORM_PROFILE_STORAGE_KEY]);
+  const saved = await chrome.storage.local.get([
+    PLATFORM_URL_STORAGE_KEY,
+    BACKEND_URL_STORAGE_KEY,
+    PLATFORM_PROFILE_STORAGE_KEY
+  ]);
   if (saved[PLATFORM_URL_STORAGE_KEY]) {
     platformUrlInput.value = saved[PLATFORM_URL_STORAGE_KEY];
+  }
+  if (saved[BACKEND_URL_STORAGE_KEY]) {
+    backendUrlInput.value = saved[BACKEND_URL_STORAGE_KEY];
   }
   renderProfileSummary(saved[PLATFORM_PROFILE_STORAGE_KEY] || null);
 }
@@ -270,7 +280,10 @@ async function connectToPlatform() {
     return;
   }
 
-  await chrome.storage.local.set({ [PLATFORM_URL_STORAGE_KEY]: platformUrl });
+  await chrome.storage.local.set({
+    [PLATFORM_URL_STORAGE_KEY]: platformUrl,
+    [BACKEND_URL_STORAGE_KEY]: backendUrlInput.value.trim().replace(/\/+$/, "")
+  });
   const tab = await getPlatformTab(platformUrl);
 
   if (!tab?.id) {
@@ -308,7 +321,10 @@ async function connectToPlatform() {
     return;
   }
 
-  await chrome.storage.local.set({ [PLATFORM_PROFILE_STORAGE_KEY]: result.summary });
+  await chrome.storage.local.set({
+    [PLATFORM_PROFILE_STORAGE_KEY]: result.summary,
+    [PLATFORM_PROFILE_TEXT_STORAGE_KEY]: result.profile,
+  });
   renderProfileSummary(result.summary);
   setStatus("Connected to GrantFlow profile successfully.");
 }
@@ -369,6 +385,134 @@ async function triggerAutofillPrep() {
   renderFields(response);
 }
 
+function chooseAutofillTargets(fields) {
+  const blocked = new Set([
+    "password",
+    "confirm_password",
+    "username",
+    "birth_month",
+    "birth_day",
+    "unknown"
+  ]);
+
+  return fields.filter((field) => {
+    if (blocked.has(field.fieldKey)) {
+      return false;
+    }
+    if (field.type === "checkbox" || field.type === "radio" || field.type === "password") {
+      return false;
+    }
+    return field.confidenceBucket === "high" || field.confidenceBucket === "review";
+  });
+}
+
+async function autofillCurrentPage() {
+  const backendUrl = backendUrlInput.value.trim().replace(/\/+$/, "");
+  if (!backendUrl) {
+    setStatus("Enter the backend URL first.");
+    return;
+  }
+
+  await chrome.storage.local.set({
+    [PLATFORM_URL_STORAGE_KEY]: platformUrlInput.value.trim().replace(/\/+$/, ""),
+    [BACKEND_URL_STORAGE_KEY]: backendUrl
+  });
+
+  const saved = await chrome.storage.local.get([
+    PLATFORM_PROFILE_TEXT_STORAGE_KEY,
+    PLATFORM_PROFILE_STORAGE_KEY
+  ]);
+  const profileText = saved[PLATFORM_PROFILE_TEXT_STORAGE_KEY] || "";
+  if (!profileText) {
+    setStatus("Connect to the platform first so the extension has organization profile data.");
+    return;
+  }
+
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) {
+    setStatus("Could not find the active tab.");
+    return;
+  }
+
+  const scanResponse = await chrome.tabs.sendMessage(tab.id, { type: "GRANT_HELPER_PREPARE_AUTOFILL" }).catch(() => null);
+  if (!scanResponse) {
+    setStatus("This page did not respond. Refresh the page and try again.");
+    return;
+  }
+
+  const targets = chooseAutofillTargets(scanResponse.fields || []);
+  if (!targets.length) {
+    setStatus("No fillable fields were detected on this page.");
+    renderFields(scanResponse);
+    return;
+  }
+
+  setStatus(`Requesting backend answers for ${targets.length} field${targets.length === 1 ? "" : "s"}...`);
+
+  const fills = [];
+  for (const field of targets) {
+    const questionText = [
+      field.label,
+      field.placeholder,
+      field.name,
+      field.id
+    ].filter(Boolean).join(" | ");
+
+    try {
+      const response = await fetch(`${backendUrl}/api/autofill-field`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questionText,
+          fieldKey: field.fieldKey,
+          descriptor: field.descriptor,
+          tagName: field.tagName,
+          inputType: field.type,
+          pageTitle: scanResponse.title,
+          pageUrl: scanResponse.url,
+          organizationProfile: profileText,
+          grantContext: ""
+        })
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || `Backend request failed: ${response.status}`);
+      }
+
+      if (data.answer) {
+        fills.push({
+          index: field.index,
+          value: data.answer,
+          confidence: data.confidence || "medium",
+          fieldKey: data.normalizedFieldKey || field.fieldKey
+        });
+      }
+    } catch (error) {
+      console.error("Autofill answer failed for field", field.fieldKey, error);
+    }
+  }
+
+  if (!fills.length) {
+    setStatus("The backend did not return any values to fill.");
+    renderFields(scanResponse);
+    return;
+  }
+
+  const fillResponse = await chrome.tabs.sendMessage(tab.id, {
+    type: "GRANT_HELPER_AUTOFILL_FIELDS",
+    fills
+  }).catch(() => null);
+
+  renderFields(scanResponse);
+  if (!fillResponse) {
+    setStatus("Answers were generated, but the page could not be updated.");
+    return;
+  }
+
+  setStatus(`Autofilled ${fillResponse.applied.length} field${fillResponse.applied.length === 1 ? "" : "s"} from backend answers.`);
+}
+
 
 scanButton.addEventListener("click", () => {
   scanCurrentPage().catch((error) => {
@@ -378,9 +522,9 @@ scanButton.addEventListener("click", () => {
 });
 
 autofillButton.addEventListener("click", () => {
-  triggerAutofillPrep().catch((error) => {
+  autofillCurrentPage().catch((error) => {
     console.error(error);
-    setStatus("Could not prepare autofill for this page.");
+    setStatus("Could not autofill this page.");
   });
 });
 

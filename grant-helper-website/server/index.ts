@@ -84,6 +84,19 @@ interface ChatRequestBody {
   messages?: unknown;
 }
 
+interface AutofillFieldRequestBody {
+  questionText?: unknown;
+  fieldKey?: unknown;
+  descriptor?: unknown;
+  tagName?: unknown;
+  inputType?: unknown;
+  pageTitle?: unknown;
+  pageUrl?: unknown;
+  organizationProfile?: unknown;
+  grantContext?: unknown;
+  userId?: unknown;
+}
+
 function buildSystemInstruction(profileContext: string, grantContext: string): string {
   let out = RAG_SYSTEM_INSTRUCTION;
   if (profileContext.trim()) {
@@ -91,6 +104,23 @@ function buildSystemInstruction(profileContext: string, grantContext: string): s
   }
   out += `Grant opportunity (use for deadlines, eligibility, amounts, etc.):\n${grantContext}`;
   return out;
+}
+
+function isNonAutofillField(fieldKey: string, inputType: string, tagName: string): boolean {
+  const blockedKeys = new Set([
+    'password',
+    'confirm_password',
+    'username',
+    'birth_month',
+    'birth_day',
+    'unknown'
+  ]);
+
+  if (blockedKeys.has(fieldKey)) {
+    return true;
+  }
+
+  return inputType === 'checkbox' || inputType === 'radio' || inputType === 'password' || tagName === 'button';
 }
 
 /** Fetch combined text from document_chunks for a user (Supabase). Returns empty string if not configured or no data. */
@@ -115,6 +145,102 @@ async function generateAnswerForQuestion(context: string, question: string, word
   const instructions = RAG_SYSTEM_INSTRUCTION + (wordLimit ? ` Keep your answer within ${wordLimit} words.` : '');
   const prompt = `Context from the organization's documents and profile:\n\n${context}\n\nQuestion to answer:\n${question}\n\nProvide a direct, concise answer suitable for pasting into a grant form.`;
   return await generateModelText(instructions, prompt);
+}
+
+async function generateAutofillAnswer(options: {
+  organizationContext: string;
+  grantContext: string;
+  questionText: string;
+  fieldKey: string;
+  descriptor: string;
+  tagName: string;
+  inputType: string;
+  pageTitle: string;
+  pageUrl: string;
+}): Promise<{ answer: string; confidence: 'high' | 'medium' | 'low'; rationale: string; normalizedFieldKey: string; }> {
+  const {
+    organizationContext,
+    grantContext,
+    questionText,
+    fieldKey,
+    descriptor,
+    tagName,
+    inputType,
+    pageTitle,
+    pageUrl,
+  } = options;
+
+  if (isNonAutofillField(fieldKey, inputType, tagName)) {
+    return {
+      answer: '',
+      confidence: 'low',
+      rationale: 'Skipped because this field should not be auto-filled.',
+      normalizedFieldKey: fieldKey || 'unknown',
+    };
+  }
+
+  const instructions = `${RAG_SYSTEM_INSTRUCTION}
+
+You are generating one auto-fill value for a grant portal field.
+Return strict JSON only with keys: normalizedFieldKey, answer, confidence, rationale.
+- normalizedFieldKey must be snake_case.
+- confidence must be one of high, medium, low.
+- rationale should be one short sentence.
+- answer should be ready to paste into the field.
+- For short text inputs, keep the answer short.
+- For textarea questions, answer in one concise paragraph.
+- If the field should not be auto-filled or the context is insufficient, return answer as an empty string and confidence as low.`;
+
+  const prompt = `Field key guess: ${fieldKey || 'unknown'}
+Field question or label:
+${questionText}
+
+Descriptor:
+${descriptor || 'n/a'}
+
+HTML tag / input type:
+${tagName} / ${inputType}
+
+Page title:
+${pageTitle || 'n/a'}
+
+Page URL:
+${pageUrl || 'n/a'}
+
+Grant context:
+${grantContext || 'n/a'}
+
+Organization profile context:
+${organizationContext}
+`;
+
+  const raw = await generateModelText(instructions, prompt);
+  const cleaned = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/, '').trim();
+
+  try {
+    const parsed = JSON.parse(cleaned) as {
+      normalizedFieldKey?: string;
+      answer?: string;
+      confidence?: 'high' | 'medium' | 'low';
+      rationale?: string;
+    };
+
+    return {
+      normalizedFieldKey: parsed.normalizedFieldKey?.trim() || fieldKey || 'unknown',
+      answer: parsed.answer?.trim() || '',
+      confidence: parsed.confidence === 'high' || parsed.confidence === 'medium' || parsed.confidence === 'low'
+        ? parsed.confidence
+        : 'low',
+      rationale: parsed.rationale?.trim() || 'No rationale returned.',
+    };
+  } catch {
+    return {
+      normalizedFieldKey: fieldKey || 'unknown',
+      answer: cleaned,
+      confidence: cleaned ? 'medium' : 'low',
+      rationale: 'Model response could not be parsed as JSON, so fallback text was used.',
+    };
+  }
 }
 
 async function generateOpenAIText(instructions: string, messages: Array<{ role: 'developer' | 'user' | 'assistant'; content: string }>): Promise<string> {
@@ -288,6 +414,62 @@ app.post('/api/chat', async (req: Request, res: Response): Promise<void> => {
           : 'Failed to get reply from assistant';
     console.error('Chat error:', err);
     res.status(status === 429 ? 429 : 500).json({ error: message });
+  }
+});
+
+app.post('/api/autofill-field', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const {
+      questionText,
+      fieldKey = '',
+      descriptor = '',
+      tagName = '',
+      inputType = '',
+      pageTitle = '',
+      pageUrl = '',
+      organizationProfile = '',
+      grantContext = '',
+      userId = '',
+    } = req.body as AutofillFieldRequestBody;
+
+    if (!questionText || typeof questionText !== 'string' || !questionText.trim()) {
+      res.status(400).json({ error: 'questionText is required and must be a string' });
+      return;
+    }
+
+    let organizationContext = typeof organizationProfile === 'string' ? organizationProfile.trim() : '';
+    if (typeof userId === 'string' && userId.trim() && supabaseAdmin) {
+      const docContext = await fetchUserDocumentContext(userId.trim());
+      if (docContext) {
+        organizationContext = organizationContext
+          ? `${organizationContext}\n\n--- Documents from Supabase ---\n\n${docContext}`
+          : docContext;
+      }
+    }
+
+    if (!organizationContext) {
+      res.status(400).json({ error: 'organizationProfile or user document context is required' });
+      return;
+    }
+
+    const result = await generateAutofillAnswer({
+      organizationContext,
+      grantContext: typeof grantContext === 'string' ? grantContext.trim() : '',
+      questionText: questionText.trim(),
+      fieldKey: typeof fieldKey === 'string' ? fieldKey.trim() : '',
+      descriptor: typeof descriptor === 'string' ? descriptor.trim() : '',
+      tagName: typeof tagName === 'string' ? tagName.trim() : '',
+      inputType: typeof inputType === 'string' ? inputType.trim() : '',
+      pageTitle: typeof pageTitle === 'string' ? pageTitle.trim() : '',
+      pageUrl: typeof pageUrl === 'string' ? pageUrl.trim() : '',
+    });
+
+    res.json(result);
+  } catch (err) {
+    console.error('Autofill field error:', err);
+    res.status(500).json({
+      error: err instanceof Error ? err.message : 'Failed to generate autofill answer',
+    });
   }
 });
 
