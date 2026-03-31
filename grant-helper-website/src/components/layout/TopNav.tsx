@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react';
+import { supabase } from '../../config/supabase';
+import { isSupabaseConfigured } from '../../hooks/useSupabaseAuth';
 import './TopNav.css';
 
 interface TopNavProps {
@@ -11,6 +14,42 @@ const viewTitles: Record<string, string> = {
 };
 
 export default function TopNav({ currentView }: TopNavProps) {
+  const [userOrg, setUserOrg] = useState<string>(() =>
+    isSupabaseConfigured() ? '' : 'Demo'
+  );
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+
+    async function refreshLabel() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const meta = user?.user_metadata as { full_name?: string; organization_name?: string } | undefined;
+      const label =
+        meta?.organization_name ||
+        meta?.full_name ||
+        user?.email ||
+        'Account';
+      setUserOrg(label);
+    }
+
+    refreshLabel();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      refreshLabel();
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    if (!isSupabaseConfigured()) return;
+    await supabase.auth.signOut();
+  };
+
   return (
     <header className="topnav">
       <div className="topnav-content">
@@ -24,8 +63,12 @@ export default function TopNav({ currentView }: TopNavProps) {
             ❓
           </button>
           <div className="user-profile">
-            <div className="user-avatar">S</div>
-            <span className="user-name">Sarah's Org</span>
+            <span className="user-name">{userOrg}</span>
+            {isSupabaseConfigured() && (
+              <button type="button" className="topnav-sign-out" onClick={handleSignOut}>
+                Sign out
+              </button>
+            )}
           </div>
         </div>
       </div>
