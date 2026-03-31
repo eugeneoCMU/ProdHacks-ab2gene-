@@ -223,17 +223,19 @@ export default function ProfileView({onOrganizationProfileChange,
                 setExtracting(true);
                 try {
                   // Ensure we have a user for Supabase (anonymous if needed) so uploads can be saved
-                  let { data: { session } } = await supabase.auth.getSession();
+                  const { data: { session } } = await supabase.auth.getSession();
                   const supabaseConfigured = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
                   if (!session?.user && supabaseConfigured) {
-                    const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously();
-                    if (anonErr) {
-                      setExtractError(
-                        `Documents could not be saved to Supabase: ${anonErr.message}. Enable Anonymous sign-in in Supabase Dashboard → Authentication → Providers.`
-                      );
-                      // Continue to extraction below so profile still works
-                    }
-                    if (anon?.session) session = anon.session;
+                    // const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously();
+                    // if (anonErr) {
+                    //   setExtractError(
+                    //     `Documents could not be saved to Supabase: ${anonErr.message}. Enable Anonymous sign-in in Supabase Dashboard → Authentication → Providers.`
+                    //   );
+                    //   // Continue to extraction below so profile still works
+                    // }
+                    // if (anon?.session) session = anon.session;
+                    setExtractError('Please sign in to save your documents.');
+                    return;
                   }
                   const userId = session?.user?.id;
 
@@ -245,7 +247,7 @@ export default function ProfileView({onOrganizationProfileChange,
                       } catch (uploadErr) {
                         console.warn('Supabase upload failed for', file.name, uploadErr);
                         setExtractError(
-                          uploadErr instanceof Error ? uploadErr.message + ". This is the first issue." : 'One or more files could not be saved to your account. Extraction will continue.'
+                          uploadErr instanceof Error ? uploadErr.message : 'One or more files could not be saved to your account. Extraction will continue.'
                         );
                       }
                     }
@@ -256,7 +258,7 @@ export default function ProfileView({onOrganizationProfileChange,
                   setShowUpload(false);
                 } catch (err) {
                   console.warn('Supabase upload failed for', err);
-                  setExtractError(err instanceof Error ? err.message + ". This is the second issue." : 'Failed to extract text from documents');
+                  setExtractError(err instanceof Error ? err.message : 'Failed to extract text from documents');
                 } finally {
                   setExtracting(false);
                 }

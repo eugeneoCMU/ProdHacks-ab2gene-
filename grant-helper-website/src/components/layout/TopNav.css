@@ -56,12 +56,22 @@
   padding: 0.5rem 1rem;
   border-radius: 12px;
   background: #f9fafb;
-  cursor: pointer;
   transition: background 0.2s ease;
 }
 
-.user-profile:hover {
-  background: #f3f4f6;
+.topnav-sign-out {
+  margin-left: 0.25rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #4f46e5;
+  background: #eef2ff;
+  border: none;
+  border-radius: 8px;
+}
+
+.topnav-sign-out:hover {
+  background: #e0e7ff;
 }
 
 .user-avatar {
@@ -129,5 +139,14 @@
 
   .user-name {
     color: #e5e7eb;
+  }
+
+  .topnav-sign-out {
+    color: #a5b4fc;
+    background: rgba(79, 70, 229, 0.25);
+  }
+
+  .topnav-sign-out:hover {
+    background: rgba(79, 70, 229, 0.35);
   }
 }
