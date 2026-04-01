@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { extractDocuments } from '../../api/extractDocuments';
 import { lookupEIN } from '../../api/einLookup';
-import { supabase, uploadToSupabase } from '../../config/supabase';
+import { supabase, uploadToSupabase, saveOrganizationProfileText } from '../../config/supabase';
 import './EmptyState.css';
 import './ProfileView.css';
 
@@ -163,8 +163,14 @@ export default function ProfileView({onOrganizationProfileChange,
                     setEINLoading(true);
                     setEINError(null);
                     try {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      if (!session?.user) {
+                        setEINError('Please sign in before importing via EIN so your data can be saved.');
+                        return;
+                      }
                       const { text } = await lookupEIN(einValue);
                       onOrganizationProfileChange(text);
+                      await saveOrganizationProfileText(session.user.id, text);
                       setShowEINModal(false);
                     } catch (err) {
                       setEINError(err instanceof Error ? err.message : 'Lookup failed. Check the EIN and try again.');
