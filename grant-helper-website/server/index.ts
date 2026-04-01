@@ -578,6 +578,101 @@ app.get('/api/google-form/prefill-url', (req: Request, res: Response): void => {
   res.redirect(302, url);
 });
 
+/** POST /api/ein-lookup
+ * Body: { ein: string }
+ * Fetches org info and most recent 990 filing text from ProPublica Nonprofit Explorer.
+ * Returns: { orgName, text }
+ */
+app.post('/api/ein-lookup', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const ein = typeof req.body.ein === 'string' ? req.body.ein.replace(/\D/g, '') : '';
+    if (!ein || ein.length !== 9) {
+      res.status(400).json({ error: 'A valid 9-digit EIN is required.' });
+      return;
+    }
+
+    const proPublicaRes = await fetch(
+      `https://projects.propublica.org/nonprofits/api/v2/organizations/${ein}.json`
+    );
+    if (proPublicaRes.status === 404) {
+      res.status(404).json({ error: 'No nonprofit found for that EIN. Make sure it is a registered 501(c)(3).' });
+      return;
+    }
+    if (!proPublicaRes.ok) {
+      res.status(502).json({ error: 'Failed to reach ProPublica Nonprofit Explorer. Try again later.' });
+      return;
+    }
+
+    const data = await proPublicaRes.json() as {
+      organization?: {
+        name?: string;
+        city?: string;
+        state?: string;
+        ntee_code?: string;
+        subsection_code?: string;
+        asset_amount?: number;
+        income_amount?: number;
+        revenue_amount?: number;
+      };
+      filings_with_data?: Array<{
+        tax_prd_yr?: number;
+        totrevenue?: number;
+        totfuncexpns?: number;
+        totassetsend?: number;
+        pdf_url?: string;
+      }>;
+    };
+
+    const org = data.organization;
+    if (!org?.name) {
+      res.status(404).json({ error: 'Organization data not found for that EIN.' });
+      return;
+    }
+
+    // Build text summary from structured org data
+    const parts: string[] = [];
+    parts.push(`Organization Name: ${org.name}`);
+    if (org.city && org.state) parts.push(`Location: ${org.city}, ${org.state}`);
+    if (org.ntee_code) parts.push(`NTEE Code (Mission Category): ${org.ntee_code}`);
+    if (org.revenue_amount) parts.push(`Total Revenue: $${org.revenue_amount.toLocaleString()}`);
+    if (org.asset_amount) parts.push(`Total Assets: $${org.asset_amount.toLocaleString()}`);
+
+    const recentFilings = (data.filings_with_data ?? []).slice(0, 3);
+    if (recentFilings.length > 0) {
+      parts.push('\nRecent IRS 990 Filing Summaries:');
+      for (const f of recentFilings) {
+        const lines = [`  Year: ${f.tax_prd_yr ?? 'Unknown'}`];
+        if (f.totrevenue) lines.push(`  Total Revenue: $${f.totrevenue.toLocaleString()}`);
+        if (f.totfuncexpns) lines.push(`  Total Expenses: $${f.totfuncexpns.toLocaleString()}`);
+        if (f.totassetsend) lines.push(`  Total Assets (End of Year): $${f.totassetsend.toLocaleString()}`);
+        parts.push(lines.join('\n'));
+      }
+    }
+
+    // Try to extract text from the most recent 990 PDF
+    const pdfUrl = recentFilings.find((f) => f.pdf_url)?.pdf_url;
+    if (pdfUrl) {
+      try {
+        const pdfRes = await fetch(pdfUrl);
+        if (pdfRes.ok) {
+          const arrayBuffer = await pdfRes.arrayBuffer();
+          const pdfText = await extractTextFromPdf(Buffer.from(arrayBuffer));
+          if (pdfText.trim()) {
+            parts.push('\n--- IRS Form 990 (Most Recent Filing) ---\n' + pdfText.trim());
+          }
+        }
+      } catch (pdfErr) {
+        console.warn('Could not extract PDF text for EIN', ein, pdfErr);
+      }
+    }
+
+    res.json({ orgName: org.name, text: parts.join('\n') });
+  } catch (err) {
+    console.error('EIN lookup error:', err);
+    res.status(500).json({ error: err instanceof Error ? err.message : 'EIN lookup failed' });
+  }
+});
+
 const PORT = Number(process.env.PORT) || 3001;
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
