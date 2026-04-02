@@ -352,9 +352,19 @@ export default function ProfileView({onOrganizationProfileChange,
                     }
                   }
 
+                  setSavedDocuments([...savedDocuments, ...files.map((f) => ({
+                    id: f.id,
+                    filename: f.file.name,
+                    mime_type: f.file.type,
+                    file_size_bytes: f.file.size,
+                    created_at: f.file.lastModified.toString(),
+                    status: "uploaded"
+                  }))]);
+
                   const { text } = await extractDocuments(files.map((f) => f.file));
                   onOrganizationProfileChange(text);
                   setShowUpload(false);
+                  setFiles([]);
                 } catch (err) {
                   console.warn('Supabase upload failed for', err);
                   setExtractError(err instanceof Error ? err.message : 'Failed to extract text from documents');
