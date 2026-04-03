@@ -5,9 +5,10 @@ import SearchView from './components/pages/SearchView';
 import WorkspaceView from './components/pages/WorkspaceView';
 import AuthPage from './components/pages/AuthPage';
 import {
-  ensureOrganizationProfileRow,
-  fetchOrganizationProfile,
+  // ensureOrganizationProfileRow,
+  getUserDocuments,
   saveOrganizationProfileText,
+  type UserDocumentRow,
 } from './config/supabase';
 import { useSupabaseAuth } from './hooks/useSupabaseAuth';
 import './App.css';
@@ -43,6 +44,7 @@ function App() {
   const [activeView, setActiveView] = useState('profile');
   const [organizationProfile, setOrganizationProfile] = useState(initialOrganizationProfile);
   const [profileReady, setProfileReady] = useState(() => !supabaseConfigured);
+  const [userDocuments, setUserDocuments] = useState<UserDocumentRow[]>([]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -62,6 +64,7 @@ function App() {
 
     if (!session?.user) {
       setOrganizationProfile('');
+      setUserDocuments([]);
       setProfileReady(false);
       return;
     }
@@ -71,13 +74,17 @@ function App() {
 
     (async () => {
       try {
-        await ensureOrganizationProfileRow(session.user.id);
-        const row = await fetchOrganizationProfile(session.user.id);
+        // await ensureOrganizationProfileRow(session.user.id);
+        const docs = await getUserDocuments(session.user.id);
         if (cancelled) return;
-        setOrganizationProfile(row?.organization_profile ?? '');
+        // setOrganizationProfile(row?.organization_profile ?? '');
+        setUserDocuments(docs);
       } catch (e) {
         console.warn('Failed to load organization profile', e);
-        if (!cancelled) setOrganizationProfile('');
+        if (!cancelled) {
+          setOrganizationProfile('');
+          setUserDocuments([]);
+        }
       } finally {
         if (!cancelled) setProfileReady(true);
       }
@@ -126,8 +133,8 @@ function App() {
       case 'profile':
         return (
           <ProfileView
-            organizationProfile={organizationProfile}
             onOrganizationProfileChange={setOrganizationProfile}
+            userDocuments={userDocuments}
           />
         );
       case 'search':
@@ -137,8 +144,8 @@ function App() {
       default:
         return (
           <ProfileView
-            organizationProfile={organizationProfile}
             onOrganizationProfileChange={setOrganizationProfile}
+            userDocuments={userDocuments}
           />
         );
     }
