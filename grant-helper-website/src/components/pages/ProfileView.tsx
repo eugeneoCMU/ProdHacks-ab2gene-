@@ -86,9 +86,6 @@ export default function ProfileView({onOrganizationProfileChange,
   };
 
   const handleDelete = async (id: string) => {
-    const confirmed = window.confirm('Are you sure you want to delete this document?');
-    if (!confirmed) return;
-
     setSavedDocuments(savedDocuments.filter((doc) => doc.id !== id));
     await deleteDocument(id);
   };
@@ -341,12 +338,11 @@ export default function ProfileView({onOrganizationProfileChange,
                   }
                   const userId = session?.user?.id;
 
-                  const uploadResults: { id: string; file: File }[] = [];
+                  // Upload each file to Supabase Storage + documents table when user is available
                   if (userId) {
                     for (const { file } of files) {
                       try {
-                        const { id } = await uploadToSupabase(file, userId);
-                        uploadResults.push({ id, file });
+                        await uploadToSupabase(file, userId);
                       } catch (uploadErr) {
                         console.warn('Supabase upload failed for', file.name, uploadErr);
                         setExtractError(
@@ -356,35 +352,18 @@ export default function ProfileView({onOrganizationProfileChange,
                     }
                   }
 
-                  const newSavedRows: UserDocumentRow[] = files.map(({ file, id: localId }) => {
-                    const rowId = uploadResults.find((r) => r.file === file)?.id ?? localId;
-                    return {
-                      id: rowId,
-                      filename: file.name,
-                      mime_type: file.type,
-                      file_size_bytes: file.size,
-                      created_at: new Date(file.lastModified).toISOString(),
-                      status: 'uploaded',
-                    };
-                  });
+                  setSavedDocuments([...savedDocuments, ...files.map((f) => ({
+                    id: f.id,
+                    filename: f.file.name,
+                    mime_type: f.file.type,
+                    file_size_bytes: f.file.size,
+                    created_at: f.file.lastModified.toString(),
+                    status: "uploaded"
+                  }))]);
 
-                  setSavedDocuments([...savedDocuments, ...newSavedRows]);
-
-                  const accessToken = session?.access_token;
-                  const chunksReady =
-                    Boolean(accessToken) &&
-                    uploadResults.length === files.length &&
-                    uploadResults.length > 0;
-                  const { text } = await extractDocuments(
-                    files.map((f) => f.file),
-                    chunksReady && accessToken
-                      ? {
-                          accessToken,
-                          documentIds: uploadResults.map((r) => r.id),
-                        }
-                      : undefined
-                  );
+                  const { text } = await extractDocuments(files.map((f) => f.file));
                   onOrganizationProfileChange(text);
+                  setShowUpload(false);
                   setFiles([]);
                 } catch (err) {
                   console.warn('Supabase upload failed for', err);

@@ -17,7 +17,6 @@ import multer from 'multer';
 import mammoth from 'mammoth';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { pipeline, type FeatureExtractionPipeline, type Tensor } from '@huggingface/transformers';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -43,7 +42,7 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 if (!OPENAI_API_KEY && !GEMINI_API_KEY) {
   console.error(
-    'Missing OPENAI API key.'
+    'Missing API key. Add OPENAI_API_KEY=your_key or GEMINI_API_KEY=your_key to grant-helper-website/.env.'
   );
   process.exit(1);
 }
@@ -139,129 +138,6 @@ async function fetchUserDocumentContext(userId: string): Promise<string> {
   }
   if (!data?.length) return '';
   return data.map((r) => r.content).filter(Boolean).join('\n\n');
-}
-
-const CHUNK_CHAR_SIZE = Number(process.env.RAG_CHUNK_CHAR_SIZE) || 1500;
-const CHUNK_OVERLAP = Number(process.env.RAG_CHUNK_OVERLAP) || 200;
-/** Default: ONNX MiniLM 384-dim (matches pgvector column in migration 004). */
-const TRANSFORMERS_EMBEDDING_MODEL =
-  process.env.TRANSFORMERS_EMBEDDING_MODEL || 'onnx-community/all-MiniLM-L6-v2-ONNX';
-
-let embeddingExtractor: FeatureExtractionPipeline | null = null;
-
-async function getEmbeddingExtractor(): Promise<FeatureExtractionPipeline> {
-  if (!embeddingExtractor) {
-    embeddingExtractor = await pipeline('feature-extraction', TRANSFORMERS_EMBEDDING_MODEL);
-  }
-  return embeddingExtractor;
-}
-
-/** Convert pooled feature-extraction output [batch, dim] to row vectors. */
-function tensorToEmbeddingRows(output: Tensor): number[][] {
-  const dims = output.dims;
-  const raw = output.data;
-  const data = raw instanceof Float32Array ? raw : new Float32Array(raw as ArrayLike<number>);
-  if (dims.length === 2) {
-    const [batch, dim] = dims;
-    const rows: number[][] = [];
-    for (let i = 0; i < batch; i++) {
-      rows.push(Array.from(data.subarray(i * dim, (i + 1) * dim)));
-    }
-    return rows;
-  }
-  if (dims.length === 1) {
-    return [Array.from(data)];
-  }
-  throw new Error(`Unexpected embedding tensor shape: ${dims.join(' × ')}`);
-}
-
-/** Local embeddings via Transformers.js (no OpenAI embedding API). */
-async function embedTextsWithTransformers(texts: string[]): Promise<number[][]> {
-  if (!texts.length) return [];
-  const extractor = await getEmbeddingExtractor();
-  const batchSize = 8;
-  const all: number[][] = [];
-  for (let i = 0; i < texts.length; i += batchSize) {
-    const batch = texts.slice(i, i + batchSize);
-    const output = await extractor(batch, { pooling: 'mean', normalize: true });
-    all.push(...tensorToEmbeddingRows(output));
-  }
-  if (all.length !== texts.length) {
-    throw new Error('Embedding count mismatch');
-  }
-  return all;
-}
-
-/** Sliding-window text chunks for embedding + RAG. */
-function splitTextIntoChunks(text: string, chunkSize: number, overlap: number): string[] {
-  const t = text.trim();
-  if (!t) return [];
-  if (t.length <= chunkSize) return [t];
-  const chunks: string[] = [];
-  let i = 0;
-  while (i < t.length) {
-    const slice = t.slice(i, i + chunkSize);
-    const trimmed = slice.trim();
-    if (trimmed) chunks.push(trimmed);
-    if (i + chunkSize >= t.length) break;
-    i += chunkSize - overlap;
-  }
-  return chunks;
-}
-
-function createUserSupabaseClient(accessToken: string): SupabaseClient | null {
-  if (!hasValidSupabaseUrl || !SUPABASE_ANON_KEY) return null;
-  return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: { headers: { Authorization: `Bearer ${accessToken}` } },
-  });
-}
-
-async function persistChunksAndEmbeddings(
-  userClient: SupabaseClient,
-  userId: string,
-  documentId: string,
-  filename: string,
-  chunks: string[],
-  embeddings: number[][] | null
-): Promise<void> {
-  // const { error: delErr } = await userClient.from('document_chunks').delete().eq('document_id', documentId);
-  // if (delErr) throw new Error(`Failed to clear old chunks: ${delErr.message}`);
-
-  const batchSize = 50;
-  for (let offset = 0; offset < chunks.length; offset += batchSize) {
-    const slice = chunks.slice(offset, offset + batchSize);
-    const rows = slice.map((content, j) => {
-      const chunk_index = offset + j;
-      const row: {
-        user_id: string;
-        document_id: string;
-        chunk_index: number;
-        content: string;
-        source_info: Record<string, unknown>;
-        embedding?: number[];
-      } = {
-        user_id: userId,
-        document_id: documentId,
-        chunk_index,
-        content,
-        source_info: { filename, source: 'extract-documents' },
-      };
-      if (embeddings?.[chunk_index]?.length) {
-        row.embedding = embeddings[chunk_index];
-      }
-      return row;
-    });
-
-    const { error: insErr } = await userClient.from('document_chunks').insert(rows);
-    if (insErr) throw new Error(`document_chunks insert failed: ${insErr.message}`);
-  }
-
-  const { error: upErr } = await userClient
-    .from('documents')
-    .update({ status: 'ready' })
-    .eq('id', documentId)
-    .eq('user_id', userId);
-  if (upErr) throw new Error(`documents status update failed: ${upErr.message}`);
 }
 
 /** Generate one grant-application answer using Gemini from context and question. */
@@ -467,9 +343,7 @@ async function extractTextFromFile(buffer: Buffer, mimeType: string, filename: s
 }
 
 /** POST /api/extract-documents
- * Multipart form with "files" (array of files). Returns { text: string, chunksInserted?: number }.
- * Optional: field "documentIds" = JSON array of document UUIDs (same order as files), and
- * Authorization: Bearer <access_token> — required together to persist chunks + embeddings to Supabase.
+ * Multipart form with "files" (array of files). Returns { text: string }.
  */
 app.post('/api/extract-documents', upload.array('files', 20), async (req: Request, res: Response): Promise<void> => {
   try {
@@ -478,73 +352,15 @@ app.post('/api/extract-documents', upload.array('files', 20), async (req: Reques
       res.status(400).json({ error: 'No files uploaded. Send multipart form with field "files".' });
       return;
     }
-
-    let documentIds: string[] | undefined;
-    const rawIds = req.body?.documentIds;
-    if (typeof rawIds === 'string' && rawIds.trim()) {
-      try {
-        const parsed = JSON.parse(rawIds) as unknown;
-        if (Array.isArray(parsed) && parsed.every((x) => typeof x === 'string' && x.length > 0)) {
-          documentIds = parsed as string[];
-        }
-      } catch {
-        /* ignore invalid JSON */
-      }
-    }
-
-    const authHeader = req.headers.authorization;
-    const accessToken =
-      typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
-        ? authHeader.slice(7).trim()
-        : '';
-
     const parts: string[] = [];
-    let chunksInserted = 0;
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+    for (const file of files) {
       const text = await extractTextFromFile(file.buffer, file.mimetype, file.originalname);
       const trimmed = text.trim();
       if (trimmed) {
         parts.push(`--- ${file.originalname} ---\n${trimmed}`);
       }
-
-      const docId = documentIds?.[i];
-      const canPersist =
-        Boolean(accessToken && docId && trimmed && documentIds?.length === files.length);
-
-      if (!canPersist) {
-        continue;
-      }
-
-      const userClient = createUserSupabaseClient(accessToken);
-      if (!userClient) {
-        continue;
-      }
-
-      const { data: authData, error: authErr } = await userClient.auth.getUser();
-      if (authErr || !authData.user) {
-        console.warn('extract-documents: invalid session for chunk persist:', authErr?.message);
-        continue;
-      }
-
-      const userId = authData.user.id;
-
-      try {
-        const chunks = splitTextIntoChunks(trimmed, CHUNK_CHAR_SIZE, CHUNK_OVERLAP);
-        if (!chunks.length) continue;
-
-        const embeddings = await embedTextsWithTransformers(chunks);
-
-        await persistChunksAndEmbeddings(userClient, userId, docId!, file.originalname, chunks, embeddings);
-        chunksInserted += chunks.length;
-      } catch (persistErr) {
-        console.error('extract-documents: persist chunks failed:', persistErr);
-        throw persistErr;
-      }
     }
-
-    res.json({ text: parts.join('\n\n'), chunksInserted });
+    res.json({ text: parts.join('\n\n') });
   } catch (err) {
     console.error('Extract error:', err);
     res.status(500).json({

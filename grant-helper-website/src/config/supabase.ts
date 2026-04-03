@@ -27,12 +27,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
  * Upload a file to Supabase Storage
  * @param file - File object to upload
  * @param userId - User ID (from auth.user())
- * @returns Row id (same UUID as storage segment) and storage path
+ * @returns Storage path if successful
  */
-export async function uploadToSupabase(
-  file: File,
-  userId: string
-): Promise<{ id: string; storagePath: string }> {
+export async function uploadToSupabase(file: File, userId: string): Promise<string> {
   const documentId = crypto.randomUUID();
   const storagePath = `${userId}/${documentId}/${file.name}`;
 
@@ -43,9 +40,8 @@ export async function uploadToSupabase(
 
   if (uploadError) throw uploadError;
 
-  // Keep documents.id aligned with path segment so extract/chunk persist uses the same UUID
+  // Insert metadata into documents table
   const { error: dbError } = await supabase.from('documents').insert({
-    id: documentId,
     user_id: userId,
     filename: file.name,
     mime_type: file.type,
@@ -56,7 +52,7 @@ export async function uploadToSupabase(
 
   if (dbError) throw dbError;
 
-  return { id: documentId, storagePath };
+  return storagePath;
 }
 
 /**
