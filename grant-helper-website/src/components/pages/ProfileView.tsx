@@ -37,13 +37,10 @@ const SUGGESTED_DOCS = [
 ];
 
 interface ProfileViewProps {
-  onOrganizationProfileChange: (value: string) => void;
   userDocuments?: UserDocumentRow[];
 }
 
-export default function ProfileView({onOrganizationProfileChange,
-  userDocuments = [],
-}: ProfileViewProps) {
+export default function ProfileView({userDocuments = []}: ProfileViewProps) {
   const [savedDocuments, setSavedDocuments] = useState<UserDocumentRow[]>(userDocuments);
   const [showUpload, setShowUpload] = useState(false);
   const [files, setFiles] = useState<UploadedFile[]>([]);
@@ -184,7 +181,6 @@ export default function ProfileView({onOrganizationProfileChange,
                         return;
                       }
                       const { text } = await lookupEIN(einValue);
-                      onOrganizationProfileChange(text);
                       await saveOrganizationProfileText(session.user.id, text);
                       setShowEINModal(false);
                     } catch (err) {
@@ -375,7 +371,7 @@ export default function ProfileView({onOrganizationProfileChange,
                     Boolean(accessToken) &&
                     uploadResults.length === files.length &&
                     uploadResults.length > 0;
-                  const { text } = await extractDocuments(
+                  await extractDocuments(
                     files.map((f) => f.file),
                     chunksReady && accessToken
                       ? {
@@ -384,7 +380,6 @@ export default function ProfileView({onOrganizationProfileChange,
                         }
                       : undefined
                   );
-                  onOrganizationProfileChange(text);
                   setFiles([]);
                 } catch (err) {
                   console.warn('Supabase upload failed for', err);

@@ -10,7 +10,7 @@ interface GrantChatProps {
   onClose: () => void;
 }
 
-export default function GrantChat({ grantTitle, grantContext, profileContext = '', onClose }: GrantChatProps) {
+export default function GrantChat({ grantTitle, grantContext, onClose }: GrantChatProps) {
   const { session } = useSupabaseAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -39,7 +39,6 @@ export default function GrantChat({ grantTitle, grantContext, profileContext = '
       const nextHistory = [...messages, userMessage];
       const { reply } = await postChat({
         grantContext,
-        profileContext,
         messages: nextHistory,
         accessToken: session?.access_token,
       });

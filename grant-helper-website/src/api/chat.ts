@@ -20,13 +20,12 @@ export interface PostChatOptions {
 
 export async function postChat({
   grantContext,
-  profileContext = '',
   messages,
   accessToken,
 }: PostChatOptions): Promise<{ reply: string }> {
   let res: Response;
   try {
-    const body: Record<string, unknown> = { grantContext, profileContext, messages };
+    const body: Record<string, unknown> = { grantContext, messages };
     if (accessToken) {
       body.accessToken = accessToken;
     }

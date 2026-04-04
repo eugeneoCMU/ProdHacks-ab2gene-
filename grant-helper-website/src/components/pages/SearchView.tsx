@@ -4,11 +4,8 @@ import GrantChat from '../chat/GrantChat';
 import './EmptyState.css';
 import './SearchView.css';
 
-interface SearchViewProps {
-  organizationProfile?: string;
-}
 
-export default function SearchView({ organizationProfile = '' }: SearchViewProps) {
+export default function SearchView() {
   const [query, setQuery] = useState('education');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +75,6 @@ export default function SearchView({ organizationProfile = '' }: SearchViewProps
             <GrantChat
               grantTitle={selectedOpportunity.opportunity_title}
               grantContext={buildGrantContext(selectedOpportunity)}
-              profileContext={organizationProfile}
               onClose={() => setSelectedOpportunity(null)}
             />
           </div>

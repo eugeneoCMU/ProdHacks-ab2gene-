@@ -15,7 +15,6 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import mammoth from 'mammoth';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { pipeline, type FeatureExtractionPipeline, type Tensor } from '@huggingface/transformers';
 
@@ -40,17 +39,13 @@ app.use(express.json());
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-if (!OPENAI_API_KEY && !GEMINI_API_KEY) {
+if (!OPENAI_API_KEY) {
   console.error(
     'Missing OPENAI API key.'
   );
   process.exit(1);
 }
-
-const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 
 const RAG_SYSTEM_INSTRUCTION = `You are the founder or program director of the organization applying for this grant.
 You are personally completing this grant application. All information provided represents your organization's real operations, programs, impact, and plans.
@@ -101,14 +96,10 @@ interface AutofillFieldRequestBody {
 }
 
 function buildSystemInstruction(
-  profileContext: string,
   grantContext: string,
   retrievedDocumentChunks?: string
 ): string {
   let out = RAG_SYSTEM_INSTRUCTION;
-  if (profileContext.trim()) {
-    out += `Applicant / organization profile (base context):\n${profileContext.trim()}\n\n`;
-  }
   if (retrievedDocumentChunks?.trim()) {
     out += `Relevant excerpts from your organization's uploaded documents (retrieved for this question):\n${retrievedDocumentChunks.trim()}\n\n`;
   }
@@ -502,36 +493,19 @@ async function generateOpenAIText(instructions: string, messages: Array<{ role: 
   return json.choices?.[0]?.message?.content?.trim() || '';
 }
 
-async function generateGeminiText(instructions: string, prompt: string): Promise<string> {
-  if (!genAI) {
-    throw new Error('Gemini client is not configured.');
-  }
-
-  const model = genAI.getGenerativeModel({
-    model: GEMINI_MODEL,
-    systemInstruction: instructions,
-  });
-  const result = await model.generateContent(prompt);
-  return (result.response.text() ?? '').trim();
-}
-
 async function generateModelText(
   instructions: string,
   prompt: string,
   history: Array<{ role: 'user' | 'model'; content: string }> = []
 ): Promise<string> {
-  if (OPENAI_API_KEY) {
-    const messages = [
-      ...history.map((message) => ({
-        role: message.role === 'model' ? 'assistant' as const : 'user' as const,
-        content: message.content,
-      })),
-      { role: 'user' as const, content: prompt },
-    ];
-    return await generateOpenAIText(instructions, messages);
-  }
-
-  return await generateGeminiText(instructions, prompt);
+  const messages = [
+    ...history.map((message) => ({
+      role: message.role === 'model' ? 'assistant' as const : 'user' as const,
+      content: message.content,
+    })),
+    { role: 'user' as const, content: prompt },
+  ];
+  return await generateOpenAIText(instructions, messages);
 }
 
 /** Extract text from PDF using pdfjs-dist directly (avoids Buffer vs Uint8Array issues in pdf-parse). */
@@ -667,7 +641,7 @@ app.post('/api/extract-documents', upload.array('files', 20), async (req: Reques
  */
 app.post('/api/chat', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { grantContext, profileContext, messages, accessToken: bodyToken } = req.body as ChatRequestBody;
+    const { grantContext, messages, accessToken: bodyToken } = req.body as ChatRequestBody;
     if (!grantContext || typeof grantContext !== 'string') {
       res.status(400).json({ error: 'grantContext is required and must be a string' });
       return;
@@ -676,7 +650,6 @@ app.post('/api/chat', async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ error: 'messages must be an array' });
       return;
     }
-    const profile = typeof profileContext === 'string' ? profileContext : '';
     const authHeader = req.headers.authorization;
     const tokenFromHeader =
       typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
@@ -698,11 +671,6 @@ app.post('/api/chat', async (req: Request, res: Response): Promise<void> => {
 
     let retrievedChunks = '';
 
-    console.log(accessToken);
-    console.log(toSend);
-    console.log(priorHistory);
-    console.log(profile);
-    console.log(grantContext);
     if (accessToken) {
       try {
         retrievedChunks = await retrieveRelevantChunksForQuery(accessToken, toSend);
@@ -712,7 +680,7 @@ app.post('/api/chat', async (req: Request, res: Response): Promise<void> => {
     }
 
     const text = await generateModelText(
-      buildSystemInstruction(profile, grantContext, retrievedChunks || undefined),
+      buildSystemInstruction(grantContext, retrievedChunks || undefined),
       toSend,
       priorHistory
     );
