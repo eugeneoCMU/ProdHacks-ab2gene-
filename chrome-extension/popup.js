@@ -1156,6 +1156,55 @@ function isLikelyNameValue(value) {
   return true;
 }
 
+function isLikelyFullName(value) {
+  const trimmed = String(value || "").trim();
+  if (!isLikelyNameValue(trimmed)) {
+    return false;
+  }
+  return trimmed.split(/\s+/).filter(Boolean).length >= 2;
+}
+
+function isLikelyJobTitle(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed || /\d{3,}/.test(trimmed) || trimmed.includes("@")) {
+    return false;
+  }
+  const normalized = normalizeFillText(trimmed);
+  return !(
+    normalized.includes("street") ||
+    normalized.includes("address") ||
+    normalized.includes("road") ||
+    normalized.includes("avenue") ||
+    normalized.includes("pittsburgh") ||
+    normalized.includes("united states")
+  );
+}
+
+function isLikelyOrganizationName(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed || trimmed.includes("@") || /^\d+$/.test(trimmed)) {
+    return false;
+  }
+  const normalized = normalizeFillText(trimmed);
+  return !(
+    normalized.includes("street") ||
+    normalized.includes("road") ||
+    normalized.includes("avenue") ||
+    normalized.includes("suite") ||
+    normalized.includes("unit") ||
+    normalized.includes("pittsburgh") ||
+    normalized.includes("united states")
+  );
+}
+
+function isLikelyProjectTitle(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed || trimmed.length < 4 || trimmed.includes("@")) {
+    return false;
+  }
+  return /[A-Za-z]/.test(trimmed);
+}
+
 function isSafeValueForFieldKey(fieldKey, value) {
   const trimmed = String(value || "").trim();
   if (!trimmed) {
@@ -1194,11 +1243,18 @@ function isSafeValueForFieldKey(fieldKey, value) {
       return trimmed.length >= 2 && trimmed.length <= 120;
     case "first_name":
     case "last_name":
-    case "contact_name":
     case "principal_investigator_name":
     case "authorized_representative_name":
     case "executive_officer_name":
       return isLikelyNameValue(trimmed);
+    case "contact_name":
+      return isLikelyFullName(trimmed);
+    case "job_title":
+      return isLikelyJobTitle(trimmed);
+    case "organization_name":
+      return isLikelyOrganizationName(trimmed);
+    case "project_title":
+      return isLikelyProjectTitle(trimmed);
     case "website":
       return /^(https?:\/\/|www\.)/i.test(trimmed) || /^[A-Za-z0-9.-]+\.[A-Za-z]{2,}(?:\/.*)?$/.test(trimmed);
     case "ein":
@@ -1256,6 +1312,9 @@ function resolveFieldKeyForFill(field) {
     field.id
   ].filter(Boolean).join(" ");
   const directMatch = inferFieldKeyFromText(directText, "");
+  if (field.fieldKey && field.fieldKey !== "unknown" && field.confidence >= 0.78 && !directMatch) {
+    return field.fieldKey;
+  }
   if (directMatch) {
     return directMatch;
   }
