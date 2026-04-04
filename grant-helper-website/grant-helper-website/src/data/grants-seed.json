@@ -1,0 +1,1519 @@
+{
+  "generated_at": "2026-03-22T00:47:09.844Z",
+  "total": 56,
+  "categories": [
+    "Federal Government",
+    "State & Local Government",
+    "Private Foundation",
+    "Corporate / CSR",
+    "Health & Human Services",
+    "Arts & Culture",
+    "Technology & Innovation",
+    "Environment & Conservation",
+    "Education & Youth",
+    "Community & Economic Development"
+  ],
+  "grants": [
+    {
+      "id": "nih-research-project-grant-r01",
+      "opportunity_title": "NIH Research Project Grant (R01)",
+      "provider": "National Institutes of Health (NIH)",
+      "category": "Federal Government",
+      "funding_min": 500000,
+      "funding_max": null,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "universities"
+      ],
+      "focus_areas": [
+        "biomedical",
+        "health"
+      ],
+      "target_population": "Researchers and institutions conducting health-related research",
+      "description": "The NIH R01 grant supports health-related research and development based on the mission of the NIH. It is intended for projects that are of high scientific caliber.",
+      "application_url": "https://grants.nih.gov/grants/funding/r01.htm",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 2,
+      "is_recurring": true,
+      "notes": "Requires detailed project proposal and budget justification."
+    },
+    {
+      "id": "nea-our-town-grant",
+      "opportunity_title": "Our Town Grant",
+      "provider": "National Endowment for the Arts (NEA)",
+      "category": "Federal Government",
+      "funding_min": 25000,
+      "funding_max": 200000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments"
+      ],
+      "focus_areas": [
+        "arts",
+        "community development"
+      ],
+      "target_population": "Communities seeking to integrate arts into community revitalization",
+      "description": "Our Town grants support projects that integrate arts, culture, and design into local efforts to strengthen communities.",
+      "application_url": "https://www.arts.gov/grants/our-town",
+      "deadline_type": "annual",
+      "typical_deadline_month": 8,
+      "is_recurring": true,
+      "notes": "Partnerships between arts organizations and local government are required."
+    },
+    {
+      "id": "usda-farm-to-school-grant",
+      "opportunity_title": "Farm to School Grant Program",
+      "provider": "U.S. Department of Agriculture (USDA)",
+      "category": "Federal Government",
+      "funding_min": 20000,
+      "funding_max": 100000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "state_governments",
+        "local_governments",
+        "nonprofits_501c3",
+        "schools"
+      ],
+      "focus_areas": [
+        "nutrition",
+        "education",
+        "agriculture"
+      ],
+      "target_population": "Schools and organizations aiming to improve access to local foods",
+      "description": "The Farm to School Grant Program assists in implementing farm to school programs that improve access to local foods in schools.",
+      "application_url": "https://www.fns.usda.gov/cfs/farm-school-grant-program",
+      "deadline_type": "annual",
+      "typical_deadline_month": 1,
+      "is_recurring": true,
+      "notes": "Matching funds are required."
+    },
+    {
+      "id": "epa-environmental-education-grant",
+      "opportunity_title": "Environmental Education Grants",
+      "provider": "Environmental Protection Agency (EPA)",
+      "category": "Federal Government",
+      "funding_min": 5000,
+      "funding_max": 100000,
+      "geographic_scope": "regional",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments",
+        "universities"
+      ],
+      "focus_areas": [
+        "environment",
+        "education"
+      ],
+      "target_population": "Educators and organizations focused on environmental education",
+      "description": "The EPA's Environmental Education Grants program supports projects that enhance the public's awareness, knowledge, and skills to make informed decisions that affect environmental quality.",
+      "application_url": "https://www.epa.gov/education/environmental-education-ee-grants",
+      "deadline_type": "annual",
+      "typical_deadline_month": 4,
+      "is_recurring": true,
+      "notes": "Projects must address EPA's educational priorities."
+    },
+    {
+      "id": "doe-weatherization-assistance-program",
+      "opportunity_title": "Weatherization Assistance Program",
+      "provider": "U.S. Department of Energy (DOE)",
+      "category": "Federal Government",
+      "funding_min": 500000,
+      "funding_max": null,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "CA",
+        "TX",
+        "NY",
+        "FL",
+        "IL",
+        "PA",
+        "OH",
+        "GA",
+        "WA",
+        "CO"
+      ],
+      "eligibility_types": [
+        "state_governments",
+        "local_governments"
+      ],
+      "focus_areas": [
+        "energy efficiency",
+        "low-income households"
+      ],
+      "target_population": "Low-income households needing energy efficiency improvements",
+      "description": "The Weatherization Assistance Program provides funding to states to improve the energy efficiency of low-income homes, reducing energy costs for families in need.",
+      "application_url": "https://www.energy.gov/eere/wap/weatherization-assistance-program",
+      "deadline_type": "rolling",
+      "typical_deadline_month": null,
+      "is_recurring": true,
+      "notes": "Funds are distributed to states, which then allocate to local agencies."
+    },
+    {
+      "id": "hrsa-rural-health-care-services-outreach",
+      "opportunity_title": "Rural Health Care Services Outreach Program",
+      "provider": "Health Resources and Services Administration (HRSA)",
+      "category": "Federal Government",
+      "funding_min": 50000,
+      "funding_max": 250000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "TX",
+        "GA",
+        "OH",
+        "WA"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments",
+        "universities"
+      ],
+      "focus_areas": [
+        "healthcare",
+        "rural communities"
+      ],
+      "target_population": "Rural communities needing improved healthcare access",
+      "description": "This program supports projects that demonstrate innovative models to improve healthcare services in rural communities.",
+      "application_url": "https://www.hrsa.gov/grants/find-funding",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 12,
+      "is_recurring": true,
+      "notes": "Projects must be community-based and involve a consortium of local partners."
+    },
+    {
+      "id": "community-development-block-grant",
+      "opportunity_title": "Community Development Block Grant (CDBG)",
+      "provider": "U.S. Department of Housing and Urban Development (HUD)",
+      "category": "State & Local Government",
+      "funding_min": 50000,
+      "funding_max": 1000000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "state_governments",
+        "local_governments"
+      ],
+      "focus_areas": [
+        "community development",
+        "infrastructure"
+      ],
+      "target_population": "Low and moderate-income communities",
+      "description": "The CDBG program provides annual grants to states, cities, and counties to develop viable urban communities by providing decent housing and a suitable living environment, and by expanding economic opportunities.",
+      "application_url": "https://www.hud.gov/program_offices/comm_planning/cdbg",
+      "deadline_type": "annual",
+      "typical_deadline_month": 8,
+      "is_recurring": true,
+      "notes": "Applicants must ensure compliance with national objectives and citizen participation requirements."
+    },
+    {
+      "id": "california-homeless-housing-assistance",
+      "opportunity_title": "Homeless Housing, Assistance and Prevention Program",
+      "provider": "California Business, Consumer Services and Housing Agency",
+      "category": "State & Local Government",
+      "funding_min": 100000,
+      "funding_max": 5000000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "CA"
+      ],
+      "eligibility_types": [
+        "local_governments",
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "homelessness",
+        "housing"
+      ],
+      "target_population": "Homeless individuals and families in California",
+      "description": "This program provides funds to support regional coordination and expand or develop local capacity to address immediate homelessness challenges.",
+      "application_url": "https://www.bcsh.ca.gov/hcfc/hhap_program.html",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 3,
+      "is_recurring": true,
+      "notes": "Requires a local plan to address homelessness and a commitment to regional collaboration."
+    },
+    {
+      "id": "texas-criminal-justice-grant",
+      "opportunity_title": "Criminal Justice Grant Program",
+      "provider": "Texas Governor's Office",
+      "category": "State & Local Government",
+      "funding_min": 5000,
+      "funding_max": 50000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "TX"
+      ],
+      "eligibility_types": [
+        "local_governments",
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "criminal justice",
+        "public safety"
+      ],
+      "target_population": "Communities in need of criminal justice and public safety improvements",
+      "description": "The program provides funding to support projects that enhance the criminal justice system, improve public safety, and reduce crime in Texas communities.",
+      "application_url": "https://gov.texas.gov/organization/cjd",
+      "deadline_type": "annual",
+      "typical_deadline_month": 2,
+      "is_recurring": true,
+      "notes": "Applicants must demonstrate a clear need and provide measurable outcomes."
+    },
+    {
+      "id": "florida-cultural-affairs-grant",
+      "opportunity_title": "General Program Support Grant",
+      "provider": "Florida Division of Cultural Affairs",
+      "category": "State & Local Government",
+      "funding_min": 10000,
+      "funding_max": 150000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "FL"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments"
+      ],
+      "focus_areas": [
+        "arts",
+        "culture"
+      ],
+      "target_population": "Arts organizations and cultural programs in Florida",
+      "description": "This grant supports the general program activities of arts and cultural organizations, enhancing access to cultural experiences across Florida.",
+      "application_url": "https://dos.myflorida.com/cultural/grants/grant-programs/general-program-support/",
+      "deadline_type": "annual",
+      "typical_deadline_month": 6,
+      "is_recurring": true,
+      "notes": "Applicants must demonstrate a history of cultural programming and community engagement."
+    },
+    {
+      "id": "ohio-transportation-alternatives-program",
+      "opportunity_title": "Transportation Alternatives Program (TAP)",
+      "provider": "Ohio Department of Transportation",
+      "category": "State & Local Government",
+      "funding_min": 25000,
+      "funding_max": 500000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "OH"
+      ],
+      "eligibility_types": [
+        "local_governments",
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "transportation",
+        "infrastructure"
+      ],
+      "target_population": "Communities seeking to improve transportation infrastructure",
+      "description": "TAP provides funding for community-based projects that expand travel choices and enhance transportation infrastructure, including pedestrian and bicycle facilities.",
+      "application_url": "https://www.transportation.ohio.gov/programs/local-programs/transportation-alternatives",
+      "deadline_type": "annual",
+      "typical_deadline_month": 9,
+      "is_recurring": true,
+      "notes": "Projects must align with state transportation goals and demonstrate community support."
+    },
+    {
+      "id": "georgia-emergency-management-performance-grant",
+      "opportunity_title": "Emergency Management Performance Grant (EMPG)",
+      "provider": "Georgia Emergency Management and Homeland Security Agency",
+      "category": "State & Local Government",
+      "funding_min": 50000,
+      "funding_max": 250000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "GA"
+      ],
+      "eligibility_types": [
+        "state_governments",
+        "local_governments"
+      ],
+      "focus_areas": [
+        "emergency management",
+        "disaster preparedness"
+      ],
+      "target_population": "Communities requiring enhanced emergency management capabilities",
+      "description": "EMPG provides funding to assist local and state governments in preparing for all hazards through planning, training, and exercises.",
+      "application_url": "https://gema.georgia.gov/grants",
+      "deadline_type": "annual",
+      "typical_deadline_month": 4,
+      "is_recurring": true,
+      "notes": "Requires a 50% match from non-federal sources and adherence to FEMA guidelines."
+    },
+    {
+      "id": "gates-foundation-global-health",
+      "opportunity_title": "Global Health Grant Program",
+      "provider": "Bill & Melinda Gates Foundation",
+      "category": "Private Foundation",
+      "funding_min": 500000,
+      "funding_max": null,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "universities"
+      ],
+      "focus_areas": [
+        "global_health",
+        "disease_prevention"
+      ],
+      "target_population": "Populations in need of health interventions globally",
+      "description": "This program supports innovative solutions to improve health outcomes in low-income countries. Funding focuses on disease prevention and health system strengthening.",
+      "application_url": "https://www.gatesfoundation.org/How-We-Work/General-Information/Grant-Opportunities",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 6,
+      "is_recurring": true,
+      "notes": "Proposals must align with the foundation's strategic priorities."
+    },
+    {
+      "id": "kresge-foundation-arts-culture",
+      "opportunity_title": "Arts & Culture Grant Program",
+      "provider": "The Kresge Foundation",
+      "category": "Private Foundation",
+      "funding_min": 50000,
+      "funding_max": 300000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments"
+      ],
+      "focus_areas": [
+        "arts",
+        "community_development"
+      ],
+      "target_population": "Communities seeking to integrate arts into community revitalization",
+      "description": "This grant program supports projects that integrate arts and culture into community development efforts. It aims to enhance the quality of life and economic vitality of communities.",
+      "application_url": "https://kresge.org/programs/arts-culture",
+      "deadline_type": "annual",
+      "typical_deadline_month": 9,
+      "is_recurring": true,
+      "notes": "Projects must demonstrate community engagement and sustainability."
+    },
+    {
+      "id": "macarthur-foundation-100-million",
+      "opportunity_title": "100&Change",
+      "provider": "MacArthur Foundation",
+      "category": "Private Foundation",
+      "funding_min": 100000000,
+      "funding_max": 100000000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "social_impact",
+        "innovation"
+      ],
+      "target_population": "Organizations with transformative solutions to critical social challenges",
+      "description": "100&Change is a competition for a $100 million grant to fund a single proposal that promises real and measurable progress in solving a critical problem of our time.",
+      "application_url": "https://www.macfound.org/programs/100change/",
+      "deadline_type": "cycle",
+      "typical_deadline_month": null,
+      "is_recurring": false,
+      "notes": "Open to organizations worldwide; proposals must be impactful and feasible."
+    },
+    {
+      "id": "annie-e-casey-foundation-juvenile-justice",
+      "opportunity_title": "Juvenile Justice Strategy Group",
+      "provider": "Annie E. Casey Foundation",
+      "category": "Private Foundation",
+      "funding_min": 5000,
+      "funding_max": 50000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "GA",
+        "MD",
+        "NY"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "state_governments"
+      ],
+      "focus_areas": [
+        "juvenile_justice",
+        "youth"
+      ],
+      "target_population": "Youth involved in the juvenile justice system",
+      "description": "This program supports efforts to reform juvenile justice systems to improve outcomes for youth. It focuses on reducing incarceration and promoting community-based alternatives.",
+      "application_url": "https://www.aecf.org/work/juvenile-justice",
+      "deadline_type": "rolling",
+      "typical_deadline_month": null,
+      "is_recurring": true,
+      "notes": "Preference given to initiatives that demonstrate measurable outcomes."
+    },
+    {
+      "id": "robert-wood-johnson-foundation-health-equity",
+      "opportunity_title": "Health Equity Grant Program",
+      "provider": "Robert Wood Johnson Foundation",
+      "category": "Private Foundation",
+      "funding_min": 100000,
+      "funding_max": 500000,
+      "geographic_scope": "regional",
+      "states_eligible": [
+        "CA",
+        "TX",
+        "IL"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "universities"
+      ],
+      "focus_areas": [
+        "health_equity",
+        "community_health"
+      ],
+      "target_population": "Underserved communities facing health disparities",
+      "description": "This program funds initiatives that address health disparities and promote health equity in underserved communities. It supports innovative approaches to improving community health.",
+      "application_url": "https://www.rwjf.org/en/how-we-work/grants-explorer.html",
+      "deadline_type": "annual",
+      "typical_deadline_month": 4,
+      "is_recurring": true,
+      "notes": "Projects must align with the foundation's vision for a Culture of Health."
+    },
+    {
+      "id": "w-k-kellogg-foundation-education",
+      "opportunity_title": "Education & Learning Grant Program",
+      "provider": "W.K. Kellogg Foundation",
+      "category": "Private Foundation",
+      "funding_min": 25000,
+      "funding_max": 200000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "MI",
+        "MS",
+        "NM"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "universities"
+      ],
+      "focus_areas": [
+        "education",
+        "early_childhood"
+      ],
+      "target_population": "Children and families in need of educational support",
+      "description": "This program supports initiatives that improve educational outcomes for children, particularly in early childhood. It aims to ensure equitable access to quality education.",
+      "application_url": "https://www.wkkf.org/grantseekers",
+      "deadline_type": "rolling",
+      "typical_deadline_month": null,
+      "is_recurring": true,
+      "notes": "Focus on projects that demonstrate community involvement and sustainability."
+    },
+    {
+      "id": "google-org-impact-challenge",
+      "opportunity_title": "Google.org Impact Challenge",
+      "provider": "Google.org",
+      "category": "Corporate / CSR",
+      "funding_min": 50000,
+      "funding_max": 500000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "technology",
+        "community-development"
+      ],
+      "target_population": "Nonprofits leveraging technology for social impact",
+      "description": "The Google.org Impact Challenge supports nonprofits using technology to tackle societal challenges. Grants are awarded to innovative projects that have the potential to create significant community impact.",
+      "application_url": "https://impactchallenge.withgoogle.com/",
+      "deadline_type": "annual",
+      "typical_deadline_month": 9,
+      "is_recurring": true,
+      "notes": "Projects should demonstrate a clear plan for execution and scalability."
+    },
+    {
+      "id": "microsoft-ai-for-good",
+      "opportunity_title": "AI for Good Grants",
+      "provider": "Microsoft Philanthropies",
+      "category": "Corporate / CSR",
+      "funding_min": 10000,
+      "funding_max": 100000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "universities"
+      ],
+      "focus_areas": [
+        "artificial-intelligence",
+        "social-impact"
+      ],
+      "target_population": "Organizations using AI to address societal challenges",
+      "description": "Microsoft's AI for Good program offers grants to organizations using artificial intelligence to solve pressing social issues. The program provides funding and resources to help scale AI-driven solutions.",
+      "application_url": "https://www.microsoft.com/en-us/ai/ai-for-good",
+      "deadline_type": "rolling",
+      "typical_deadline_month": null,
+      "is_recurring": true,
+      "notes": "Applicants must demonstrate the ethical use of AI in their projects."
+    },
+    {
+      "id": "jpmorgan-chase-advancingcities",
+      "opportunity_title": "AdvancingCities Challenge",
+      "provider": "JPMorgan Chase Foundation",
+      "category": "Corporate / CSR",
+      "funding_min": 250000,
+      "funding_max": 3000000,
+      "geographic_scope": "regional",
+      "states_eligible": [
+        "NY",
+        "IL",
+        "TX",
+        "CA"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments"
+      ],
+      "focus_areas": [
+        "economic-development",
+        "workforce-development"
+      ],
+      "target_population": "Communities seeking economic revitalization",
+      "description": "The AdvancingCities Challenge by JPMorgan Chase supports initiatives aimed at driving inclusive growth and economic opportunity in cities. The program funds innovative solutions that address workforce development and economic revitalization.",
+      "application_url": "https://www.jpmorganchase.com/impact/communities/advancingcities",
+      "deadline_type": "annual",
+      "typical_deadline_month": 4,
+      "is_recurring": true,
+      "notes": "Preference given to projects with collaborative partnerships."
+    },
+    {
+      "id": "bank-of-america-neighborhood-builders",
+      "opportunity_title": "Neighborhood Builders Program",
+      "provider": "Bank of America",
+      "category": "Corporate / CSR",
+      "funding_min": 200000,
+      "funding_max": 200000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "FL",
+        "GA",
+        "NC"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "community-development",
+        "leadership"
+      ],
+      "target_population": "Local nonprofits focusing on community development",
+      "description": "The Neighborhood Builders Program provides leadership development and flexible funding to nonprofits working to address economic mobility and community development in their local areas.",
+      "application_url": "https://about.bankofamerica.com/en-us/what-guides-us/neighborhood-builders.html",
+      "deadline_type": "annual",
+      "typical_deadline_month": 6,
+      "is_recurring": true,
+      "notes": "Includes leadership training for executive directors and emerging leaders."
+    },
+    {
+      "id": "target-foundation-hometown",
+      "opportunity_title": "Target Foundation Hometown Grant",
+      "provider": "Target Foundation",
+      "category": "Corporate / CSR",
+      "funding_min": 5000,
+      "funding_max": 100000,
+      "geographic_scope": "local",
+      "states_eligible": [
+        "MN"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "arts-and-culture",
+        "social-services"
+      ],
+      "target_population": "Nonprofits serving communities in the Minneapolis-St. Paul area",
+      "description": "The Target Foundation Hometown Grant supports local nonprofits in the Minneapolis-St. Paul area, focusing on arts, culture, and social services. The program aims to enhance community vitality and well-being.",
+      "application_url": "https://corporate.target.com/corporate-responsibility/philanthropy/target-foundation",
+      "deadline_type": "annual",
+      "typical_deadline_month": 3,
+      "is_recurring": true,
+      "notes": "Priority given to organizations with a strong community presence."
+    },
+    {
+      "id": "walmart-foundation-community-grant",
+      "opportunity_title": "Community Grant Program",
+      "provider": "Walmart Foundation",
+      "category": "Corporate / CSR",
+      "funding_min": 250,
+      "funding_max": 5000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "TX",
+        "OH",
+        "PA"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments"
+      ],
+      "focus_areas": [
+        "hunger-relief",
+        "community-engagement"
+      ],
+      "target_population": "Local communities in need of hunger relief and community support",
+      "description": "The Walmart Foundation Community Grant Program provides funding to local organizations working to address hunger relief, community engagement, and other critical needs in their communities.",
+      "application_url": "https://walmart.org/how-we-give/local-community-grants",
+      "deadline_type": "rolling",
+      "typical_deadline_month": null,
+      "is_recurring": true,
+      "notes": "Applications are accepted on a rolling basis throughout the year."
+    },
+    {
+      "id": "nih-health-disparities-research",
+      "opportunity_title": "NIH Health Disparities Research Grants",
+      "provider": "National Institutes of Health (NIH)",
+      "category": "Health & Human Services",
+      "funding_min": 500000,
+      "funding_max": null,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "universities"
+      ],
+      "focus_areas": [
+        "health disparities",
+        "research"
+      ],
+      "target_population": "Populations experiencing health disparities",
+      "description": "This grant supports research aimed at understanding and addressing health disparities among different populations in the United States.",
+      "application_url": "https://grants.nih.gov/grants/guide/pa-files/PA-20-185.html",
+      "deadline_type": "annual",
+      "typical_deadline_month": 10,
+      "is_recurring": true,
+      "notes": "Applicants must demonstrate expertise in health disparities research."
+    },
+    {
+      "id": "robert-wood-johnson-culture-of-health",
+      "opportunity_title": "Robert Wood Johnson Foundation Culture of Health Prize",
+      "provider": "Robert Wood Johnson Foundation",
+      "category": "Health & Human Services",
+      "funding_min": 25000,
+      "funding_max": 25000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "local_governments",
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "community health",
+        "equity"
+      ],
+      "target_population": "Communities working towards health equity",
+      "description": "The Culture of Health Prize honors communities that are working to build a culture of health for all residents.",
+      "application_url": "https://www.rwjf.org/en/library/funding-opportunities/2021/culture-of-health-prize.html",
+      "deadline_type": "annual",
+      "typical_deadline_month": 11,
+      "is_recurring": true,
+      "notes": "Communities must demonstrate measurable progress in health equity."
+    },
+    {
+      "id": "california-mental-health-services-act",
+      "opportunity_title": "California Mental Health Services Act (MHSA) Grants",
+      "provider": "California Department of Health Care Services",
+      "category": "Health & Human Services",
+      "funding_min": 50000,
+      "funding_max": 500000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "CA"
+      ],
+      "eligibility_types": [
+        "local_governments",
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "mental health",
+        "community services"
+      ],
+      "target_population": "California residents with mental health needs",
+      "description": "MHSA provides funding for mental health services and programs in California, focusing on prevention and early intervention.",
+      "application_url": "https://www.dhcs.ca.gov/services/MH/Pages/MH_Division.aspx",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 6,
+      "is_recurring": true,
+      "notes": "Programs must align with state mental health priorities."
+    },
+    {
+      "id": "kresge-health-program",
+      "opportunity_title": "Kresge Foundation Health Program Grants",
+      "provider": "Kresge Foundation",
+      "category": "Health & Human Services",
+      "funding_min": 100000,
+      "funding_max": 600000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "public health",
+        "community development"
+      ],
+      "target_population": "Underserved communities in the U.S.",
+      "description": "This program supports efforts to improve the health of low-income, underserved communities by addressing social determinants of health.",
+      "application_url": "https://kresge.org/programs/health",
+      "deadline_type": "rolling",
+      "typical_deadline_month": null,
+      "is_recurring": true,
+      "notes": "Proposals must demonstrate innovative approaches to health improvement."
+    },
+    {
+      "id": "texas-homeless-housing-services",
+      "opportunity_title": "Texas Homeless Housing and Services Program (HHSP)",
+      "provider": "Texas Department of Housing and Community Affairs",
+      "category": "Health & Human Services",
+      "funding_min": 5000,
+      "funding_max": 50000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "TX"
+      ],
+      "eligibility_types": [
+        "local_governments",
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "homelessness",
+        "housing"
+      ],
+      "target_population": "Homeless individuals and families in Texas",
+      "description": "HHSP provides funding to support services and housing solutions for homeless individuals and families in Texas.",
+      "application_url": "https://www.tdhca.state.tx.us/",
+      "deadline_type": "annual",
+      "typical_deadline_month": 8,
+      "is_recurring": true,
+      "notes": "Applicants must demonstrate capacity to manage housing programs."
+    },
+    {
+      "id": "florida-children-healthcare-access",
+      "opportunity_title": "Florida Children's Healthcare Access Program",
+      "provider": "Florida Department of Health",
+      "category": "Health & Human Services",
+      "funding_min": 10000,
+      "funding_max": 100000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "FL"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments"
+      ],
+      "focus_areas": [
+        "children's health",
+        "access to care"
+      ],
+      "target_population": "Children in Florida needing improved healthcare access",
+      "description": "This program provides grants to improve healthcare access for children in Florida, focusing on underserved areas.",
+      "application_url": "https://www.floridahealth.gov/",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 4,
+      "is_recurring": true,
+      "notes": "Projects must align with state health priorities for children."
+    },
+    {
+      "id": "nea-art-works",
+      "opportunity_title": "Art Works",
+      "provider": "National Endowment for the Arts",
+      "category": "Arts & Culture",
+      "funding_min": 10000,
+      "funding_max": 100000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "state_governments",
+        "local_governments",
+        "universities"
+      ],
+      "focus_areas": [
+        "visual-arts",
+        "performing-arts"
+      ],
+      "target_population": "Artists and arts organizations across the United States",
+      "description": "The Art Works grant program supports projects that celebrate creativity and cultural heritage, and that engage the public with diverse art forms. Funding is available for a wide range of artistic disciplines.",
+      "application_url": "https://www.arts.gov/grants",
+      "deadline_type": "annual",
+      "typical_deadline_month": 2,
+      "is_recurring": true,
+      "notes": "Matching funds are required."
+    },
+    {
+      "id": "kresge-foundation-arts-and-culture",
+      "opportunity_title": "Kresge Foundation Arts and Culture Program",
+      "provider": "Kresge Foundation",
+      "category": "Arts & Culture",
+      "funding_min": 50000,
+      "funding_max": 300000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "community-development",
+        "creative-placemaking"
+      ],
+      "target_population": "Communities seeking to integrate arts and culture into community revitalization",
+      "description": "The Kresge Foundation's Arts and Culture Program supports efforts that integrate arts and culture into community development and revitalization efforts, with a focus on creative placemaking.",
+      "application_url": "https://kresge.org/programs/arts-culture",
+      "deadline_type": "rolling",
+      "typical_deadline_month": null,
+      "is_recurring": true,
+      "notes": "Proposals are accepted on a rolling basis."
+    },
+    {
+      "id": "florida-division-of-cultural-affairs-grant",
+      "opportunity_title": "General Program Support",
+      "provider": "Florida Division of Cultural Affairs",
+      "category": "Arts & Culture",
+      "funding_min": 5000,
+      "funding_max": 150000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "FL"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments"
+      ],
+      "focus_areas": [
+        "arts-education",
+        "cultural-programs"
+      ],
+      "target_population": "Florida-based arts organizations and cultural programs",
+      "description": "This grant provides funding to Florida arts and cultural organizations to support general program operations, including arts education and cultural programming.",
+      "application_url": "https://dos.myflorida.com/cultural/grants/grant-programs/general-program-support/",
+      "deadline_type": "annual",
+      "typical_deadline_month": 6,
+      "is_recurring": true,
+      "notes": ""
+    },
+    {
+      "id": "texas-commission-on-the-arts-grant",
+      "opportunity_title": "Arts Respond Project",
+      "provider": "Texas Commission on the Arts",
+      "category": "Arts & Culture",
+      "funding_min": 1000,
+      "funding_max": 10000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "TX"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments",
+        "universities"
+      ],
+      "focus_areas": [
+        "arts-access",
+        "community-engagement"
+      ],
+      "target_population": "Texas communities and underserved populations",
+      "description": "The Arts Respond Project grant provides funding for arts-based projects that address community needs and engage underserved populations in Texas.",
+      "application_url": "https://www.arts.texas.gov/grants/",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 3,
+      "is_recurring": true,
+      "notes": "Projects must address one of the priority areas outlined by the commission."
+    },
+    {
+      "id": "macarthur-foundation-arts-and-culture",
+      "opportunity_title": "MacArthur Foundation Arts & Culture Grant",
+      "provider": "MacArthur Foundation",
+      "category": "Arts & Culture",
+      "funding_min": 50000,
+      "funding_max": 500000,
+      "geographic_scope": "regional",
+      "states_eligible": [
+        "IL"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "arts-innovation",
+        "cultural-diversity"
+      ],
+      "target_population": "Chicago-based arts organizations and initiatives",
+      "description": "The MacArthur Foundation supports innovative arts and culture organizations in the Chicago area, focusing on projects that promote cultural diversity and artistic innovation.",
+      "application_url": "https://www.macfound.org/programs/arts-culture/",
+      "deadline_type": "annual",
+      "typical_deadline_month": 9,
+      "is_recurring": true,
+      "notes": "Focus on organizations with a strong track record of impact in the community."
+    },
+    {
+      "id": "seattle-office-of-arts-and-culture-grant",
+      "opportunity_title": "Civic Partners Grant",
+      "provider": "Seattle Office of Arts & Culture",
+      "category": "Arts & Culture",
+      "funding_min": 2000,
+      "funding_max": 50000,
+      "geographic_scope": "local",
+      "states_eligible": [
+        "WA"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "local-arts",
+        "community-building"
+      ],
+      "target_population": "Seattle-based arts organizations and community groups",
+      "description": "The Civic Partners Grant supports Seattle-based arts organizations and community groups that contribute to the city's cultural vitality and community building through arts and culture.",
+      "application_url": "https://www.seattle.gov/arts/programs/grants",
+      "deadline_type": "annual",
+      "typical_deadline_month": 4,
+      "is_recurring": true,
+      "notes": "Organizations must demonstrate a commitment to community engagement."
+    },
+    {
+      "id": "nsf-small-business-innovation-research",
+      "opportunity_title": "Small Business Innovation Research (SBIR) Program",
+      "provider": "National Science Foundation (NSF)",
+      "category": "Technology & Innovation",
+      "funding_min": 50000,
+      "funding_max": 1500000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "for_profit"
+      ],
+      "focus_areas": [
+        "technology",
+        "innovation",
+        "research",
+        "development"
+      ],
+      "target_population": "Small businesses engaged in scientific research and development",
+      "description": "The NSF SBIR program provides funding to small businesses to support research and development of innovative technologies that have the potential for commercialization.",
+      "application_url": "https://seedfund.nsf.gov/apply/",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 6,
+      "is_recurring": true,
+      "notes": "Phase I and Phase II funding available; requires commercialization plan."
+    },
+    {
+      "id": "gates-foundation-grand-challenges",
+      "opportunity_title": "Grand Challenges Explorations",
+      "provider": "Bill & Melinda Gates Foundation",
+      "category": "Technology & Innovation",
+      "funding_min": 100000,
+      "funding_max": 1000000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "universities",
+        "for_profit"
+      ],
+      "focus_areas": [
+        "global health",
+        "technology",
+        "innovation",
+        "sustainability"
+      ],
+      "target_population": "Innovators working on global health and development challenges",
+      "description": "This program funds innovative ideas to solve pressing global health and development problems. It encourages bold and unconventional approaches.",
+      "application_url": "https://gcgh.grandchallenges.org/",
+      "deadline_type": "annual",
+      "typical_deadline_month": 11,
+      "is_recurring": true,
+      "notes": "Initial grants are seed funding; follow-on funding available for successful projects."
+    },
+    {
+      "id": "california-energy-commission-epic",
+      "opportunity_title": "Electric Program Investment Charge (EPIC)",
+      "provider": "California Energy Commission",
+      "category": "Technology & Innovation",
+      "funding_min": 50000,
+      "funding_max": 5000000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "CA"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "for_profit",
+        "universities"
+      ],
+      "focus_areas": [
+        "energy",
+        "technology",
+        "innovation",
+        "sustainability"
+      ],
+      "target_population": "Organizations developing energy innovations in California",
+      "description": "EPIC funds research, development, and demonstration projects that advance clean energy technologies and support California's energy policy goals.",
+      "application_url": "https://www.energy.ca.gov/programs-and-topics/programs",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 9,
+      "is_recurring": true,
+      "notes": "Projects must align with California's energy policy goals; matching funds may be required."
+    },
+    {
+      "id": "texas-emerging-technology-fund",
+      "opportunity_title": "Texas Emerging Technology Fund",
+      "provider": "Texas Economic Development",
+      "category": "Technology & Innovation",
+      "funding_min": 250000,
+      "funding_max": 5000000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "TX"
+      ],
+      "eligibility_types": [
+        "for_profit",
+        "universities"
+      ],
+      "focus_areas": [
+        "technology",
+        "innovation",
+        "commercialization",
+        "research"
+      ],
+      "target_population": "Technology companies and research institutions in Texas",
+      "description": "The Texas Emerging Technology Fund provides funding to support the development and commercialization of new technologies in Texas.",
+      "application_url": "https://gov.texas.gov/business",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 3,
+      "is_recurring": true,
+      "notes": "Focus on projects with high potential for commercialization and job creation."
+    },
+    {
+      "id": "knight-foundation-prototype-fund",
+      "opportunity_title": "Prototype Fund",
+      "provider": "Knight Foundation",
+      "category": "Technology & Innovation",
+      "funding_min": 10000,
+      "funding_max": 50000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "universities",
+        "individuals"
+      ],
+      "focus_areas": [
+        "media",
+        "technology",
+        "innovation",
+        "community"
+      ],
+      "target_population": "Innovators developing new tools and approaches in media and journalism",
+      "description": "The Prototype Fund supports early-stage media and information projects that explore new ways to inform and engage communities.",
+      "application_url": "https://knightfoundation.org/grants/prototype-fund/",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 5,
+      "is_recurring": true,
+      "notes": "Focus on rapid prototyping and testing of new ideas in media and journalism."
+    },
+    {
+      "id": "epa-environmental-education-grants",
+      "opportunity_title": "Environmental Education Grants Program",
+      "provider": "U.S. Environmental Protection Agency",
+      "category": "Environment & Conservation",
+      "funding_min": 5000,
+      "funding_max": 100000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "state_governments",
+        "local_governments",
+        "universities"
+      ],
+      "focus_areas": [
+        "environmental-education",
+        "community-awareness"
+      ],
+      "target_population": "Educators and community organizations",
+      "description": "The EPA's Environmental Education Grants Program supports projects that enhance the public's awareness, knowledge, and skills to make informed decisions that affect environmental quality.",
+      "application_url": "https://www.epa.gov/education/environmental-education-ee-grants",
+      "deadline_type": "annual",
+      "typical_deadline_month": 11,
+      "is_recurring": true,
+      "notes": "Projects must include an educational component and demonstrate measurable results."
+    },
+    {
+      "id": "california-climate-investments",
+      "opportunity_title": "California Climate Investments",
+      "provider": "California Air Resources Board",
+      "category": "Environment & Conservation",
+      "funding_min": 50000,
+      "funding_max": 500000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "CA"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "state_governments",
+        "local_governments",
+        "universities"
+      ],
+      "focus_areas": [
+        "climate-change",
+        "greenhouse-gas-reduction"
+      ],
+      "target_population": "Communities in California affected by climate change",
+      "description": "This program funds projects that reduce greenhouse gas emissions and provide economic, environmental, and public health benefits to disadvantaged communities in California.",
+      "application_url": "https://www.caclimateinvestments.ca.gov/",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 6,
+      "is_recurring": true,
+      "notes": "Projects must align with California's climate goals and demonstrate community benefits."
+    },
+    {
+      "id": "florida-forever-grant-program",
+      "opportunity_title": "Florida Forever Grant Program",
+      "provider": "Florida Department of Environmental Protection",
+      "category": "Environment & Conservation",
+      "funding_min": 100000,
+      "funding_max": 1000000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "FL"
+      ],
+      "eligibility_types": [
+        "state_governments",
+        "local_governments",
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "land-conservation",
+        "wildlife-habitat"
+      ],
+      "target_population": "Florida communities and ecosystems",
+      "description": "Florida Forever is the state's premier conservation and recreation lands acquisition program, focusing on protecting natural resources and wildlife habitats.",
+      "application_url": "https://floridadep.gov/lands/environmental-services/content/florida-forever",
+      "deadline_type": "annual",
+      "typical_deadline_month": 3,
+      "is_recurring": true,
+      "notes": "Applicants must demonstrate the ecological significance of the land to be conserved."
+    },
+    {
+      "id": "macarthur-foundation-conservation-grants",
+      "opportunity_title": "Conservation and Sustainable Development Grants",
+      "provider": "MacArthur Foundation",
+      "category": "Environment & Conservation",
+      "funding_min": 100000,
+      "funding_max": 500000,
+      "geographic_scope": "regional",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "universities"
+      ],
+      "focus_areas": [
+        "biodiversity",
+        "sustainable-development"
+      ],
+      "target_population": "Organizations working on biodiversity conservation",
+      "description": "The MacArthur Foundation supports efforts to conserve biodiversity and promote sustainable development in critical regions around the world.",
+      "application_url": "https://www.macfound.org/programs/conservation/",
+      "deadline_type": "rolling",
+      "typical_deadline_month": null,
+      "is_recurring": true,
+      "notes": "Focus on innovative solutions and partnerships in biodiversity hotspots."
+    },
+    {
+      "id": "ohio-environmental-education-fund",
+      "opportunity_title": "Ohio Environmental Education Fund",
+      "provider": "Ohio Environmental Protection Agency",
+      "category": "Environment & Conservation",
+      "funding_min": 5000,
+      "funding_max": 50000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "OH"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments",
+        "universities"
+      ],
+      "focus_areas": [
+        "environmental-education",
+        "pollution-prevention"
+      ],
+      "target_population": "Ohio educators and community organizations",
+      "description": "This fund supports projects that increase awareness and understanding of environmental issues and encourage the adoption of sustainable practices in Ohio.",
+      "application_url": "https://epa.ohio.gov/oee",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 1,
+      "is_recurring": true,
+      "notes": "Applicants must demonstrate measurable environmental outcomes."
+    },
+    {
+      "id": "walmart-foundation-environmental-sustainability",
+      "opportunity_title": "Environmental Sustainability Grants",
+      "provider": "Walmart Foundation",
+      "category": "Environment & Conservation",
+      "funding_min": 25000,
+      "funding_max": 500000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "sustainability",
+        "waste-reduction"
+      ],
+      "target_population": "Communities and organizations focused on sustainability",
+      "description": "The Walmart Foundation provides funding to support initiatives that promote environmental sustainability, including waste reduction and sustainable agriculture.",
+      "application_url": "https://walmart.org/how-we-give",
+      "deadline_type": "rolling",
+      "typical_deadline_month": null,
+      "is_recurring": true,
+      "notes": "Preference given to projects with scalable and replicable solutions."
+    },
+    {
+      "id": "gates-foundation-global-learning",
+      "opportunity_title": "Global Learning Initiative",
+      "provider": "Bill & Melinda Gates Foundation",
+      "category": "Education & Youth",
+      "funding_min": 500000,
+      "funding_max": null,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "universities"
+      ],
+      "focus_areas": [
+        "global education",
+        "innovation"
+      ],
+      "target_population": "Students and educators worldwide",
+      "description": "The Global Learning Initiative supports innovative education projects that aim to improve learning outcomes for students globally. The program funds scalable solutions that can be adapted to different educational contexts.",
+      "application_url": "https://www.gatesfoundation.org/How-We-Work/General-Information/Grant-Opportunities",
+      "deadline_type": "rolling",
+      "typical_deadline_month": null,
+      "is_recurring": true,
+      "notes": "Projects must demonstrate scalability and potential for global impact."
+    },
+    {
+      "id": "florida-bright-futures-scholarship",
+      "opportunity_title": "Florida Bright Futures Scholarship Program",
+      "provider": "Florida Department of Education",
+      "category": "Education & Youth",
+      "funding_min": 5000,
+      "funding_max": 25000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "FL"
+      ],
+      "eligibility_types": [
+        "individuals"
+      ],
+      "focus_areas": [
+        "scholarships",
+        "higher education"
+      ],
+      "target_population": "Florida high school graduates",
+      "description": "The Florida Bright Futures Scholarship Program provides scholarships based on high school academic achievement. It is designed to help students attend postsecondary institutions in Florida.",
+      "application_url": "https://www.floridastudentfinancialaidsg.org/SAPHome/SAPHome?url=home",
+      "deadline_type": "annual",
+      "typical_deadline_month": 8,
+      "is_recurring": true,
+      "notes": "Students must maintain a certain GPA to retain the scholarship."
+    },
+    {
+      "id": "nea-arts-education-grant",
+      "opportunity_title": "Arts Education Grant",
+      "provider": "National Endowment for the Arts (NEA)",
+      "category": "Education & Youth",
+      "funding_min": 10000,
+      "funding_max": 100000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments",
+        "universities"
+      ],
+      "focus_areas": [
+        "arts education",
+        "youth engagement"
+      ],
+      "target_population": "Students and educators in arts programs",
+      "description": "The Arts Education Grant supports projects that help children and youth acquire knowledge and understanding of the arts. The program funds projects that integrate arts education into the school curriculum.",
+      "application_url": "https://www.arts.gov/grants",
+      "deadline_type": "annual",
+      "typical_deadline_month": 2,
+      "is_recurring": true,
+      "notes": "Matching funds are required for this grant."
+    },
+    {
+      "id": "texas-21st-century-community-learning-centers",
+      "opportunity_title": "21st Century Community Learning Centers",
+      "provider": "Texas Education Agency",
+      "category": "Education & Youth",
+      "funding_min": 50000,
+      "funding_max": 500000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "TX"
+      ],
+      "eligibility_types": [
+        "nonprofits_501c3",
+        "local_governments",
+        "universities"
+      ],
+      "focus_areas": [
+        "after-school programs",
+        "academic enrichment"
+      ],
+      "target_population": "Students in high-need communities",
+      "description": "This program provides funding for academic enrichment opportunities during non-school hours for children, particularly students who attend high-poverty and low-performing schools.",
+      "application_url": "https://tea.texas.gov/finance-and-grants/grants",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 4,
+      "is_recurring": true,
+      "notes": "Programs must operate during non-school hours or periods when school is not in session."
+    },
+    {
+      "id": "microsoft-philanthropies-youthspark",
+      "opportunity_title": "YouthSpark",
+      "provider": "Microsoft Philanthropies",
+      "category": "Education & Youth",
+      "funding_min": 10000,
+      "funding_max": 100000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "technology education",
+        "youth empowerment"
+      ],
+      "target_population": "Youth aged 6-24",
+      "description": "YouthSpark aims to empower young people by providing access to computer science education and digital skills training. The program supports initiatives that help youth succeed in a technology-driven world.",
+      "application_url": "https://www.microsoft.com/en-us/corporate-responsibility/philanthropies",
+      "deadline_type": "rolling",
+      "typical_deadline_month": null,
+      "is_recurring": true,
+      "notes": "Focus on underserved communities and promoting diversity in tech."
+    },
+    {
+      "id": "ohio-education-research-grant",
+      "opportunity_title": "Ohio Education Research Grant",
+      "provider": "Ohio Department of Education",
+      "category": "Education & Youth",
+      "funding_min": 20000,
+      "funding_max": 100000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "OH"
+      ],
+      "eligibility_types": [
+        "universities",
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "educational research",
+        "policy development"
+      ],
+      "target_population": "Researchers and educators in Ohio",
+      "description": "The Ohio Education Research Grant supports research projects that aim to improve educational outcomes in the state. The program encourages innovative approaches to educational challenges.",
+      "application_url": "http://education.ohio.gov/Topics/Research-Evaluation-and-Advanced-Analytics",
+      "deadline_type": "annual",
+      "typical_deadline_month": 6,
+      "is_recurring": true,
+      "notes": "Research findings must be shared with the Ohio Department of Education."
+    },
+    {
+      "id": "texas-capital-fund-infrastructure-development",
+      "opportunity_title": "Texas Capital Fund Infrastructure Development",
+      "provider": "Texas Department of Agriculture",
+      "category": "Community & Economic Development",
+      "funding_min": 50000,
+      "funding_max": 1500000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "TX"
+      ],
+      "eligibility_types": [
+        "local_governments"
+      ],
+      "focus_areas": [
+        "infrastructure",
+        "economic growth"
+      ],
+      "target_population": "Rural communities in Texas",
+      "description": "This program provides financial assistance to rural communities in Texas to improve public infrastructure and encourage economic development.",
+      "application_url": "https://www.texasagriculture.gov/GrantsServices/RuralEconomicDevelopment/TexasCapitalFund.aspx",
+      "deadline_type": "cycle",
+      "typical_deadline_month": 4,
+      "is_recurring": true,
+      "notes": "Projects must create or retain permanent jobs."
+    },
+    {
+      "id": "florida-small-cities-cdbg",
+      "opportunity_title": "Florida Small Cities Community Development Block Grant",
+      "provider": "Florida Department of Economic Opportunity",
+      "category": "Community & Economic Development",
+      "funding_min": 500000,
+      "funding_max": 750000,
+      "geographic_scope": "state",
+      "states_eligible": [
+        "FL"
+      ],
+      "eligibility_types": [
+        "local_governments"
+      ],
+      "focus_areas": [
+        "housing",
+        "public facilities"
+      ],
+      "target_population": "Small cities and rural areas in Florida",
+      "description": "This program provides funding to small cities and rural areas in Florida for community development projects that improve housing, public facilities, and economic opportunities.",
+      "application_url": "https://floridajobs.org/community-planning-and-development",
+      "deadline_type": "annual",
+      "typical_deadline_month": 5,
+      "is_recurring": true,
+      "notes": "Projects must benefit low- and moderate-income persons."
+    },
+    {
+      "id": "macarthur-foundation-100-million-and-change",
+      "opportunity_title": "100&Change",
+      "provider": "MacArthur Foundation",
+      "category": "Community & Economic Development",
+      "funding_min": 100000000,
+      "funding_max": 100000000,
+      "geographic_scope": "national",
+      "states_eligible": [],
+      "eligibility_types": [
+        "nonprofits_501c3"
+      ],
+      "focus_areas": [
+        "large-scale impact",
+        "systemic change"
+      ],
+      "target_population": "Communities needing systemic change solutions",
+      "description": "100&Change is a competition for a $100 million grant to fund a single proposal that promises real and measurable progress in solving a critical problem of our time.",
+      "application_url": "https://www.macfound.org/programs/100change/",
+      "deadline_type": "cycle",
+      "typical_deadline_month": null,
+      "is_recurring": false,
+      "notes": "Highly competitive; requires a detailed proposal and plan for systemic change."
+    }
+  ]
+}
