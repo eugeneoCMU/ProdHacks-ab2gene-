@@ -32,12 +32,7 @@
         "primary contact",
         "contact person",
         "authorized official",
-        "point of contact",
-        "primary person responsible for this application",
-        "person responsible for this application",
-        "responsible contact",
-        "contact full name",
-        "full legal name"
+        "point of contact"
       ],
       autocomplete: ["name"]
     },
@@ -51,22 +46,22 @@
     { key: "password", aliases: ["password", "create password", "confirm password", "new password"], inputTypes: ["password"] },
     { key: "confirm_password", aliases: ["confirm password", "re enter password", "reenter password", "verify password"], inputTypes: ["password"] },
     { key: "username", aliases: ["username", "user name", "login name", "account username"] },
-    { key: "email", aliases: ["email", "e mail", "email address", "e-mail address", "contact email", "organization email", "re enter email address", "reenter email address", "confirm email address"], autocomplete: ["email"] },
-    { key: "phone", aliases: ["phone", "telephone", "phone number", "telephone number", "primary phone number", "organization phone", "contact phone", "daytime phone", "best phone number"], autocomplete: ["tel", "tel-national"] },
-    { key: "mobile_phone", aliases: ["mobile phone", "mobile phone number", "cell phone", "mobile number", "confirm mobile phone number", "cell number"], autocomplete: ["tel", "tel-national"] },
+    { key: "email", aliases: ["email", "e mail", "email address"], autocomplete: ["email"] },
+    { key: "phone", aliases: ["phone", "telephone", "phone number", "telephone number", "primary phone number", "organization phone"], autocomplete: ["tel", "tel-national"] },
+    { key: "mobile_phone", aliases: ["mobile phone", "mobile phone number", "cell phone", "mobile number", "confirm mobile phone number"], autocomplete: ["tel", "tel-national"] },
     { key: "fax", aliases: ["fax", "fax number"] },
-    { key: "job_title", aliases: ["job title", "title", "role", "position", "title / position", "title and position", "position title", "professional title"], autocomplete: ["organization-title"] },
-    { key: "website", aliases: ["website", "web site", "website url", "organization website", "organization url", "web address"], autocomplete: ["url"] },
+    { key: "job_title", aliases: ["job title", "title", "role", "position"], autocomplete: ["organization-title"] },
+    { key: "website", aliases: ["website", "web site", "website url", "organization website"], autocomplete: ["url"] },
     { key: "uei", aliases: ["uei", "unique entity identifier", "unique entity id", "sam uei"] },
     { key: "duns", aliases: ["duns", "duns number", "dun and bradstreet", "duns #"] },
     { key: "ein", aliases: ["ein", "tin", "tax id", "taxpayer identification", "federal tax id", "tax id number", "ein tax id"] },
     { key: "type_of_applicant", aliases: ["type of applicant", "applicant type", "organization type", "entity type"] },
     { key: "year_founded", aliases: ["year founded", "founded year", "organization founded", "year established", "date founded"] },
-    { key: "address_line_1", aliases: ["address line 1", "street address", "mailing address", "address", "address 1", "street 1", "primary organizational address", "organization address", "mailing street"], autocomplete: ["street-address", "address-line1"] },
-    { key: "address_line_2", aliases: ["address line 2", "suite", "unit", "apartment", "apt", "address 2", "suite number", "suite or apt"], autocomplete: ["address-line2"] },
-    { key: "city", aliases: ["city", "town", "city suburb", "city/suburb", "locality"], autocomplete: ["address-level2"] },
-    { key: "state", aliases: ["state", "province", "region", "state or province", "state/province"], autocomplete: ["address-level1"] },
-    { key: "zip", aliases: ["zip", "zip code", "zipcode", "postal code", "postal", "postal zip", "zip/post code", "zip/postal code"], autocomplete: ["postal-code"] },
+    { key: "address_line_1", aliases: ["address line 1", "street address", "mailing address", "address", "address 1", "street 1"] },
+    { key: "address_line_2", aliases: ["address line 2", "suite", "unit", "apartment", "apt", "address 2", "suite number"] },
+    { key: "city", aliases: ["city", "town"], autocomplete: ["address-level2"] },
+    { key: "state", aliases: ["state", "province", "region", "state or province"], autocomplete: ["address-level1"] },
+    { key: "zip", aliases: ["zip", "zip code", "zipcode", "postal code", "postal", "postal zip"], autocomplete: ["postal-code"] },
     { key: "country", aliases: ["country", "nation"], autocomplete: ["country", "country-name"] },
     { key: "county", aliases: ["county", "parish", "borough"] },
     { key: "congressional_district_applicant", aliases: ["congressional district of applicant", "applicant congressional district"] },
@@ -76,7 +71,7 @@
     { key: "funding_opportunity_number", aliases: ["funding opportunity number", "foa number", "opportunity number", "notice of funding opportunity number"] },
     { key: "agency_routing_identifier", aliases: ["agency routing identifier", "agency tracking number"] },
     { key: "federal_identifier", aliases: ["federal identifier", "federal award identifier"] },
-    { key: "project_title", aliases: ["project title", "proposal title", "application title", "program title", "grant title", "project name", "program name", "name of project"] },
+    { key: "project_title", aliases: ["project title", "proposal title", "application title", "program title", "grant title"] },
     {
       key: "project_summary",
       aliases: ["project summary", "project description", "summary", "abstract", "description", "narrative", "proposal summary", "executive summary", "project narrative"]
@@ -161,10 +156,6 @@
 
   function getText(node) {
     return normalizeText(node?.innerText || node?.textContent || "");
-  }
-
-  function getRawText(node) {
-    return (node?.innerText || node?.textContent || "").replace(/\s+/g, " ").trim();
   }
 
   function hasOtherFormControls(node, currentElement) {
@@ -422,45 +413,6 @@
         selectHints.join(" ")
       ]).join(" ")
     };
-  }
-
-  function getRequiredMetadata(element) {
-    if (element.hasAttribute("required")) {
-      return { required: true, source: "required attribute" };
-    }
-
-    if ((element.getAttribute("aria-required") || "").toLowerCase() === "true") {
-      return { required: true, source: "aria-required" };
-    }
-
-    const candidates = [];
-    if (element.id) {
-      document.querySelectorAll(`label[for="${CSS.escape(element.id)}"]`).forEach((label) => {
-        candidates.push(getRawText(label));
-      });
-    }
-
-    const wrappingLabel = element.closest("label");
-    if (wrappingLabel) {
-      candidates.push(getRawText(wrappingLabel));
-    }
-
-    const previousSibling = element.previousElementSibling;
-    if (previousSibling) {
-      candidates.push(getRawText(previousSibling));
-    }
-
-    const container = element.closest("tr, td, th, div, section, fieldset");
-    if (container) {
-      candidates.push(getRawText(container).slice(0, 220));
-    }
-
-    const requiredText = candidates.find((text) => /\*/.test(text) || /\brequired\b/i.test(text));
-    if (requiredText) {
-      return { required: true, source: "label marker" };
-    }
-
-    return { required: false, source: "" };
   }
 
   function includesWholePhrase(haystack, needle) {
@@ -933,7 +885,6 @@
 
       const inference = inferField(element);
       const rect = element.getBoundingClientRect();
-      const requiredMeta = getRequiredMetadata(element);
 
       results.push({
         index,
@@ -946,8 +897,6 @@
         fieldKey: inference.fieldKey,
         confidence: Number(inference.confidence.toFixed(2)),
         confidenceBucket: inference.confidenceBucket,
-        required: requiredMeta.required,
-        requiredSource: requiredMeta.source,
         reasons: inference.reasons,
         descriptor: inference.descriptor,
         path: buildDomPath(element),
@@ -958,12 +907,7 @@
       });
     });
 
-    return dampenDuplicateMatches(results).sort((a, b) => {
-      if (a.required !== b.required) {
-        return a.required ? -1 : 1;
-      }
-      return b.confidence - a.confidence;
-    });
+    return dampenDuplicateMatches(results).sort((a, b) => b.confidence - a.confidence);
   }
 
   function ensureHighlightStyle() {
@@ -1021,39 +965,6 @@
     });
   }
 
-  function setNativeInputValue(element, value) {
-    const prototype = element instanceof HTMLTextAreaElement
-      ? HTMLTextAreaElement.prototype
-      : HTMLInputElement.prototype;
-    const descriptor = Object.getOwnPropertyDescriptor(prototype, "value");
-    const setter = descriptor?.set;
-    if (setter) {
-      setter.call(element, value);
-    } else {
-      element.value = value;
-    }
-  }
-
-  function dispatchFillEvents(element) {
-    element.dispatchEvent(new Event("input", { bubbles: true }));
-    element.dispatchEvent(new Event("change", { bubbles: true }));
-    element.dispatchEvent(new Event("blur", { bubbles: true }));
-  }
-
-  function simulateDigitTyping(element, digits) {
-    setNativeInputValue(element, "");
-    element.dispatchEvent(new Event("input", { bubbles: true }));
-
-    for (const digit of digits) {
-      const nextValue = `${element.value || ""}${digit}`;
-      setNativeInputValue(element, nextValue);
-      element.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-
-    element.dispatchEvent(new Event("change", { bubbles: true }));
-    element.dispatchEvent(new Event("blur", { bubbles: true }));
-  }
-
   function fillElementValue(element, value) {
     const normalizedValue = String(value ?? "").trim();
     const tagName = element.tagName.toLowerCase();
@@ -1077,26 +988,12 @@
     } else if (inputType === "checkbox" || inputType === "radio") {
       return false;
     } else {
-      element.focus();
-      setNativeInputValue(element, normalizedValue);
-      if (
-        (inputType === "tel" || inputType === "text") &&
-        normalizeText(element.value) !== normalizeText(normalizedValue)
-      ) {
-        setNativeInputValue(element, normalizedValue.replace(/\D/g, ""));
-      }
-      if (
-        inputType === "tel" &&
-        normalizeText(element.value) !== normalizeText(normalizedValue) &&
-        normalizedValue.replace(/\D/g, "").length >= 10
-      ) {
-        simulateDigitTyping(element, normalizedValue.replace(/\D/g, ""));
-      }
+      element.value = normalizedValue;
     }
 
-    dispatchFillEvents(element);
-    return normalizeText(element.value) === normalizeText(normalizedValue) ||
-      normalizeText(element.value) === normalizeText(normalizedValue.replace(/\D/g, ""));
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+    element.dispatchEvent(new Event("change", { bubbles: true }));
+    return true;
   }
 
   function autofillFields(fills) {

@@ -3,42 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GrantFlow Extension</title>
+    <title>Grant Helper</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
     <main class="popup">
-      <section class="hero-card">
-        <p class="eyebrow">GrantFlow Extension</p>
-        <h1>Grant Application Assistant</h1>
-        <p class="subtitle">Sync your uploaded documents, then autofill only the fields we can support confidently. Unknowns stay blank.</p>
-        <div class="hero-actions">
-          <button id="autofill-button" type="button" disabled>Autofill Page</button>
-          <div class="hero-secondary-actions">
-            <button id="connect-platform-button" type="button">Connect &amp; Sync</button>
-            <button id="open-platform-button" type="button" class="secondary-button">Open GrantFlow</button>
-          </div>
-        </div>
+      <p class="eyebrow">Task 1 - Chrome Extension: Grant Autofill</p>
+      <h1>Field Detection & Fuzzy Matching</h1>
+      <p class="subtitle">Current milestone: scan any grant page and identify likely autofill targets before we start filling.</p>
+      <section class="task-card">
+        <p class="task-label">Aligned build steps</p>
+        <ul class="task-list">
+          <li>Scan all visible <code>input</code>, <code>textarea</code>, and <code>select</code> elements</li>
+          <li>Extract label, id, name, placeholder, and ARIA metadata</li>
+          <li>Map fields to canonical grant-profile schema keys</li>
+          <li>Flag low-confidence or unknown fields for manual mapping fallback</li>
+        </ul>
       </section>
-
-      <section class="panel-card">
-        <p class="section-label">Synced Files</p>
+      <section class="task-card">
+        <p class="task-label">Platform Connection</p>
+        <label class="input-label" for="platform-url">Platform URL</label>
+        <input id="platform-url" class="config-input" type="text" value="http://localhost:5173" />
+        <label class="input-label" for="backend-url">Backend URL</label>
+        <input id="backend-url" class="config-input" type="text" value="http://localhost:3001" />
+        <div class="button-row">
+          <button id="open-platform-button" type="button" class="secondary-button">Open platform</button>
+          <button id="connect-platform-button" type="button" class="secondary-button">Login / connect</button>
+        </div>
         <div id="profile-summary" class="profile-summary-card">
-          <p class="field-meta">No synced documents yet. Upload files in GrantFlow, then click sync.</p>
+          <p class="field-meta">Not connected yet. Open the platform, upload profile docs there, then connect from the extension.</p>
         </div>
       </section>
-
-      <div id="status-card" class="status-card status-card--idle">
-        <div class="status-indicator" aria-hidden="true">
-          <span class="status-dot"></span>
-          <span class="status-dot"></span>
-          <span class="status-dot"></span>
-        </div>
-        <p id="status" class="status">Ready.</p>
+      <div class="button-stack">
+        <button id="scan-button" type="button">Scan current page</button>
+        <button id="autofill-button" type="button" class="secondary-button">Autofill with backend</button>
       </div>
-
+      <p id="status" class="status">Ready.</p>
       <div id="results" class="results"></div>
     </main>
     <script src="popup.js"></script>
   </body>
-</html>
+  </html>

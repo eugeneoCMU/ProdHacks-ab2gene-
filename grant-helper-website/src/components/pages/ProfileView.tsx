@@ -1,25 +1,9 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { extractDocuments } from '../../api/extractDocuments';
-import { supabase, uploadToSupabase, getUserDocuments, deleteDocument } from '../../config/supabase';
+import { lookupEIN } from '../../api/einLookup';
+import { deleteDocument, supabase, uploadToSupabase, saveOrganizationProfileText, type UserDocumentRow } from '../../config/supabase';
 import './EmptyState.css';
 import './ProfileView.css';
-
-const PROFILE_STORAGE_KEY = 'grantflow.organizationProfile';
-const PROFILE_SUMMARY_STORAGE_KEY = 'grantflow.profileSummary';
-const SAVED_DOCUMENTS_STORAGE_KEY = 'grantflow.savedDocuments';
-
-function buildProfileSummary(profile: string) {
-  const trimmed = profile.trim();
-  const preview = trimmed.slice(0, 320);
-  const sentenceCount = trimmed ? trimmed.split(/[.!?]+/).filter(Boolean).length : 0;
-
-  return {
-    preview,
-    characters: trimmed.length,
-    sentences: sentenceCount,
-    updatedAt: new Date().toISOString(),
-  };
-}
 
 type UploadedFile = {
   id: string;
@@ -53,33 +37,22 @@ const SUGGESTED_DOCS = [
 ];
 
 interface ProfileViewProps {
-  organizationProfile: string;
-  onOrganizationProfileChange: (value: string) => void;
+  userDocuments?: UserDocumentRow[];
 }
 
-type SavedDocument = {
-  id: string;
-  filename: string;
-  mime_type?: string | null;
-  file_size_bytes?: number | null;
-  created_at?: string | null;
-  status?: string | null;
-};
-
-export default function ProfileView({onOrganizationProfileChange,
-}: ProfileViewProps) {
+export default function ProfileView({userDocuments = []}: ProfileViewProps) {
+  const [savedDocuments, setSavedDocuments] = useState<UserDocumentRow[]>(userDocuments);
   const [showUpload, setShowUpload] = useState(false);
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [dragging, setDragging] = useState(false);
   const [extracting, setExtracting] = useState(false);
   const [extractError, setExtractError] = useState<string | null>(null);
-  const [uploadWarning, setUploadWarning] = useState<string | null>(null);
-  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
-  const [savedDocuments, setSavedDocuments] = useState<SavedDocument[]>([]);
-  const [savedDocsLoading, setSavedDocsLoading] = useState(false);
-  const [savedDocsError, setSavedDocsError] = useState<string | null>(null);
-  const [deletingDocumentId, setDeletingDocumentId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [showEINModal, setShowEINModal] = useState(false);
+  const [einValue, setEINValue] = useState('');
+  const [einLoading, setEINLoading] = useState(false);
+  const [einError, setEINError] = useState<string | null>(null);
 
   const addFiles = useCallback((incoming: FileList | File[]) => {
     const valid = Array.from(incoming).filter((f) =>
@@ -109,188 +82,42 @@ export default function ProfileView({onOrganizationProfileChange,
     setFiles((prev) => prev.filter((f) => f.id !== id));
   };
 
+  const handleDelete = async (id: string) => {
+    const confirmed = window.confirm('Are you sure you want to delete this document?');
+    if (!confirmed) return;
+
+    setSavedDocuments(savedDocuments.filter((doc) => doc.id !== id));
+    await deleteDocument(id);
+  };
+
   const formatSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  const formatSavedDate = (value?: string | null) => {
-    if (!value) return 'Recently added';
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) return value;
-    return parsed.toLocaleDateString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
+  const formatStoredDocSize = (bytes: number | null) => {
+    if (bytes == null) return '';
+    return formatSize(bytes);
   };
-
-  const loadSavedDocuments = useCallback(async () => {
-    const supabaseConfigured = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
-    if (!supabaseConfigured) {
-      setSavedDocuments([]);
-      setSavedDocsError(null);
-      return;
-    }
-
-    setSavedDocsLoading(true);
-    setSavedDocsError(null);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
-      if (!userId) {
-        setSavedDocuments([]);
-        return;
-      }
-
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem('grantflow.userId', userId);
-      }
-
-      const docs = await getUserDocuments(userId);
-      setSavedDocuments((docs || []) as SavedDocument[]);
-    } catch (error) {
-      console.warn('Could not load saved documents', error);
-      setSavedDocsError('Could not load saved documents right now.');
-    } finally {
-      setSavedDocsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadSavedDocuments();
-  }, [loadSavedDocuments]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    window.localStorage.setItem(
-      SAVED_DOCUMENTS_STORAGE_KEY,
-      JSON.stringify(savedDocuments.map((doc) => doc.filename).filter(Boolean))
-    );
-  }, [savedDocuments]);
-
-  const handleDeleteSavedDocument = useCallback(async (documentId: string, filename: string) => {
-    const confirmed = window.confirm(`Remove "${filename}" from this account?`);
-    if (!confirmed) {
-      return;
-    }
-
-    setDeletingDocumentId(documentId);
-    setSavedDocsError(null);
-    setSaveSuccess(null);
-    try {
-      await deleteDocument(documentId);
-      setSavedDocuments((prev) => prev.filter((doc) => doc.id !== documentId));
-      setSaveSuccess(`Removed ${filename} from this account.`);
-    } catch (error) {
-      console.warn('Could not delete saved document', error);
-      setSavedDocsError(
-        error instanceof Error ? error.message : 'Could not remove this document right now.'
-      );
-    } finally {
-      setDeletingDocumentId(null);
-    }
-  }, []);
-
-  const savedDocumentsSection = (
-    <div className="saved-documents-card">
-      <div className="saved-documents-header">
-        <div>
-          <h3 className="saved-documents-title">Saved documents</h3>
-          <p className="saved-documents-subtitle">
-            Files already stored for this organization account.
-          </p>
-        </div>
-        <button
-          type="button"
-          className="saved-documents-refresh"
-          onClick={() => loadSavedDocuments()}
-          disabled={savedDocsLoading}
-        >
-          {savedDocsLoading ? 'Refreshing...' : 'Refresh'}
-        </button>
-      </div>
-
-      {savedDocsError && (
-        <p className="saved-documents-error" role="alert">
-          {savedDocsError}
-        </p>
-      )}
-
-      {!savedDocsError && savedDocsLoading && (
-        <p className="saved-documents-empty">Loading saved documents...</p>
-      )}
-
-      {!savedDocsLoading && !savedDocsError && savedDocuments.length === 0 && (
-        <p className="saved-documents-empty">
-          No saved documents yet. Upload a few files to build the organization profile.
-        </p>
-      )}
-
-      {savedDocuments.length > 0 && (
-        <ul className="saved-documents-list">
-          {savedDocuments.map((doc) => (
-            <li key={doc.id} className="saved-document-item">
-              <div className="saved-document-main">
-                <span className="saved-document-name">{doc.filename}</span>
-                <span className="saved-document-meta">
-                  {[formatSavedDate(doc.created_at), doc.file_size_bytes ? formatSize(doc.file_size_bytes) : '']
-                    .filter(Boolean)
-                    .join(' • ')}
-                </span>
-              </div>
-              <div className="saved-document-actions">
-                <span className="saved-document-status">
-                  {(doc.status || 'saved').replace(/_/g, ' ')}
-                </span>
-                <button
-                  type="button"
-                  className="saved-document-delete"
-                  onClick={() => handleDeleteSavedDocument(doc.id, doc.filename)}
-                  disabled={deletingDocumentId === doc.id}
-                >
-                  {deletingDocumentId === doc.id ? 'Removing...' : 'Remove'}
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
 
   if (!showUpload) {
     return (
       <div className="empty-state">
-        {saveSuccess && (
-          <div className="upload-success" role="status">
-            {saveSuccess}
-          </div>
-        )}
-        <div className="profile-landing-grid">
-          <div className="profile-landing-main">
-            <div className="empty-state-icon">🏢</div>
-            <h2 className="empty-state-title">Create Your Organization Profile</h2>
-            <p className="empty-state-description">
-              Tell us about your nonprofit so we can find the perfect grants for you.
-              Upload your legal documents and our AI will extract the key details to
-              match you with relevant opportunities and help draft compelling grant applications.
-            </p>
-            <div className="empty-state-actions">
-              <button className="btn-primary" onClick={() => setShowUpload(true)}>
-                Upload documents
-              </button>
-              <button className="btn-secondary">Import from EIN</button>
-            </div>
-          </div>
-
-          <div className="profile-landing-side">
-            {savedDocumentsSection}
-          </div>
+        <div className="empty-state-icon">🏢</div>
+        <h2 className="empty-state-title">Create Your Organization Profile</h2>
+        <p className="empty-state-description">
+          Tell us about your nonprofit so we can find the perfect grants for you.
+          Upload your legal documents and our AI will extract the key details to
+          match you with relevant opportunities and help draft compelling grant applications.
+        </p>
+        <div className="empty-state-actions">
+          <button className="btn-primary" onClick={() => setShowUpload(true)}>
+            Get Started
+          </button>
+          <button className="btn-secondary" onClick={() => { setShowEINModal(true); setEINError(null); setEINValue(''); }}>
+            Import from EIN
+          </button>
         </div>
 
         <div className="feature-grid">
@@ -316,6 +143,59 @@ export default function ProfileView({onOrganizationProfileChange,
             </p>
           </div>
         </div>
+
+        {showEINModal && (
+          <div className="ein-modal-overlay" onClick={() => setShowEINModal(false)}>
+            <div className="ein-modal" onClick={(e) => e.stopPropagation()}>
+              <h3 className="ein-modal-title">Import from EIN</h3>
+              <p className="ein-modal-subtitle">
+                Enter your organization's Employer Identification Number (EIN) to automatically import your public IRS 990 filings and organization profile.
+              </p>
+              <input
+                className="ein-input"
+                type="text"
+                placeholder="XX-XXXXXXX"
+                value={einValue}
+                maxLength={10}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, '');
+                  setEINValue(raw.length > 2 ? `${raw.slice(0, 2)}-${raw.slice(2)}` : raw);
+                  setEINError(null);
+                }}
+              />
+              {einError && <p className="ein-error">{einError}</p>}
+              <div className="ein-modal-actions">
+                <button className="btn-secondary" onClick={() => setShowEINModal(false)} disabled={einLoading}>
+                  Cancel
+                </button>
+                <button
+                  className="btn-primary"
+                  disabled={einLoading || einValue.replace(/\D/g, '').length !== 9}
+                  onClick={async () => {
+                    setEINLoading(true);
+                    setEINError(null);
+                    try {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      if (!session?.user) {
+                        setEINError('Please sign in before importing via EIN so your data can be saved.');
+                        return;
+                      }
+                      const { text } = await lookupEIN(einValue);
+                      await saveOrganizationProfileText(session.user.id, text);
+                      setShowEINModal(false);
+                    } catch (err) {
+                      setEINError(err instanceof Error ? err.message : 'Lookup failed. Check the EIN and try again.');
+                    } finally {
+                      setEINLoading(false);
+                    }
+                  }}
+                >
+                  {einLoading ? 'Importing…' : 'Import'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -381,6 +261,31 @@ export default function ProfileView({onOrganizationProfileChange,
       </div>
 
       {/* Uploaded files */}
+      {savedDocuments.length > 0 && (
+        <div className="file-list-section">
+          <h3 className="file-list-title">Saved Documents ({savedDocuments.length})</h3>
+          <ul className="file-list">
+            {savedDocuments.map((doc) => (
+              <li key={doc.id} className="file-item">
+                <span className="file-type-badge">
+                  {FILE_TYPE_LABELS[doc.mime_type ?? ''] ?? 'FILE'}
+                </span>
+                <div className="file-info">
+                  <span className="file-name">{doc.filename}</span>
+                  <span className="file-size">{formatStoredDocSize(doc.file_size_bytes)}</span>
+                </div>
+                <button
+                  className="file-remove"
+                  onClick={() => handleDelete(doc.id)}
+                  title="Remove file">
+                  ✕
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {files.length > 0 && (
         <div className="file-list-section">
           <h3 className="file-list-title">Uploaded Files ({files.length})</h3>
@@ -413,76 +318,71 @@ export default function ProfileView({onOrganizationProfileChange,
               disabled={extracting}
               onClick={async () => {
                 setExtractError(null);
-                setUploadWarning(null);
-                setSaveSuccess(null);
                 setExtracting(true);
                 try {
-                  const warnings: string[] = [];
                   // Ensure we have a user for Supabase (anonymous if needed) so uploads can be saved
-                  let { data: { session } } = await supabase.auth.getSession();
+                  const { data: { session } } = await supabase.auth.getSession();
                   const supabaseConfigured = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
                   if (!session?.user && supabaseConfigured) {
-                    const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously();
-                    if (anonErr) {
-                      warnings.push(
-                        `Documents were analyzed locally, but cloud saving is not fully configured yet: ${anonErr.message}.`
-                      );
-                      // Continue to extraction below so profile still works
-                    }
-                    if (anon?.session) session = anon.session;
+                    // const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously();
+                    // if (anonErr) {
+                    //   setExtractError(
+                    //     `Documents could not be saved to Supabase: ${anonErr.message}. Enable Anonymous sign-in in Supabase Dashboard → Authentication → Providers.`
+                    //   );
+                    //   // Continue to extraction below so profile still works
+                    // }
+                    // if (anon?.session) session = anon.session;
+                    setExtractError('Please sign in to save your documents.');
+                    return;
                   }
                   const userId = session?.user?.id;
-                  if (typeof window !== 'undefined') {
-                    if (userId) {
-                      window.localStorage.setItem('grantflow.userId', userId);
-                    } else {
-                      window.localStorage.removeItem('grantflow.userId');
-                    }
-                  }
 
-                  // Upload each file to Supabase Storage + documents table when user is available
+                  const uploadResults: { id: string; file: File }[] = [];
                   if (userId) {
                     for (const { file } of files) {
                       try {
-                        await uploadToSupabase(file, userId);
+                        const { id } = await uploadToSupabase(file, userId);
+                        uploadResults.push({ id, file });
                       } catch (uploadErr) {
                         console.warn('Supabase upload failed for', file.name, uploadErr);
-                        warnings.push(
-                          uploadErr instanceof Error
-                            ? `${file.name} could not be saved to cloud storage, but the document was still analyzed.`
-                            : 'One or more files could not be saved to your account, but extraction will continue.'
+                        setExtractError(
+                          uploadErr instanceof Error ? uploadErr.message : 'One or more files could not be saved to your account. Extraction will continue.'
                         );
                       }
                     }
                   }
 
-                  const { text } = await extractDocuments(files.map((f) => f.file));
-                  const extractedText = text.trim();
-                  if (extractedText && typeof window !== 'undefined') {
-                    const existingProfile = window.localStorage.getItem(PROFILE_STORAGE_KEY) || '';
-                    const mergedProfile = [existingProfile.trim(), extractedText]
-                      .filter(Boolean)
-                      .filter((value, index, all) => all.indexOf(value) === index)
-                      .join('\n\n');
+                  const newSavedRows: UserDocumentRow[] = files.map(({ file, id: localId }) => {
+                    const rowId = uploadResults.find((r) => r.file === file)?.id ?? localId;
+                    return {
+                      id: rowId,
+                      filename: file.name,
+                      mime_type: file.type,
+                      file_size_bytes: file.size,
+                      created_at: new Date(file.lastModified).toISOString(),
+                      status: 'uploaded',
+                    };
+                  });
 
-                    window.localStorage.setItem(PROFILE_STORAGE_KEY, mergedProfile);
-                    window.localStorage.setItem(
-                      PROFILE_SUMMARY_STORAGE_KEY,
-                      JSON.stringify(buildProfileSummary(mergedProfile))
-                    );
-                    onOrganizationProfileChange(mergedProfile);
-                  } else {
-                    onOrganizationProfileChange(text);
-                  }
+                  setSavedDocuments([...savedDocuments, ...newSavedRows]);
 
-                  await loadSavedDocuments();
-                  setSaveSuccess(`Saved your files and updated your organization profile from ${files.length} document${files.length === 1 ? '' : 's'}.`);
-                  if (warnings.length) {
-                    setUploadWarning(warnings[0]);
-                  }
-                  setShowUpload(false);
+                  const accessToken = session?.access_token;
+                  const chunksReady =
+                    Boolean(accessToken) &&
+                    uploadResults.length === files.length &&
+                    uploadResults.length > 0;
+                  await extractDocuments(
+                    files.map((f) => f.file),
+                    chunksReady && accessToken
+                      ? {
+                          accessToken,
+                          documentIds: uploadResults.map((r) => r.id),
+                        }
+                      : undefined
+                  );
+                  setFiles([]);
                 } catch (err) {
-                  console.warn('Document extraction failed', err);
+                  console.warn('Supabase upload failed for', err);
                   setExtractError(err instanceof Error ? err.message : 'Failed to extract text from documents');
                 } finally {
                   setExtracting(false);
@@ -496,19 +396,12 @@ export default function ProfileView({onOrganizationProfileChange,
                 {extractError}
               </p>
             )}
-            {uploadWarning && !extractError && (
-              <p className="upload-warning" role="status">
-                {uploadWarning}
-              </p>
-            )}
             <p className="upload-hint">
               We'll extract text from your documents to personalize grant search and chat.
             </p>
           </div>
         </div>
       )}
-
-      {savedDocumentsSection}
     </div>
   );
 }
