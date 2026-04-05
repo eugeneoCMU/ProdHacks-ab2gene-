@@ -176,8 +176,11 @@ export async function ensureOrganizationProfileRow(userId: string): Promise<void
 export async function saveOrganizationProfileText(userId: string, text: string): Promise<void> {
   const { error } = await supabase
     .from('organization_profiles')
-    .update({ organization_profile: text })
-    .eq('user_id', userId);
+    .upsert({
+      user_id: userId,
+      organization_name: 'My organization',
+      organization_profile: text,
+    }, { onConflict: 'user_id' });
 
   if (error) throw error;
 }

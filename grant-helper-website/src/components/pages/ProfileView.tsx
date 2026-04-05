@@ -332,7 +332,11 @@ export default function ProfileView({onOrganizationProfileChange,
                           }
                           const { text } = await lookupEIN(einValue);
                           onOrganizationProfileChange(text);
-                          await saveOrganizationProfileText(session.user.id, text);
+                          try {
+                            await saveOrganizationProfileText(session.user.id, text);
+                          } catch (saveErr) {
+                            console.warn('Failed to save profile to Supabase:', saveErr);
+                          }
                           setShowEINModal(false);
                         } catch (err) {
                           setEINError(err instanceof Error ? err.message : 'Lookup failed. Check the EIN and try again.');
