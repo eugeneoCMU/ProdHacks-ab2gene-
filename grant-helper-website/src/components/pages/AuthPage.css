@@ -176,3 +176,26 @@
   margin-top: 0.25rem;
   width: 100%;
 }
+
+.auth-forgot-link {
+  background: none;
+  border: none;
+  color: #6366f1;
+  cursor: pointer;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+}
+
+.auth-forgot-link:hover {
+  text-decoration: underline;
+}
+
+.auth-forgot-description {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+  line-height: 1.45;
+}
