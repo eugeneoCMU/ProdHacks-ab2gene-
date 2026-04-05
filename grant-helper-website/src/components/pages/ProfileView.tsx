@@ -330,8 +330,23 @@ export default function ProfileView({onOrganizationProfileChange,
                             setEINError('Please sign in before importing via EIN so your data can be saved.');
                             return;
                           }
-                          const { text } = await lookupEIN(einValue);
+                          const { orgName, text } = await lookupEIN(einValue);
                           onOrganizationProfileChange(text);
+
+                          // Save EIN data as a document so it appears in saved documents
+                          const cleanEIN = einValue.replace(/\D/g, '');
+                          const filename = `EIN-${cleanEIN}${orgName ? `-${orgName}` : ''}.txt`;
+                          const einBlob = new File([text], filename, { type: 'text/plain' });
+                          try {
+                            const { id } = await uploadToSupabase(einBlob, session.user.id);
+                            setSavedDocuments((prev) => [
+                              { id, filename, mime_type: 'text/plain', file_size_bytes: einBlob.size, created_at: new Date().toISOString(), status: 'uploaded' },
+                              ...prev,
+                            ]);
+                          } catch (uploadErr) {
+                            console.warn('Failed to save EIN data to Supabase:', uploadErr);
+                          }
+
                           try {
                             await saveOrganizationProfileText(session.user.id, text);
                           } catch (saveErr) {
