@@ -1032,7 +1032,8 @@ async function extractTextFromPdf(buffer: Buffer): Promise<string> {
 
   const data = Uint8Array.from(buffer);
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
-  const loadingTask = pdfjs.getDocument({ data });
+  pdfjs.GlobalWorkerOptions.workerSrc = '';
+  const loadingTask = pdfjs.getDocument({ data, useWorkerFetch: false, isEvalSupported: false, useSystemFonts: true });
   const doc = await loadingTask.promise;
   const numPages = doc.numPages;
   const parts: string[] = [];
