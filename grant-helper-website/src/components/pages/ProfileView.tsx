@@ -333,6 +333,10 @@ export default function ProfileView({onOrganizationProfileChange,
                           const { orgName, text } = await lookupEIN(einValue);
                           onOrganizationProfileChange(text);
 
+                          // Persist to localStorage so the Chrome extension can read it
+                          window.localStorage.setItem(PROFILE_STORAGE_KEY, text);
+                          window.localStorage.setItem(PROFILE_SUMMARY_STORAGE_KEY, JSON.stringify(buildProfileSummary(text)));
+
                           // Save EIN data as a document so it appears in saved documents
                           const cleanEIN = einValue.replace(/\D/g, '');
                           const filename = `EIN-${cleanEIN}${orgName ? `-${orgName}` : ''}.txt`;
