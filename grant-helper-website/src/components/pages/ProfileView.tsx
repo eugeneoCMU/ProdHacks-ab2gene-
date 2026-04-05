@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { extractDocuments } from '../../api/extractDocuments';
 import { lookupEIN } from '../../api/einLookup';
-import { supabase, uploadToSupabase, getUserDocuments, deleteDocument, saveOrganizationProfileText } from '../../config/supabase';
+import { supabase, uploadToSupabase, getUserDocuments, deleteDocument, saveOrganizationProfileText, fetchOrganizationProfile } from '../../config/supabase';
 import './EmptyState.css';
 import './ProfileView.css';
 
@@ -155,13 +155,27 @@ export default function ProfileView({onOrganizationProfileChange,
 
       const docs = await getUserDocuments(userId);
       setSavedDocuments((docs || []) as SavedDocument[]);
+
+      // Hydrate localStorage from Supabase so the Chrome extension can sync
+      if (typeof window !== 'undefined' && !window.localStorage.getItem(PROFILE_STORAGE_KEY)) {
+        try {
+          const orgProfile = await fetchOrganizationProfile(userId);
+          if (orgProfile?.organization_profile) {
+            window.localStorage.setItem(PROFILE_STORAGE_KEY, orgProfile.organization_profile);
+            window.localStorage.setItem(PROFILE_SUMMARY_STORAGE_KEY, JSON.stringify(buildProfileSummary(orgProfile.organization_profile)));
+            onOrganizationProfileChange(orgProfile.organization_profile);
+          }
+        } catch (profileErr) {
+          console.warn('Could not load organization profile from Supabase:', profileErr);
+        }
+      }
     } catch (error) {
       console.warn('Could not load saved documents', error);
       setSavedDocsError('Could not load saved documents right now.');
     } finally {
       setSavedDocsLoading(false);
     }
-  }, []);
+  }, [onOrganizationProfileChange]);
 
   useEffect(() => {
     loadSavedDocuments();

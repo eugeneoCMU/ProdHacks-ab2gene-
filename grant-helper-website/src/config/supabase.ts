@@ -141,18 +141,18 @@ export type OrganizationProfileRow = {
   organization_profile: string;
 };
 
-// export async function fetchOrganizationProfile(
-//   userId: string
-// ): Promise<OrganizationProfileRow | null> {
-//   const { data, error } = await supabase
-//     .from('organization_profiles')
-//     .select('organization_name, organization_profile')
-//     .eq('user_id', userId)
-//     .maybeSingle();
+export async function fetchOrganizationProfile(
+  userId: string
+): Promise<OrganizationProfileRow | null> {
+  const { data, error } = await supabase
+    .from('organization_profiles')
+    .select('organization_name, organization_profile')
+    .eq('user_id', userId)
+    .maybeSingle();
 
-//   if (error) throw error;
-//   return data;
-// }
+  if (error) throw error;
+  return data;
+}
 
 /** Ensures a row exists (e.g. if signup predates the org-profile migration). */
 export async function ensureOrganizationProfileRow(userId: string): Promise<void> {
