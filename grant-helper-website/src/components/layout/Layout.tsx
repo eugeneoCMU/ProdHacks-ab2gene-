@@ -12,9 +12,9 @@ interface LayoutProps {
 export default function Layout({ children, activeView, onNavigate }: LayoutProps) {
   return (
     <div className="app-layout">
-      <Sidebar activeView={activeView} onNavigate={onNavigate} />
+      <TopNav currentView={activeView} />
       <div className="main-container">
-        <TopNav currentView={activeView} />
+        <Sidebar activeView={activeView} onNavigate={onNavigate} />
         <main className="content-area">
           {children}
         </main>

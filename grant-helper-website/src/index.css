@@ -1,10 +1,25 @@
 /* Global Styles */
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: "Avenir Next", "Segoe UI", "Inter", sans-serif;
+  --font-display: "Georgia", "Times New Roman", serif;
   line-height: 1.5;
   font-weight: 400;
+  color-scheme: light;
+  --ink-950: #0f172a;
+  --ink-800: #1e293b;
+  --ink-700: #334155;
+  --ink-500: #64748b;
+  --paper: #f3f2ee;
+  --panel: #fcfbf8;
+  --panel-strong: #ffffff;
+  --line: #ddd9cf;
+  --line-soft: #e8e3d8;
+  --brand-700: #3f3786;
+  --brand-600: #5849b8;
+  --brand-500: #786fca;
+  --brand-tint: #efedf8;
+  --success-tint: #ecfdf3;
+  --danger-tint: #fff2f2;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -21,19 +36,27 @@ body {
   padding: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f9fafb;
-  color: #1f2937;
+  background:
+    radial-gradient(circle at top left, rgba(120, 111, 202, 0.06), transparent 24%),
+    linear-gradient(180deg, #f7f4ee 0%, #efebe3 100%);
+  color: var(--ink-950);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
 }
 
 a {
   font-weight: 500;
-  color: #6366f1;
+  color: var(--brand-600);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: #4f46e5;
+  color: var(--brand-700);
 }
 
 button {
@@ -43,7 +66,7 @@ button {
 }
 
 button:focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid var(--brand-600);
   outline-offset: 2px;
 }
 
@@ -64,23 +87,4 @@ button:focus-visible {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #111827;
-    color: #f9fafb;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #1f2937;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #4b5563;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #6b7280;
-  }
 }

@@ -159,35 +159,3 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
-
-@media (prefers-color-scheme: dark) {
-  .grant-chat {
-    background: #1f2937;
-    border-color: #4b5563;
-  }
-
-  .grant-chat-msg--model .grant-chat-msg-content {
-    background: #374151;
-    color: #f3f4f6;
-  }
-
-  .grant-chat-input-row {
-    border-color: #4b5563;
-    background: #111827;
-  }
-
-  .grant-chat-input {
-    background: #1f2937;
-    border-color: #4b5563;
-    color: #f9fafb;
-  }
-
-  .grant-chat-welcome {
-    color: #9ca3af;
-  }
-
-  .grant-chat-error {
-    background: #450a0a;
-    color: #fca5a5;
-  }
-}

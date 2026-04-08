@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../../config/supabase';
-import { isSupabaseConfigured } from '../../hooks/useSupabaseAuth';
+import { isSupabaseConfigured, supabase } from '../../config/supabase';
 import './TopNav.css';
 
 interface TopNavProps {
@@ -14,62 +13,113 @@ const viewTitles: Record<string, string> = {
 };
 
 export default function TopNav({ currentView }: TopNavProps) {
-  const [userOrg, setUserOrg] = useState<string>(() =>
-    isSupabaseConfigured() ? '' : 'Demo'
-  );
+  const [sessionLabel, setSessionLabel] = useState('Not connected');
+  const [sessionReady, setSessionReady] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!isSupabaseConfigured()) return;
-
-    async function refreshLabel() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      const meta = user?.user_metadata as { full_name?: string; organization_name?: string } | undefined;
-      const label =
-        meta?.organization_name ||
-        meta?.full_name ||
-        user?.email ||
-        'Account';
-      setUserOrg(label);
+    if (!isSupabaseConfigured || !supabase) {
+      setSessionLabel('Local mode');
+      setSessionReady(false);
+      return;
     }
 
-    refreshLabel();
+    const client = supabase;
+    let mounted = true;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      refreshLabel();
+    const syncSession = async () => {
+      try {
+        const { data: { session } } = await client.auth.getSession();
+        if (!mounted) return;
+        const userId = session?.user?.id || '';
+        if (userId) {
+          setSessionLabel(`Connected · ${userId.slice(0, 6)}`);
+          setSessionReady(true);
+        } else {
+          setSessionLabel('Not connected');
+          setSessionReady(false);
+        }
+      } catch {
+        if (!mounted) return;
+        setSessionLabel('Auth unavailable');
+        setSessionReady(false);
+      }
+    };
+
+    syncSession();
+
+    const { data: subscription } = client.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      const userId = session?.user?.id || '';
+      if (userId) {
+        setSessionLabel(`Connected · ${userId.slice(0, 6)}`);
+        setSessionReady(true);
+      } else {
+        setSessionLabel('Not connected');
+        setSessionReady(false);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.subscription.unsubscribe();
+    };
   }, []);
 
-  const handleSignOut = async () => {
-    if (!isSupabaseConfigured()) return;
-    await supabase.auth.signOut();
+  const handleConnect = async () => {
+    if (!isSupabaseConfigured || !supabase) {
+      setSessionLabel('Supabase not configured');
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const { error } = await supabase.auth.signInAnonymously();
+      if (error) {
+        setSessionLabel('Connection failed');
+        return;
+      }
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id || '';
+      if (userId) {
+        localStorage.setItem('grantflow.userId', userId);
+        setSessionLabel(`Connected · ${userId.slice(0, 6)}`);
+        setSessionReady(true);
+      }
+    } catch {
+      setSessionLabel('Connection failed');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <header className="topnav">
       <div className="topnav-content">
-        <h2 className="topnav-title">{viewTitles[currentView] || 'GrantFlow'}</h2>
+        <div className="topnav-brand">
+          <p className="topnav-eyebrow">Grant workflow system</p>
+          <h2 className="topnav-title">GrantFlow</h2>
+        </div>
 
         <div className="topnav-actions">
-          <button className="icon-button" title="Notifications">
-            🔔
-          </button>
-          <button className="icon-button" title="Help">
-            ❓
-          </button>
-          <div className="user-profile">
-            <span className="user-name">{userOrg}</span>
-            {isSupabaseConfigured() && (
-              <button type="button" className="topnav-sign-out" onClick={handleSignOut}>
-                Sign out
+          <div className={`auth-status ${sessionReady ? 'auth-status--connected' : ''}`}>
+            <div className="auth-status-copy">
+              <span className="auth-status-label">{sessionReady ? 'Account' : 'Sign in to sync documents'}</span>
+              <span className="auth-status-value">{sessionLabel}</span>
+            </div>
+            {!sessionReady && (
+              <button
+                type="button"
+                className="auth-status-button"
+                onClick={handleConnect}
+                disabled={busy}
+                aria-label="Connect your account"
+              >
+                {busy ? 'Connecting...' : 'Sign in / Connect'}
               </button>
             )}
           </div>
+          <div className="topnav-meta">{viewTitles[currentView] || 'Workspace'}</div>
         </div>
       </div>
     </header>
