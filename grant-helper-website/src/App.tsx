@@ -34,7 +34,7 @@ function App() {
   const [activeView, setActiveView] = useState('profile');
   const [organizationProfile, setOrganizationProfile] = useState('');
   const [profileReady, setProfileReady] = useState(() => !supabaseConfigured);
-  const [_userDocuments, setUserDocuments] = useState<UserDocumentRow[]>([]);
+  const [userDocuments, setUserDocuments] = useState<UserDocumentRow[]>([]);
 
   // useEffect(() => {
   //   if (typeof window === 'undefined') return;
@@ -121,8 +121,7 @@ function App() {
       case 'profile':
         return (
           <ProfileView
-            organizationProfile={organizationProfile}
-            onOrganizationProfileChange={setOrganizationProfile}
+            userDocuments={userDocuments}
           />
         );
       case 'search':
@@ -132,8 +131,7 @@ function App() {
       default:
         return (
           <ProfileView
-            organizationProfile={organizationProfile}
-            onOrganizationProfileChange={setOrganizationProfile}
+            userDocuments={userDocuments}
           />
         );
     }
