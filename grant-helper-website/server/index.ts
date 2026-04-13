@@ -17,7 +17,18 @@ import multer from 'multer';
 import mammoth from 'mammoth';
 import OpenAI from 'openai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { pipeline, type FeatureExtractionPipeline, type Tensor } from '@huggingface/transformers';
+// @huggingface/transformers is too large for Vercel serverless (338MB ONNX runtime).
+// Conditionally import only when not on Vercel.
+const IS_VERCEL = !!process.env.VERCEL;
+type FeatureExtractionPipeline = { (texts: string[], opts: Record<string, unknown>): Promise<{ dims: number[]; data: Float32Array }> };
+let _pipeline: typeof import('@huggingface/transformers').pipeline | null = null;
+async function loadPipeline() {
+  if (!_pipeline && !IS_VERCEL) {
+    const mod = await import('@huggingface/transformers');
+    _pipeline = mod.pipeline;
+  }
+  return _pipeline;
+}
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -249,15 +260,18 @@ const TRANSFORMERS_EMBEDDING_MODEL =
 
 let embeddingExtractor: FeatureExtractionPipeline | null = null;
 
-async function getEmbeddingExtractor(): Promise<FeatureExtractionPipeline> {
+async function getEmbeddingExtractor(): Promise<FeatureExtractionPipeline | null> {
+  if (IS_VERCEL) return null;
   if (!embeddingExtractor) {
-    embeddingExtractor = await pipeline('feature-extraction', TRANSFORMERS_EMBEDDING_MODEL);
+    const pip = await loadPipeline();
+    if (!pip) return null;
+    embeddingExtractor = await pip('feature-extraction', TRANSFORMERS_EMBEDDING_MODEL) as unknown as FeatureExtractionPipeline;
   }
   return embeddingExtractor;
 }
 
 /** Convert pooled feature-extraction output [batch, dim] to row vectors. */
-function tensorToEmbeddingRows(output: Tensor): number[][] {
+function tensorToEmbeddingRows(output: { dims: number[]; data: Float32Array | ArrayLike<number> }): number[][] {
   const dims = output.dims;
   const raw = output.data;
   const data = raw instanceof Float32Array ? raw : new Float32Array(raw as ArrayLike<number>);
@@ -275,10 +289,11 @@ function tensorToEmbeddingRows(output: Tensor): number[][] {
   throw new Error(`Unexpected embedding tensor shape: ${dims.join(' × ')}`);
 }
 
-/** Local embeddings via Transformers.js (no OpenAI embedding API). */
-async function embedTextsWithTransformers(texts: string[]): Promise<number[][]> {
-  if (!texts.length) return [];
+/** Local embeddings via Transformers.js (no OpenAI embedding API). Returns null on Vercel. */
+async function embedTextsWithTransformers(texts: string[]): Promise<number[][] | null> {
+  if (IS_VERCEL || !texts.length) return IS_VERCEL ? null : [];
   const extractor = await getEmbeddingExtractor();
+  if (!extractor) return null;
   const batchSize = 8;
   const all: number[][] = [];
   for (let i = 0; i < texts.length; i += batchSize) {
