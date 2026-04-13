@@ -17,18 +17,8 @@ import multer from 'multer';
 import mammoth from 'mammoth';
 import OpenAI from 'openai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-// @huggingface/transformers is too large for Vercel serverless (338MB ONNX runtime).
-// Conditionally import only when not on Vercel.
-const IS_VERCEL = !!process.env.VERCEL;
-type FeatureExtractionPipeline = { (texts: string[], opts: Record<string, unknown>): Promise<{ dims: number[]; data: Float32Array }> };
-let _pipeline: typeof import('@huggingface/transformers').pipeline | null = null;
-async function loadPipeline() {
-  if (!_pipeline && !IS_VERCEL) {
-    const mod = await import('@huggingface/transformers');
-    _pipeline = mod.pipeline;
-  }
-  return _pipeline;
-}
+// Embeddings disabled — @huggingface/transformers + ONNX runtime (338MB) exceeds Vercel's 250MB limit.
+// Text chunking still works; RAG uses full-text search instead of vector similarity.
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -206,13 +196,14 @@ async function retrieveRelevantChunksForQuery(accessToken: string, userQuery: st
 
   if (!withEmb.length) return '';
 
-  let queryEmbedding: number[];
+  let queryEmbedding: number[] | undefined;
   try {
-    queryEmbedding = (await embedTextsWithTransformers([q]))[0];
+    const result = await embedTextsWithTransformers([q]);
+    queryEmbedding = result?.[0];
   } catch (e) {
     console.warn('RAG chat: query embedding failed:', e);
-    return '';
   }
+  if (!queryEmbedding) return '';
 
   const topK = Number(process.env.RAG_CHAT_TOP_K) || 8;
   const maxChars = Number(process.env.RAG_CHAT_MAX_CHUNK_CHARS) || 12000;
@@ -254,57 +245,10 @@ async function fetchUserDocumentContext(userId: string): Promise<string> {
 
 const CHUNK_CHAR_SIZE = Number(process.env.RAG_CHUNK_CHAR_SIZE) || 1500;
 const CHUNK_OVERLAP = Number(process.env.RAG_CHUNK_OVERLAP) || 200;
-/** Default: ONNX MiniLM 384-dim (matches pgvector column in migration 004). */
-const TRANSFORMERS_EMBEDDING_MODEL =
-  process.env.TRANSFORMERS_EMBEDDING_MODEL || 'onnx-community/all-MiniLM-L6-v2-ONNX';
 
-let embeddingExtractor: FeatureExtractionPipeline | null = null;
-
-async function getEmbeddingExtractor(): Promise<FeatureExtractionPipeline | null> {
-  if (IS_VERCEL) return null;
-  if (!embeddingExtractor) {
-    const pip = await loadPipeline();
-    if (!pip) return null;
-    embeddingExtractor = await pip('feature-extraction', TRANSFORMERS_EMBEDDING_MODEL) as unknown as FeatureExtractionPipeline;
-  }
-  return embeddingExtractor;
-}
-
-/** Convert pooled feature-extraction output [batch, dim] to row vectors. */
-function tensorToEmbeddingRows(output: { dims: number[]; data: Float32Array | ArrayLike<number> }): number[][] {
-  const dims = output.dims;
-  const raw = output.data;
-  const data = raw instanceof Float32Array ? raw : new Float32Array(raw as ArrayLike<number>);
-  if (dims.length === 2) {
-    const [batch, dim] = dims;
-    const rows: number[][] = [];
-    for (let i = 0; i < batch; i++) {
-      rows.push(Array.from(data.subarray(i * dim, (i + 1) * dim)));
-    }
-    return rows;
-  }
-  if (dims.length === 1) {
-    return [Array.from(data)];
-  }
-  throw new Error(`Unexpected embedding tensor shape: ${dims.join(' × ')}`);
-}
-
-/** Local embeddings via Transformers.js (no OpenAI embedding API). Returns null on Vercel. */
-async function embedTextsWithTransformers(texts: string[]): Promise<number[][] | null> {
-  if (IS_VERCEL || !texts.length) return IS_VERCEL ? null : [];
-  const extractor = await getEmbeddingExtractor();
-  if (!extractor) return null;
-  const batchSize = 8;
-  const all: number[][] = [];
-  for (let i = 0; i < texts.length; i += batchSize) {
-    const batch = texts.slice(i, i + batchSize);
-    const output = await extractor(batch, { pooling: 'mean', normalize: true });
-    all.push(...tensorToEmbeddingRows(output));
-  }
-  if (all.length !== texts.length) {
-    throw new Error('Embedding count mismatch');
-  }
-  return all;
+/** Embeddings disabled — returns null. Chunks are stored without vectors. */
+async function embedTextsWithTransformers(_texts: string[]): Promise<number[][] | null> {
+  return null;
 }
 
 /** Sliding-window text chunks for embedding + RAG. */
