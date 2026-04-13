@@ -4,6 +4,7 @@ import GrantChat from '../chat/GrantChat';
 import './EmptyState.css';
 import './SearchView.css';
 
+const PROFILE_STORAGE_KEY = 'grantflow.organizationProfile';
 
 interface MatchedOpportunity extends GrantsGovOpportunity {
   matchScore?: number;
@@ -11,11 +12,8 @@ interface MatchedOpportunity extends GrantsGovOpportunity {
   applicationTips?: string;
 }
 
-interface SearchViewProps {
-  organizationProfile?: string;
-}
-
-export default function SearchView({ organizationProfile = '' }: SearchViewProps) {
+export default function SearchView() {
+  const organizationProfile = (typeof window !== 'undefined' ? window.localStorage.getItem(PROFILE_STORAGE_KEY) : '') || '';
   const [query, setQuery] = useState('education');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

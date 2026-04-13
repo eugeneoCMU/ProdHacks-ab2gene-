@@ -32,7 +32,8 @@ import './App.css';
 function App() {
   const { session, loading: authLoading, supabaseConfigured } = useSupabaseAuth();
   const [activeView, setActiveView] = useState('profile');
-  const [organizationProfile, setOrganizationProfile] = useState('');
+  // organizationProfile now managed via localStorage by ProfileView
+  // SearchView and WorkspaceView read it directly from localStorage
   const [profileReady, setProfileReady] = useState(() => !supabaseConfigured);
   const [userDocuments, setUserDocuments] = useState<UserDocumentRow[]>([]);
 
@@ -125,9 +126,9 @@ function App() {
           />
         );
       case 'search':
-        return <SearchView organizationProfile={organizationProfile} />;
+        return <SearchView />;
       case 'workspace':
-        return <WorkspaceView organizationProfile={organizationProfile} />;
+        return <WorkspaceView />;
       default:
         return (
           <ProfileView

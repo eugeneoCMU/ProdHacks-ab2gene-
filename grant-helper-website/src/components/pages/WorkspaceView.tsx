@@ -23,13 +23,15 @@ const GOOGLE_FORM_QUESTIONS: Record<string, string> = {
   goal: "Funding is not guaranteed in perpetuity. What is your organization's long-term sustainability plan to continue this program after this grant period ends? (Max 150 words).",
 };
 
+const PROFILE_STORAGE_KEY = 'grantflow.organizationProfile';
+
 interface WorkspaceViewProps {
-  organizationProfile?: string;
   /** Optional. When set and Supabase has document_chunks for this user, they are used as context for Gemini. */
   userId?: string;
 }
 
-export default function WorkspaceView({ organizationProfile = '', userId }: WorkspaceViewProps) {
+export default function WorkspaceView({ userId }: WorkspaceViewProps) {
+  const organizationProfile = (typeof window !== 'undefined' ? window.localStorage.getItem(PROFILE_STORAGE_KEY) : '') || '';
   const [showDemoBox, setShowDemoBox] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
