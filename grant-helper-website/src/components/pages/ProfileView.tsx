@@ -1,9 +1,19 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { extractDocuments } from '../../api/extractDocuments';
 import { lookupEIN } from '../../api/einLookup';
-import { deleteDocument, supabase, uploadToSupabase, saveOrganizationProfileText, type UserDocumentRow } from '../../config/supabase';
+import { deleteDocument, supabase, uploadToSupabase, saveOrganizationProfileText, fetchOrganizationProfile, type UserDocumentRow } from '../../config/supabase';
 import './EmptyState.css';
 import './ProfileView.css';
+
+const PROFILE_STORAGE_KEY = 'grantflow.organizationProfile';
+const SAVED_DOCUMENTS_STORAGE_KEY = 'grantflow.savedDocuments';
+
+/** Write profile text + document names to localStorage so the Chrome extension and other views can read them. */
+function syncToLocalStorage(profileText: string, docNames: string[]) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(PROFILE_STORAGE_KEY, profileText);
+  window.localStorage.setItem(SAVED_DOCUMENTS_STORAGE_KEY, JSON.stringify(docNames));
+}
 
 type UploadedFile = {
   id: string;
@@ -48,6 +58,37 @@ export default function ProfileView({userDocuments = []}: ProfileViewProps) {
   const [extracting, setExtracting] = useState(false);
   const [extractError, setExtractError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync saved document names to localStorage whenever they change
+  useEffect(() => {
+    const names = savedDocuments.map((d) => d.filename).filter(Boolean);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(SAVED_DOCUMENTS_STORAGE_KEY, JSON.stringify(names));
+    }
+  }, [savedDocuments]);
+
+  // Hydrate localStorage from Supabase on mount (for returning users)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const userId = session?.user?.id;
+        if (!userId) return;
+        window.localStorage.setItem('grantflow.userId', userId);
+
+        // Load profile from Supabase if localStorage is empty
+        if (!window.localStorage.getItem(PROFILE_STORAGE_KEY)) {
+          const profile = await fetchOrganizationProfile(userId);
+          if (profile?.organization_profile) {
+            window.localStorage.setItem(PROFILE_STORAGE_KEY, profile.organization_profile);
+          }
+        }
+      } catch (e) {
+        console.warn('Could not hydrate localStorage from Supabase:', e);
+      }
+    })();
+  }, []);
 
   const [showEINModal, setShowEINModal] = useState(false);
   const [einValue, setEINValue] = useState('');
@@ -181,6 +222,9 @@ export default function ProfileView({userDocuments = []}: ProfileViewProps) {
                         return;
                       }
                       const { orgName, text } = await lookupEIN(einValue);
+
+                      // Write to localStorage for Chrome extension + other views
+                      syncToLocalStorage(text, [...savedDocuments.map(d => d.filename), `EIN-${einValue.replace(/\D/g, '')}.txt`].filter(Boolean));
 
                       // Save EIN data as a document so it appears in saved documents
                       const cleanEIN = einValue.replace(/\D/g, '');
@@ -390,7 +434,7 @@ export default function ProfileView({userDocuments = []}: ProfileViewProps) {
                     Boolean(accessToken) &&
                     uploadResults.length === files.length &&
                     uploadResults.length > 0;
-                  await extractDocuments(
+                  const { text } = await extractDocuments(
                     files.map((f) => f.file),
                     chunksReady && accessToken
                       ? {
@@ -399,6 +443,12 @@ export default function ProfileView({userDocuments = []}: ProfileViewProps) {
                         }
                       : undefined
                   );
+
+                  // Write extracted text to localStorage for Chrome extension + other views
+                  const existingProfile = window.localStorage.getItem(PROFILE_STORAGE_KEY) || '';
+                  const merged = [existingProfile, text].filter(Boolean).join('\n\n');
+                  syncToLocalStorage(merged, [...savedDocuments, ...newSavedRows].map(d => d.filename).filter(Boolean));
+
                   setFiles([]);
                 } catch (err) {
                   console.warn('Supabase upload failed for', err);
