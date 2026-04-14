@@ -434,7 +434,7 @@ export default function ProfileView({userDocuments = []}: ProfileViewProps) {
                     Boolean(accessToken) &&
                     uploadResults.length === files.length &&
                     uploadResults.length > 0;
-                  const { text } = await extractDocuments(
+                  await extractDocuments(
                     files.map((f) => f.file),
                     chunksReady && accessToken
                       ? {
@@ -444,10 +444,11 @@ export default function ProfileView({userDocuments = []}: ProfileViewProps) {
                       : undefined
                   );
 
-                  // Write extracted text to localStorage for Chrome extension + other views
-                  const existingProfile = window.localStorage.getItem(PROFILE_STORAGE_KEY) || '';
-                  const merged = [existingProfile, text].filter(Boolean).join('\n\n');
-                  syncToLocalStorage(merged, [...savedDocuments, ...newSavedRows].map(d => d.filename).filter(Boolean));
+                  // Sync document names to localStorage for Chrome extension
+                  const allDocNames = [...savedDocuments, ...newSavedRows].map(d => d.filename).filter(Boolean);
+                  if (typeof window !== 'undefined') {
+                    window.localStorage.setItem(SAVED_DOCUMENTS_STORAGE_KEY, JSON.stringify(allDocNames));
+                  }
 
                   setFiles([]);
                 } catch (err) {
