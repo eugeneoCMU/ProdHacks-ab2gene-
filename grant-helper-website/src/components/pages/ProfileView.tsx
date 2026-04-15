@@ -21,6 +21,23 @@ function buildProfileSummary(profile: string) {
   };
 }
 
+function extractOrganizationName(profile: string) {
+  const trimmed = profile.trim();
+  if (!trimmed) return '';
+
+  const labeledMatch = trimmed.match(/(?:organization name|nonprofit name|org name)\s*[:\-]\s*([^\n.]+)/i);
+  if (labeledMatch?.[1]) {
+    return labeledMatch[1].trim();
+  }
+
+  const firstLine = trimmed.split('\n').map((line) => line.trim()).find(Boolean) || '';
+  if (firstLine && firstLine.length <= 90) {
+    return firstLine.replace(/^[0-9.\-\s]+/, '').trim();
+  }
+
+  return '';
+}
+
 type UploadedFile = {
   id: string;
   file: File;
@@ -140,7 +157,7 @@ type SavedDocument = {
   status?: string | null;
 };
 
-export default function ProfileView({onOrganizationProfileChange,
+export default function ProfileView({ organizationProfile, onOrganizationProfileChange,
 }: ProfileViewProps) {
   const [showUpload, setShowUpload] = useState(false);
   const [files, setFiles] = useState<UploadedFile[]>([]);
@@ -361,6 +378,7 @@ export default function ProfileView({onOrganizationProfileChange,
   const selectedModule =
     PROFILE_MODULES.find((module) => module.id === activeModule) ?? PROFILE_MODULES[0];
   const isConnected = Boolean(connectedUserId);
+  const organizationName = extractOrganizationName(organizationProfile) || 'your organization';
 
   if (!showUpload) {
     return (
@@ -377,12 +395,12 @@ export default function ProfileView({onOrganizationProfileChange,
                 <p className="profile-hero-kicker">Organization profile</p>
                 <h2 className="empty-state-title profile-hero-title">
                   {isConnected
-                    ? 'Keep your organization profile ready for every new opportunity.'
+                    ? `Welcome back, ${organizationName}.`
                     : 'Turn the documents your nonprofit already has into reusable grant context.'}
                 </h2>
                 <p className="empty-state-description profile-hero-description">
                   {isConnected
-                    ? 'Your account is ready to store documents, keep shared nonprofit details in one place, and support search, drafting, and applications from the same source of truth.'
+                    ? 'Here is the shared organization context your team can keep current and reuse across applications.'
                     : 'Build one organization profile for better-fit discovery, faster drafting, and less repeated application work across every new opportunity.'}
                 </p>
               </div>
@@ -404,23 +422,27 @@ export default function ProfileView({onOrganizationProfileChange,
                 <span className="profile-hero-inline-badge">{isConnected ? 'Account ready' : 'Built for lean teams'}</span>
                 <p className="profile-hero-inline-copy">
                   {isConnected
-                    ? 'Upload materials as they come in and keep the same organization context available the next time your team opens GrantFlow.'
+                    ? 'Upload new materials as they come in and keep the profile current for the next application.'
                     : 'Centralize the details that repeat across every grant so search and application work starts from context, not from zero.'}
                 </p>
               </div>
-              <div className="profile-stats-strip">
-                {HERO_STATS.map((stat) => (
-                  <article key={stat.value} className="profile-stat-pill">
-                    <span className="profile-stat-pill-value">{stat.value}</span>
-                    <span className="profile-stat-pill-label">{stat.label}</span>
-                  </article>
-                ))}
-              </div>
-              <div className="profile-trust-row" aria-label="GrantFlow capabilities">
-                {TRUST_TAGS.map((tag) => (
-                  <span key={tag} className="profile-trust-pill">{tag}</span>
-                ))}
-              </div>
+              {!isConnected && (
+                <>
+                  <div className="profile-stats-strip">
+                    {HERO_STATS.map((stat) => (
+                      <article key={stat.value} className="profile-stat-pill">
+                        <span className="profile-stat-pill-value">{stat.value}</span>
+                        <span className="profile-stat-pill-label">{stat.label}</span>
+                      </article>
+                    ))}
+                  </div>
+                  <div className="profile-trust-row" aria-label="GrantFlow capabilities">
+                    {TRUST_TAGS.map((tag) => (
+                      <span key={tag} className="profile-trust-pill">{tag}</span>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -431,79 +453,84 @@ export default function ProfileView({onOrganizationProfileChange,
           )}
         </div>
 
-        <section className="profile-proof">
-          <div className="profile-proof-lead">
-            <p className="profile-proof-kicker">Why teams keep using GrantFlow</p>
-            <h3 className="profile-proof-title">One profile becomes the engine for search, drafting, and form completion.</h3>
-            <p className="profile-proof-text">
-              Instead of re-explaining the same nonprofit every time, your team can keep one living profile
-              and use it across the most repetitive parts of grant work.
-            </p>
-          </div>
-
-          <div className="profile-proof-stats">
-            <article className="proof-stat-card">
-              <span className="proof-stat-value">3x</span>
-              <span className="proof-stat-label">faster first draft setup</span>
-              <p className="proof-stat-copy">Upload once, then reuse mission, program, and compliance details across every new opportunity.</p>
-            </article>
-            <article className="proof-stat-card">
-              <span className="proof-stat-value">1</span>
-              <span className="proof-stat-label">shared source of truth</span>
-              <p className="proof-stat-copy">Keep factual organization data in one place instead of scattered across PDFs, folders, and past applications.</p>
-            </article>
-            <article className="proof-stat-card">
-              <span className="proof-stat-value">0</span>
-              <span className="proof-stat-label">needless re-entry cycles</span>
-              <p className="proof-stat-copy">Reduce the repeated copy-paste work that slows down small teams and introduces avoidable mistakes.</p>
-            </article>
-          </div>
-
-          <div className="profile-proof-grid">
-            <article className="proof-story-card">
-              <p className="proof-story-tag">Personalized discovery</p>
-              <h4 className="proof-story-title">Find grants that fit the organization you already are.</h4>
-              <p className="proof-story-text">
-                GrantFlow uses your profile to narrow toward opportunities that align with your mission, programs, and organizational details.
+        {!isConnected && (
+          <section className="profile-proof">
+            <div className="profile-proof-lead">
+              <p className="profile-proof-kicker">Why teams keep using GrantFlow</p>
+              <h3 className="profile-proof-title">One profile becomes the engine for search, drafting, and form completion.</h3>
+              <p className="profile-proof-text">
+                Instead of re-explaining the same nonprofit every time, your team can keep one living profile
+                and use it across the most repetitive parts of grant work.
               </p>
-            </article>
-            <article className="proof-story-card">
-              <p className="proof-story-tag">Reusable answers</p>
-              <h4 className="proof-story-title">Turn everyday documents into application-ready context.</h4>
-              <p className="proof-story-text">
-                Annual reports, IRS filings, incorporation docs, and program materials become reusable fuel for future applications.
-              </p>
-            </article>
-            <article className="proof-story-card">
-              <p className="proof-story-tag">Smaller teams, bigger output</p>
-              <h4 className="proof-story-title">Built for nonprofits that do not have time to start from scratch.</h4>
-              <p className="proof-story-text">
-                GrantFlow is designed to reduce the hours spent on repetitive grant work so teams can focus on strategy and storytelling.
-              </p>
-            </article>
-          </div>
-
-          <section className="profile-story-strip">
-            <div className="profile-story-strip-header">
-              <p className="profile-proof-kicker">Why it feels different</p>
-              <h4 className="profile-module-title">More than uploaded PDFs inside a chatbot window.</h4>
             </div>
-            <div className="profile-story-strip-grid">
-              {SUCCESS_STORIES.map((story) => (
-                <article key={story.quote} className="profile-story-quote">
-                  <p className="profile-story-quote-text">“{story.quote}”</p>
-                  <span className="profile-story-quote-role">{story.role}</span>
-                  <span className="profile-story-quote-result">{story.result}</span>
-                </article>
-              ))}
+
+            <div className="profile-proof-stats">
+              <article className="proof-stat-card">
+                <span className="proof-stat-value">3x</span>
+                <span className="proof-stat-label">faster first draft setup</span>
+                <p className="proof-stat-copy">Upload once, then reuse mission, program, and compliance details across every new opportunity.</p>
+              </article>
+              <article className="proof-stat-card">
+                <span className="proof-stat-value">1</span>
+                <span className="proof-stat-label">shared source of truth</span>
+                <p className="proof-stat-copy">Keep factual organization data in one place instead of scattered across PDFs, folders, and past applications.</p>
+              </article>
+              <article className="proof-stat-card">
+                <span className="proof-stat-value">0</span>
+                <span className="proof-stat-label">needless re-entry cycles</span>
+                <p className="proof-stat-copy">Reduce the repeated copy-paste work that slows down small teams and introduces avoidable mistakes.</p>
+              </article>
             </div>
+
+            <div className="profile-proof-grid">
+              <article className="proof-story-card">
+                <p className="proof-story-tag">Personalized discovery</p>
+                <h4 className="proof-story-title">Find grants that fit the organization you already are.</h4>
+                <p className="proof-story-text">
+                  GrantFlow uses your profile to narrow toward opportunities that align with your mission, programs, and organizational details.
+                </p>
+              </article>
+              <article className="proof-story-card">
+                <p className="proof-story-tag">Reusable answers</p>
+                <h4 className="proof-story-title">Turn everyday documents into application-ready context.</h4>
+                <p className="proof-story-text">
+                  Annual reports, IRS filings, incorporation docs, and program materials become reusable fuel for future applications.
+                </p>
+              </article>
+              <article className="proof-story-card">
+                <p className="proof-story-tag">Smaller teams, bigger output</p>
+                <h4 className="proof-story-title">Built for nonprofits that do not have time to start from scratch.</h4>
+                <p className="proof-story-text">
+                  GrantFlow is designed to reduce the hours spent on repetitive grant work so teams can focus on strategy and storytelling.
+                </p>
+              </article>
+            </div>
+
+            <section className="profile-story-strip">
+              <div className="profile-story-strip-header">
+                <p className="profile-proof-kicker">Why it feels different</p>
+                <h4 className="profile-module-title">More than uploaded PDFs inside a chatbot window.</h4>
+              </div>
+              <div className="profile-story-strip-grid">
+                {SUCCESS_STORIES.map((story) => (
+                  <article key={story.quote} className="profile-story-quote">
+                    <p className="profile-story-quote-text">“{story.quote}”</p>
+                    <span className="profile-story-quote-role">{story.role}</span>
+                    <span className="profile-story-quote-result">{story.result}</span>
+                  </article>
+                ))}
+              </div>
+            </section>
           </section>
+        )}
 
-          <div className="profile-interaction-grid">
+        <div className={`profile-interaction-grid ${isConnected ? 'profile-interaction-grid--solo' : ''}`}>
             <section className="profile-module-card">
               <div className="profile-module-header">
-                <p className="profile-proof-kicker">Explore the profile</p>
-                <h4 className="profile-module-title">See what GrantFlow organizes behind the scenes.</h4>
+                <p className="profile-proof-kicker">{isConnected ? 'Inside your profile' : 'Explore the profile'}</p>
+                <h4 className="profile-module-title">
+                  {isConnected ? 'See what your team can keep organized in one place.' : 'See what GrantFlow organizes behind the scenes.'}
+                </h4>
               </div>
               <div className="profile-module-tabs" role="tablist" aria-label="Profile capabilities">
                 {PROFILE_MODULES.map((module) => (
@@ -531,33 +558,34 @@ export default function ProfileView({onOrganizationProfileChange,
               </div>
             </section>
 
-            <section className="profile-faq-card">
-              <div className="profile-module-header">
-                <p className="profile-proof-kicker">Common questions</p>
-                <h4 className="profile-module-title">A quick look at how the profile becomes useful.</h4>
-              </div>
-              <div className="profile-faq-list">
-                {PROFILE_FAQS.map((item) => {
-                  const isOpen = openFaq === item.id;
-                  return (
-                    <div key={item.id} className={`profile-faq-item ${isOpen ? 'profile-faq-item--open' : ''}`}>
-                      <button
-                        type="button"
-                        className="profile-faq-trigger"
-                        onClick={() => setOpenFaq(isOpen ? null : item.id)}
-                        aria-expanded={isOpen}
-                      >
-                        <span>{item.question}</span>
-                        <span className="profile-faq-plus" aria-hidden="true">{isOpen ? '−' : '+'}</span>
-                      </button>
-                      {isOpen && <p className="profile-faq-answer">{item.answer}</p>}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
+            {!isConnected && (
+              <section className="profile-faq-card">
+                <div className="profile-module-header">
+                  <p className="profile-proof-kicker">Common questions</p>
+                  <h4 className="profile-module-title">A quick look at how the profile becomes useful.</h4>
+                </div>
+                <div className="profile-faq-list">
+                  {PROFILE_FAQS.map((item) => {
+                    const isOpen = openFaq === item.id;
+                    return (
+                      <div key={item.id} className={`profile-faq-item ${isOpen ? 'profile-faq-item--open' : ''}`}>
+                        <button
+                          type="button"
+                          className="profile-faq-trigger"
+                          onClick={() => setOpenFaq(isOpen ? null : item.id)}
+                          aria-expanded={isOpen}
+                        >
+                          <span>{item.question}</span>
+                          <span className="profile-faq-plus" aria-hidden="true">{isOpen ? '−' : '+'}</span>
+                        </button>
+                        {isOpen && <p className="profile-faq-answer">{item.answer}</p>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
           </div>
-        </section>
       </div>
     );
   }

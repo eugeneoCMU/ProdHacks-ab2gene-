@@ -897,6 +897,10 @@
   gap: 1rem;
 }
 
+.profile-interaction-grid--solo {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .profile-module-card,
 .profile-faq-card {
   padding: 1.6rem;
