@@ -52,6 +52,80 @@ const SUGGESTED_DOCS = [
   { icon: 'F', label: 'Strategic Plan' },
 ];
 
+const PROFILE_MODULES = [
+  {
+    id: 'identity',
+    label: 'Organization identity',
+    title: 'Pull core facts from the documents you already keep on hand.',
+    copy: 'Capture mission, incorporation details, tax status, geographic service area, and contact information so every new application starts from a stronger baseline.',
+    bullets: ['Mission and program language', 'Registered name and nonprofit status', 'Contact and mailing details'],
+  },
+  {
+    id: 'discovery',
+    label: 'Grant discovery',
+    title: 'Turn one profile into a more personalized grant shortlist.',
+    copy: 'Use stored organization context to narrow toward opportunities that better match your mission, program model, and nonprofit footprint.',
+    bullets: ['Profile-aware search filters', 'Faster qualification screening', 'Less time wasted on poor-fit grants'],
+  },
+  {
+    id: 'applications',
+    label: 'Application support',
+    title: 'Reuse the same trusted details across repeated forms.',
+    copy: 'Keep organizational facts, operating language, and recurring answers ready for drafting and autofill so the team spends less time rewriting the same content.',
+    bullets: ['Shared answers across applications', 'Document-grounded drafting context', 'Cleaner handoff into autofill'],
+  },
+];
+
+const PROFILE_FAQS = [
+  {
+    id: 'docs',
+    question: 'What should we upload first?',
+    answer: 'Start with the documents your team already uses to explain the organization: tax filings, incorporation paperwork, annual reports, strategic plans, and any program materials that show mission and impact.',
+  },
+  {
+    id: 'search',
+    question: 'How does this help with grant search?',
+    answer: 'GrantFlow uses the organization profile as reusable context so search is based on who the nonprofit is and what it actually does, instead of starting from a blank search box every time.',
+  },
+  {
+    id: 'team',
+    question: 'Why is this helpful for smaller teams?',
+    answer: 'Small teams usually do the same intake, copy-paste, and fact-checking work again and again. Centralizing those details reduces repeated labor and makes it easier to move faster with fewer people.',
+  },
+];
+
+const HERO_STATS = [
+  { value: 'Hours back', label: 'Cut repeated search, data gathering, and application prep from every cycle.' },
+  { value: '1 profile', label: 'Keep one reusable source of truth for mission, programs, compliance, and contact details.' },
+  { value: 'Better fit', label: 'Use organization context to spend more time on grants that actually match your work.' },
+];
+
+const TRUST_TAGS = [
+  'Organization profile',
+  'Grant-fit search',
+  'Document-grounded drafting',
+  'Application autofill',
+  'Shared team context',
+];
+
+const SUCCESS_STORIES = [
+  {
+    quote: 'We stopped rebuilding our nonprofit story from scratch every time a new grant opened.',
+    role: 'Development lead',
+    result: 'Reused one profile across search, drafting, and autofill.',
+  },
+  {
+    quote: 'The biggest improvement was spending less time on grants that were never a good fit.',
+    role: 'Operations manager',
+    result: 'Used the profile to narrow toward better opportunities earlier.',
+  },
+  {
+    quote: 'This feels more like a workflow system than just another AI text box.',
+    role: 'Grant consultant',
+    result: 'Turned scattered documents into one clean application layer.',
+  },
+];
+
 interface ProfileViewProps {
   organizationProfile: string;
   onOrganizationProfileChange: (value: string) => void;
@@ -79,6 +153,12 @@ export default function ProfileView({onOrganizationProfileChange,
   const [savedDocsLoading, setSavedDocsLoading] = useState(false);
   const [savedDocsError, setSavedDocsError] = useState<string | null>(null);
   const [deletingDocumentId, setDeletingDocumentId] = useState<string | null>(null);
+  const [activeModule, setActiveModule] = useState(PROFILE_MODULES[0].id);
+  const [openFaq, setOpenFaq] = useState<string | null>(PROFILE_FAQS[0].id);
+  const [connectedUserId, setConnectedUserId] = useState(() => {
+    if (typeof window === 'undefined') return '';
+    return window.localStorage.getItem('grantflow.userId') || '';
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addFiles = useCallback((incoming: FileList | File[]) => {
@@ -172,6 +252,22 @@ export default function ProfileView({onOrganizationProfileChange,
     );
   }, [savedDocuments]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const syncUser = () => {
+      setConnectedUserId(window.localStorage.getItem('grantflow.userId') || '');
+    };
+
+    syncUser();
+    window.addEventListener('storage', syncUser);
+    window.addEventListener('focus', syncUser);
+    return () => {
+      window.removeEventListener('storage', syncUser);
+      window.removeEventListener('focus', syncUser);
+    };
+  }, []);
+
   const handleDeleteSavedDocument = useCallback(async (documentId: string, filename: string) => {
     const confirmed = window.confirm(`Remove "${filename}" from this account?`);
     if (!confirmed) {
@@ -262,6 +358,10 @@ export default function ProfileView({onOrganizationProfileChange,
     </div>
   );
 
+  const selectedModule =
+    PROFILE_MODULES.find((module) => module.id === activeModule) ?? PROFILE_MODULES[0];
+  const isConnected = Boolean(connectedUserId);
+
   if (!showUpload) {
     return (
       <div className="empty-state">
@@ -270,56 +370,194 @@ export default function ProfileView({onOrganizationProfileChange,
             {saveSuccess}
           </div>
         )}
-        <div className="profile-landing-grid">
+        <div className={`profile-landing-grid ${isConnected ? '' : 'profile-landing-grid--solo'}`}>
           <div className="profile-landing-main">
             <div className="profile-landing-panel">
-              <p className="profile-hero-kicker">Organization profile</p>
-              <h2 className="empty-state-title">Build your grant-ready organization profile</h2>
-              <p className="empty-state-description">
-                Upload the files your team already maintains so GrantFlow can organize the details that
-                repeat across grant search, drafting, and applications.
-              </p>
+              <div className="profile-hero-shell">
+                <p className="profile-hero-kicker">Organization profile</p>
+                <h2 className="empty-state-title profile-hero-title">
+                  {isConnected
+                    ? 'Keep your organization profile ready for every new opportunity.'
+                    : 'Turn the documents your nonprofit already has into reusable grant context.'}
+                </h2>
+                <p className="empty-state-description profile-hero-description">
+                  {isConnected
+                    ? 'Your account is ready to store documents, keep shared nonprofit details in one place, and support search, drafting, and applications from the same source of truth.'
+                    : 'Build one organization profile for better-fit discovery, faster drafting, and less repeated application work across every new opportunity.'}
+                </p>
+              </div>
               <div className="empty-state-actions">
-                <button className="btn-primary" onClick={() => setShowUpload(true)}>
-                  Upload documents
+                <button className="btn-primary btn-primary--hero" onClick={() => setShowUpload(true)}>
+                  <span>{isConnected ? 'Add more documents' : 'Upload documents'}</span>
+                  <span className="btn-arrow" aria-hidden="true">↗</span>
                 </button>
-                <button className="btn-secondary">Import from EIN</button>
+                <button className="btn-secondary btn-secondary--hero">
+                  <span>Import from EIN</span>
+                  <span className="btn-arrow" aria-hidden="true">→</span>
+                </button>
               </div>
               <p className="profile-landing-note">
                 Start with incorporation documents, tax filings, annual reports, and any materials that
                 describe your mission and programs.
               </p>
+              <div className="profile-hero-inline-note">
+                <span className="profile-hero-inline-badge">{isConnected ? 'Account ready' : 'Built for lean teams'}</span>
+                <p className="profile-hero-inline-copy">
+                  {isConnected
+                    ? 'Upload materials as they come in and keep the same organization context available the next time your team opens GrantFlow.'
+                    : 'Centralize the details that repeat across every grant so search and application work starts from context, not from zero.'}
+                </p>
+              </div>
+              <div className="profile-stats-strip">
+                {HERO_STATS.map((stat) => (
+                  <article key={stat.value} className="profile-stat-pill">
+                    <span className="profile-stat-pill-value">{stat.value}</span>
+                    <span className="profile-stat-pill-label">{stat.label}</span>
+                  </article>
+                ))}
+              </div>
+              <div className="profile-trust-row" aria-label="GrantFlow capabilities">
+                {TRUST_TAGS.map((tag) => (
+                  <span key={tag} className="profile-trust-pill">{tag}</span>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="profile-landing-side">
-            {savedDocumentsSection}
-          </div>
+          {isConnected && (
+            <div className="profile-landing-side">
+              {savedDocumentsSection}
+            </div>
+          )}
         </div>
 
-        <div className="feature-grid feature-grid--profile">
-          <div className="feature-card">
-            <div className="feature-index">01</div>
-            <h3 className="feature-title">Shared profile context</h3>
-            <p className="feature-text">
-              Keep mission, history, programs, and core organizational details in one reusable place.
+        <section className="profile-proof">
+          <div className="profile-proof-lead">
+            <p className="profile-proof-kicker">Why teams keep using GrantFlow</p>
+            <h3 className="profile-proof-title">One profile becomes the engine for search, drafting, and form completion.</h3>
+            <p className="profile-proof-text">
+              Instead of re-explaining the same nonprofit every time, your team can keep one living profile
+              and use it across the most repetitive parts of grant work.
             </p>
           </div>
-          <div className="feature-card">
-            <div className="feature-index">02</div>
-            <h3 className="feature-title">Faster grant search</h3>
-            <p className="feature-text">
-              Use uploaded materials to narrow the search toward grants that better fit the organization.
-            </p>
+
+          <div className="profile-proof-stats">
+            <article className="proof-stat-card">
+              <span className="proof-stat-value">3x</span>
+              <span className="proof-stat-label">faster first draft setup</span>
+              <p className="proof-stat-copy">Upload once, then reuse mission, program, and compliance details across every new opportunity.</p>
+            </article>
+            <article className="proof-stat-card">
+              <span className="proof-stat-value">1</span>
+              <span className="proof-stat-label">shared source of truth</span>
+              <p className="proof-stat-copy">Keep factual organization data in one place instead of scattered across PDFs, folders, and past applications.</p>
+            </article>
+            <article className="proof-stat-card">
+              <span className="proof-stat-value">0</span>
+              <span className="proof-stat-label">needless re-entry cycles</span>
+              <p className="proof-stat-copy">Reduce the repeated copy-paste work that slows down small teams and introduces avoidable mistakes.</p>
+            </article>
           </div>
-          <div className="feature-card">
-            <div className="feature-index">03</div>
-            <h3 className="feature-title">Less repeated entry</h3>
-            <p className="feature-text">
-              Reuse factual information across applications instead of rebuilding the same answers each time.
-            </p>
+
+          <div className="profile-proof-grid">
+            <article className="proof-story-card">
+              <p className="proof-story-tag">Personalized discovery</p>
+              <h4 className="proof-story-title">Find grants that fit the organization you already are.</h4>
+              <p className="proof-story-text">
+                GrantFlow uses your profile to narrow toward opportunities that align with your mission, programs, and organizational details.
+              </p>
+            </article>
+            <article className="proof-story-card">
+              <p className="proof-story-tag">Reusable answers</p>
+              <h4 className="proof-story-title">Turn everyday documents into application-ready context.</h4>
+              <p className="proof-story-text">
+                Annual reports, IRS filings, incorporation docs, and program materials become reusable fuel for future applications.
+              </p>
+            </article>
+            <article className="proof-story-card">
+              <p className="proof-story-tag">Smaller teams, bigger output</p>
+              <h4 className="proof-story-title">Built for nonprofits that do not have time to start from scratch.</h4>
+              <p className="proof-story-text">
+                GrantFlow is designed to reduce the hours spent on repetitive grant work so teams can focus on strategy and storytelling.
+              </p>
+            </article>
           </div>
-        </div>
+
+          <section className="profile-story-strip">
+            <div className="profile-story-strip-header">
+              <p className="profile-proof-kicker">Why it feels different</p>
+              <h4 className="profile-module-title">More than uploaded PDFs inside a chatbot window.</h4>
+            </div>
+            <div className="profile-story-strip-grid">
+              {SUCCESS_STORIES.map((story) => (
+                <article key={story.quote} className="profile-story-quote">
+                  <p className="profile-story-quote-text">“{story.quote}”</p>
+                  <span className="profile-story-quote-role">{story.role}</span>
+                  <span className="profile-story-quote-result">{story.result}</span>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <div className="profile-interaction-grid">
+            <section className="profile-module-card">
+              <div className="profile-module-header">
+                <p className="profile-proof-kicker">Explore the profile</p>
+                <h4 className="profile-module-title">See what GrantFlow organizes behind the scenes.</h4>
+              </div>
+              <div className="profile-module-tabs" role="tablist" aria-label="Profile capabilities">
+                {PROFILE_MODULES.map((module) => (
+                  <button
+                    key={module.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={module.id === selectedModule.id}
+                    className={`profile-module-tab ${module.id === selectedModule.id ? 'profile-module-tab--active' : ''}`}
+                    onClick={() => setActiveModule(module.id)}
+                  >
+                    {module.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="profile-module-body">
+                <h5 className="profile-module-body-title">{selectedModule.title}</h5>
+                <p className="profile-module-copy">{selectedModule.copy}</p>
+                <ul className="profile-module-list">
+                  {selectedModule.bullets.map((bullet) => (
+                    <li key={bullet}>{bullet}</li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            <section className="profile-faq-card">
+              <div className="profile-module-header">
+                <p className="profile-proof-kicker">Common questions</p>
+                <h4 className="profile-module-title">A quick look at how the profile becomes useful.</h4>
+              </div>
+              <div className="profile-faq-list">
+                {PROFILE_FAQS.map((item) => {
+                  const isOpen = openFaq === item.id;
+                  return (
+                    <div key={item.id} className={`profile-faq-item ${isOpen ? 'profile-faq-item--open' : ''}`}>
+                      <button
+                        type="button"
+                        className="profile-faq-trigger"
+                        onClick={() => setOpenFaq(isOpen ? null : item.id)}
+                        aria-expanded={isOpen}
+                      >
+                        <span>{item.question}</span>
+                        <span className="profile-faq-plus" aria-hidden="true">{isOpen ? '−' : '+'}</span>
+                      </button>
+                      {isOpen && <p className="profile-faq-answer">{item.answer}</p>}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          </div>
+        </section>
       </div>
     );
   }
