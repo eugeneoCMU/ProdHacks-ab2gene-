@@ -13,7 +13,7 @@
 .grant-chat-header {
   position: relative;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-700) 100%);
   color: #fff;
 }
 
@@ -87,7 +87,7 @@
 }
 
 .grant-chat-msg--user .grant-chat-msg-content {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-700) 100%);
   color: #fff;
 }
 
@@ -130,7 +130,7 @@
 
 .grant-chat-input:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: var(--brand-600);
 }
 
 .grant-chat-input:disabled {
@@ -140,7 +140,7 @@
 
 .grant-chat-send {
   padding: 0.75rem 1.25rem;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-700) 100%);
   color: #fff;
   border: none;
   border-radius: 12px;

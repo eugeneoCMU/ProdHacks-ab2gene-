@@ -35,7 +35,7 @@
 
 .profile-about-input:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: var(--brand-600);
 }
 
 .profile-about-input::placeholder {
@@ -70,7 +70,7 @@
 }
 
 .back-button:hover {
-  color: #4f46e5;
+  color: var(--brand-600);
 }
 
 .upload-title {
@@ -100,7 +100,7 @@
 
 /* Drop zone */
 .dropzone {
-  border: 1.5px dashed rgba(120, 111, 202, 0.32);
+  border: 1.5px dashed rgba(34, 207, 169, 0.32);
   border-radius: 32px;
   padding: 4.25rem 2.5rem;
   background: rgba(255, 255, 255, 0.74);
@@ -125,7 +125,7 @@
   border-color: var(--brand-600);
   background: rgba(255, 255, 255, 0.95);
   transform: scale(1.01);
-  box-shadow: 0 0 0 4px rgba(120, 111, 202, 0.12);
+  box-shadow: 0 0 0 4px rgba(34, 207, 169, 0.14);
 }
 
 .file-input-hidden {
@@ -309,10 +309,10 @@
 .file-status-icon {
   font-size: 0.76rem;
   font-weight: 700;
-  color: #0f766e;
+  color: #0b7f70;
   padding: 0.32rem 0.6rem;
   border-radius: 999px;
-  background: #ecfdf5;
+  background: #e7fbf5;
   flex-shrink: 0;
 }
 
@@ -412,7 +412,7 @@
   width: 280px;
   height: 280px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(120, 111, 202, 0.12) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(34, 207, 169, 0.12) 0%, transparent 72%);
   pointer-events: none;
 }
 
@@ -648,7 +648,7 @@
   flex-shrink: 0;
   padding: 0.32rem 0.6rem;
   border-radius: 999px;
-  background: #ecfdf5;
+  background: #e7fbf5;
   color: #047857;
   font-size: 0.75rem;
   font-weight: 700;
@@ -956,9 +956,9 @@
 
 .profile-module-tab--active {
   background: var(--brand-tint);
-  border-color: #d8d0f4;
+  border-color: #bdeee2;
   color: var(--brand-700);
-  box-shadow: inset 0 0 0 1px rgba(120, 111, 202, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(34, 207, 169, 0.14);
 }
 
 .profile-module-body {
@@ -1006,7 +1006,7 @@
   height: 9px;
   border-radius: 999px;
   background: var(--brand-500);
-  box-shadow: 0 0 0 4px rgba(120, 111, 202, 0.12);
+  box-shadow: 0 0 0 4px rgba(34, 207, 169, 0.14);
 }
 
 .profile-faq-list {

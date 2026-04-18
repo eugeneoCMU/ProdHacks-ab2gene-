@@ -65,8 +65,8 @@
 }
 
 .auth-status--connected {
-  background: #f9f5ff;
-  border-color: #ddd3f7;
+  background: #edfdf9;
+  border-color: #bdeee2;
 }
 
 .auth-status-copy {
@@ -174,7 +174,7 @@
 .auth-modal-intro {
   padding: 3rem;
   background:
-    radial-gradient(circle at top left, rgba(120, 111, 202, 0.08), transparent 36%),
+    radial-gradient(circle at top left, rgba(34, 207, 169, 0.08), transparent 36%),
     linear-gradient(180deg, #fbf8f1 0%, #f3ede2 100%);
 }
 
@@ -225,7 +225,7 @@
   height: 10px;
   border-radius: 999px;
   background: var(--brand-500);
-  box-shadow: 0 0 0 4px rgba(120, 111, 202, 0.12);
+  box-shadow: 0 0 0 4px rgba(34, 207, 169, 0.14);
 }
 
 .auth-modal-card {
@@ -333,7 +333,7 @@
 .auth-modal-field input:focus {
   outline: none;
   border-color: var(--brand-500);
-  box-shadow: 0 0 0 4px rgba(120, 111, 202, 0.12);
+  box-shadow: 0 0 0 4px rgba(34, 207, 169, 0.14);
 }
 
 .auth-modal-feedback {
