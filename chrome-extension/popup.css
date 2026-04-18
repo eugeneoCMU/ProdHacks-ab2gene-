@@ -3,8 +3,8 @@ body {
   min-width: 400px;
   font-family: "Avenir Next", "Segoe UI", Arial, sans-serif;
   background:
-    radial-gradient(circle at top right, rgba(139, 92, 246, 0.26), transparent 28%),
-    radial-gradient(circle at top left, rgba(99, 102, 241, 0.2), transparent 34%),
+    radial-gradient(circle at top right, rgba(34, 207, 169, 0.26), transparent 28%),
+    radial-gradient(circle at top left, rgba(15, 143, 126, 0.2), transparent 34%),
     linear-gradient(180deg, #121728 0%, #0d1323 100%);
   color: #f8fafc;
 }
@@ -15,18 +15,18 @@ body {
 
 .hero-card {
   margin-bottom: 14px;
-  border: 1px solid rgba(167, 139, 250, 0.22);
+  border: 1px solid rgba(94, 222, 192, 0.22);
   border-radius: 18px;
   padding: 16px;
   background:
-    linear-gradient(180deg, rgba(167, 139, 250, 0.14) 0%, rgba(255, 255, 255, 0.02) 100%),
+    linear-gradient(180deg, rgba(94, 222, 192, 0.14) 0%, rgba(255, 255, 255, 0.02) 100%),
     rgba(15, 20, 35, 0.96);
-  box-shadow: 0 14px 32px rgba(37, 18, 79, 0.28);
+  box-shadow: 0 14px 32px rgba(9, 77, 67, 0.28);
 }
 
 .eyebrow {
   margin: 0 0 8px;
-  color: #c4b5fd;
+  color: #7fe7d2;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -67,22 +67,22 @@ h1 {
 }
 
 .hero-badge {
-  border: 1px solid rgba(167, 139, 250, 0.2);
+  border: 1px solid rgba(94, 222, 192, 0.2);
   border-radius: 999px;
   padding: 5px 10px;
-  background: rgba(139, 92, 246, 0.12);
-  color: #ede9fe;
+  background: rgba(34, 207, 169, 0.12);
+  color: #d8fff5;
   font-size: 11px;
   font-weight: 700;
 }
 
 .panel-card {
   margin-bottom: 14px;
-  border: 1px solid rgba(167, 139, 250, 0.14);
+  border: 1px solid rgba(94, 222, 192, 0.14);
   border-radius: 16px;
   padding: 14px;
   background: rgba(16, 21, 36, 0.92);
-  box-shadow: inset 0 1px 0 rgba(196, 181, 253, 0.05);
+  box-shadow: inset 0 1px 0 rgba(127, 231, 210, 0.05);
 }
 
 .section-label {
@@ -108,10 +108,10 @@ button {
   padding: 12px 14px;
   font-size: 14px;
   font-weight: 600;
-  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 55%, #6366f1 100%);
+  background: linear-gradient(135deg, #0f8f7e 0%, #22cfa9 55%, #5edec0 100%);
   color: #fff;
   cursor: pointer;
-  box-shadow: 0 12px 24px rgba(109, 40, 217, 0.28);
+  box-shadow: 0 12px 24px rgba(15, 143, 126, 0.28);
 }
 
 button:hover {
@@ -127,16 +127,16 @@ button:disabled {
 
 .secondary-button {
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(167, 139, 250, 0.18);
+  border: 1px solid rgba(94, 222, 192, 0.18);
   box-shadow: none;
 }
 
 .secondary-button:hover {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(34, 207, 169, 0.1);
 }
 
 .profile-summary-card {
-  border: 1px solid rgba(167, 139, 250, 0.12);
+  border: 1px solid rgba(94, 222, 192, 0.12);
   border-radius: 12px;
   padding: 10px;
   background: rgba(8, 12, 24, 0.95);
@@ -156,14 +156,14 @@ button:disabled {
 }
 
 .document-item {
-  color: #ddd6fe;
+  color: #d8fff5;
   font-size: 12px;
   line-height: 1.4;
 }
 
 .status-card {
   margin-bottom: 14px;
-  border: 1px solid rgba(167, 139, 250, 0.14);
+  border: 1px solid rgba(94, 222, 192, 0.14);
   border-radius: 14px;
   padding: 12px 14px;
   background: rgba(8, 12, 24, 0.95);
@@ -215,7 +215,7 @@ button:disabled {
 }
 
 .status-card--success .status-dot {
-  background: #22c55e;
+  background: #22cfa9;
 }
 
 .status-card--error .status-dot {
