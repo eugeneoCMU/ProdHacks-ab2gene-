@@ -83,12 +83,12 @@
     },
     { key: "project_abstract", aliases: ["project abstract", "abstract summary", "research abstract"] },
     { key: "project_goals", aliases: ["project goals", "goals", "project objectives", "objectives", "aims", "specific aims"] },
-    { key: "need_statement", aliases: ["statement of need", "need statement", "community need", "problem statement"] },
-    { key: "target_population", aliases: ["target population", "population served", "beneficiaries", "participants served"] },
+    { key: "need_statement", aliases: ["statement of need", "need statement", "community need", "problem statement", "specific problem", "why it is urgent", "problem this grant will help solve"] },
+    { key: "target_population", aliases: ["target population", "population served", "beneficiaries", "participants served", "who will benefit", "people or communities you serve", "people you serve", "communities you serve"] },
     { key: "geographic_area_served", aliases: ["geographic area served", "service area", "area served"] },
-    { key: "mission_statement", aliases: ["mission statement", "organization mission", "our mission", "mission and purpose"] },
-    { key: "organization_history", aliases: ["organization history", "organizational history", "background of organization", "history of organization"] },
-    { key: "program_description", aliases: ["program description", "program overview", "describe your program", "services provided"] },
+    { key: "mission_statement", aliases: ["mission statement", "organization mission", "our mission", "mission and purpose", "describe your organization mission", "describe your organization s mission"] },
+    { key: "organization_history", aliases: ["organization history", "organizational history", "background of organization", "history of organization", "history and the community need"] },
+    { key: "program_description", aliases: ["program description", "program overview", "describe your program", "services provided", "what makes your organization or program uniquely effective"] },
     { key: "impact_statement", aliases: ["impact statement", "impact", "community impact", "organizational impact"] },
     { key: "outcomes", aliases: ["outcomes", "expected outcomes", "anticipated outcomes", "project outcomes"] },
     { key: "evaluation_plan", aliases: ["evaluation plan", "measure success", "evaluation methods", "how will you evaluate"] },
@@ -675,6 +675,30 @@
       score += 0.12;
       reasons.push("address block signal");
     }
+
+    const narrativeDescriptor = signals.descriptor;
+    const hasNarrativePromptSignal =
+      tagName === "textarea" && (
+        narrativeDescriptor.includes("describe your organization") ||
+        narrativeDescriptor.includes("describe the specific problem") ||
+        narrativeDescriptor.includes("community need") ||
+        narrativeDescriptor.includes("who will benefit") ||
+        narrativeDescriptor.includes("communities you serve") ||
+        narrativeDescriptor.includes("what makes your organization or program uniquely effective") ||
+        narrativeDescriptor.includes("compared with other approaches")
+      );
+
+    if (hasNarrativePromptSignal && (
+      definition.key === "address_line_1" ||
+      definition.key === "address_line_2" ||
+      definition.key === "city" ||
+      definition.key === "state" ||
+      definition.key === "zip" ||
+      definition.key === "country"
+    )) {
+      score -= 0.7;
+      reasons.push("narrative textarea penalty");
+    }
     if ((definition.key === "organization_name" || definition.key === "contact_name") && signals.descriptor.includes("applicant")) {
       score += 0.18;
       reasons.push("applicant signal");
@@ -756,6 +780,55 @@
   function applyFallbacks(bestMatch, signals, element) {
     const type = signals.type;
     const descriptor = signals.descriptor;
+
+    if (element.tagName.toLowerCase() === "textarea") {
+      if (
+        descriptor.includes("mission") &&
+        descriptor.includes("history") &&
+        descriptor.includes("community need")
+      ) {
+        return {
+          fieldKey: "organization_description",
+          confidence: 0.84,
+          reasons: ["textarea mission/history/community-need override"]
+        };
+      }
+
+      if (
+        descriptor.includes("specific problem") ||
+        descriptor.includes("why it is urgent") ||
+        descriptor.includes("problem this grant will help solve")
+      ) {
+        return {
+          fieldKey: "need_statement",
+          confidence: 0.84,
+          reasons: ["textarea need statement override"]
+        };
+      }
+
+      if (
+        descriptor.includes("who will benefit") ||
+        descriptor.includes("people or communities you serve") ||
+        descriptor.includes("communities you serve")
+      ) {
+        return {
+          fieldKey: "target_population",
+          confidence: 0.84,
+          reasons: ["textarea target population override"]
+        };
+      }
+
+      if (
+        descriptor.includes("uniquely effective") ||
+        descriptor.includes("compared with other approaches")
+      ) {
+        return {
+          fieldKey: "organizational_capacity",
+          confidence: 0.8,
+          reasons: ["textarea organizational capacity override"]
+        };
+      }
+    }
 
     if (bestMatch.confidence < 0.35) {
       if (type === "email") {

@@ -235,7 +235,7 @@
 
 /* File list */
 .file-list-section {
-  margin-top: 2.4rem;
+  margin-top: 4rem;
   background: rgba(255, 255, 255, 0.52);
   border: 1px solid var(--line-soft);
   border-radius: 28px;
@@ -892,6 +892,7 @@
 }
 
 .profile-interaction-grid {
+  margin-top: 3.2rem;
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: 1rem;
