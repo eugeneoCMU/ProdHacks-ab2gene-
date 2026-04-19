@@ -1,36 +1,23 @@
 .app-layout {
-  display: flex;
   width: 100%;
   min-height: 100vh;
-  background: #f9fafb;
+  background: transparent;
 }
 
 .main-container {
-  flex: 1;
-  margin-left: 280px;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .content-area {
   flex: 1;
-  margin-top: 70px;
-  padding: 2rem;
+  padding: 2.75rem 3rem 3.5rem;
   overflow-y: auto;
 }
 
 @media (max-width: 768px) {
-  .main-container {
-    margin-left: 80px;
-  }
-
   .content-area {
-    padding: 1rem;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .app-layout {
-    background: #111827;
+    padding: 1.25rem;
   }
 }

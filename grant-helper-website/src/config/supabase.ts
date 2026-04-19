@@ -21,31 +21,37 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+export const supabase = isSupabaseConfigured ? createClient(supabaseUrl, supabaseAnonKey) : null;
+
+function requireSupabase() {
+  if (!supabase) {
+    throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.');
+  }
+
+  return supabase;
+}
 
 /**
  * Upload a file to Supabase Storage
  * @param file - File object to upload
  * @param userId - User ID (from auth.user())
- * @returns Row id (same UUID as storage segment) and storage path
+ * @returns Storage path if successful
  */
-export async function uploadToSupabase(
-  file: File,
-  userId: string
-): Promise<{ id: string; storagePath: string }> {
+export async function uploadToSupabase(file: File, userId: string): Promise<string> {
+  const client = requireSupabase();
   const documentId = crypto.randomUUID();
   const storagePath = `${userId}/${documentId}/${file.name}`;
 
   // Upload to Storage
-  const { error: uploadError } = await supabase.storage
+  const { error: uploadError } = await client.storage
     .from('user-docs')
     .upload(storagePath, file);
 
   if (uploadError) throw uploadError;
 
-  // Keep documents.id aligned with path segment so extract/chunk persist uses the same UUID
-  const { error: dbError } = await supabase.from('documents').insert({
-    id: documentId,
+  // Insert metadata into documents table
+  const { error: dbError } = await client.from('documents').insert({
     user_id: userId,
     filename: file.name,
     mime_type: file.type,
@@ -56,7 +62,7 @@ export async function uploadToSupabase(
 
   if (dbError) throw dbError;
 
-  return { id: documentId, storagePath };
+  return storagePath;
 }
 
 /**
@@ -64,25 +70,17 @@ export async function uploadToSupabase(
  * @param userId - User ID (from auth.user())
  * @returns Array of document metadata
  */
-export async function getUserDocuments(userId: string): Promise<UserDocumentRow[]> {
-  const { data, error } = await supabase
+export async function getUserDocuments(userId: string) {
+  const client = requireSupabase();
+  const { data, error } = await client
     .from('documents')
     .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  return (data ?? []) as UserDocumentRow[];
+  return data;
 }
-
-export type UserDocumentRow = {
-  id: string;
-  filename: string;
-  mime_type: string | null;
-  file_size_bytes: number | null;
-  created_at: string;
-  status: string | null;
-};
 
 /**
  * Search user's document chunks (RAG retrieval)
@@ -96,7 +94,8 @@ export async function searchDocuments(
   query: string,
   limit: number = 10
 ) {
-  const { data, error } = await supabase.rpc('search_user_documents', {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc('search_user_documents', {
     p_user_id: userId,
     p_query: query,
     p_limit: limit,
@@ -111,8 +110,9 @@ export async function searchDocuments(
  * @param documentId - Document UUID
  */
 export async function deleteDocument(documentId: string) {
+  const client = requireSupabase();
   // Get document metadata first
-  const { data: doc, error: fetchError } = await supabase
+  const { data: doc, error: fetchError } = await client
     .from('documents')
     .select('storage_path')
     .eq('id', documentId)
@@ -121,14 +121,14 @@ export async function deleteDocument(documentId: string) {
   if (fetchError) throw fetchError;
 
   // Delete from storage
-  const { error: storageError } = await supabase.storage
+  const { error: storageError } = await client.storage
     .from('user-docs')
     .remove([doc.storage_path]);
 
   if (storageError) throw storageError;
 
   // Database cascades will auto-delete chunks due to ON DELETE CASCADE
-  const { error: dbError } = await supabase
+  const { error: dbError } = await client
     .from('documents')
     .delete()
     .eq('id', documentId);

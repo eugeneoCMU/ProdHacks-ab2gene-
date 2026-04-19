@@ -743,12 +743,22 @@ function chooseAutofillTargets(fields) {
     if (blocked.has(field.fieldKey)) {
       return false;
     }
-    if (resolveFieldKeyForFill(field) === "unknown") {
-      return false;
-    }
     if (field.type === "checkbox" || field.type === "radio" || field.type === "password") {
       return false;
     }
+
+    const tagName = String(field.tagName || "").toLowerCase();
+    const resolvedFieldKey = resolveFieldKeyForFill(field);
+    const descriptor = buildFieldTextBlob(field);
+
+    if (tagName === "textarea") {
+      return Boolean(resolvedFieldKey && resolvedFieldKey !== "unknown") || descriptor.length >= 18;
+    }
+
+    if (resolvedFieldKey === "unknown") {
+      return false;
+    }
+
     return field.confidenceBucket === "high";
   }).sort((a, b) => {
     if (a.required !== b.required) {
@@ -1030,6 +1040,37 @@ function inferFieldKeyFromText(text, fallbackKey) {
   const normalized = normalizeFillText(text);
   if (!normalized) {
     return fallbackKey;
+  }
+
+  if (
+    normalized.includes("mission") &&
+    normalized.includes("history") &&
+    normalized.includes("community need")
+  ) {
+    return "organization_description";
+  }
+
+  if (
+    normalized.includes("specific problem") ||
+    normalized.includes("why it is urgent") ||
+    normalized.includes("problem this grant will help solve")
+  ) {
+    return "need_statement";
+  }
+
+  if (
+    normalized.includes("who will benefit") ||
+    normalized.includes("communities you serve") ||
+    normalized.includes("people or communities you serve")
+  ) {
+    return "target_population";
+  }
+
+  if (
+    normalized.includes("uniquely effective") ||
+    normalized.includes("compared with other approaches")
+  ) {
+    return "organizational_capacity";
   }
 
   if (
@@ -1402,6 +1443,22 @@ function shouldUseAiFallback(field) {
   return false;
 }
 
+function shouldPrioritizeAiForField(field) {
+  const tagName = String(field.tagName || "").toLowerCase();
+  const resolvedFieldKey = resolveFieldKeyForFill(field);
+  const group = getFieldGroup(resolvedFieldKey);
+
+  if (tagName === "textarea") {
+    return true;
+  }
+
+  if (SYNTHETIC_AI_FIELD_KEYS.has(resolvedFieldKey)) {
+    return true;
+  }
+
+  return group === "Narrative";
+}
+
 async function requestBatchAutofillAnswers(backendUrl, payload) {
   const response = await fetch(`${backendUrl}/api/autofill-fields`, {
     method: "POST",
@@ -1548,10 +1605,16 @@ async function autofillCurrentPage() {
   }
 
   const fills = buildStructuredFills(targets, structuredProfile);
-  const filledIndexes = new Set(fills.map((fill) => fill.index));
-  const aiTargets = targets
-    .filter((field) => !filledIndexes.has(field.index))
-    .filter((field) => shouldUseAiFallback(field));
+  const fillMap = new Map(fills.map((fill) => [fill.index, fill]));
+  const aiTargets = targets.filter((field) => {
+    if (String(field.tagName || "").toLowerCase() === "textarea") {
+      return true;
+    }
+    if (shouldPrioritizeAiForField(field)) {
+      return true;
+    }
+    return !fillMap.has(field.index) && shouldUseAiFallback(field);
+  });
 
   if (aiTargets.length) {
     setStatusState("working");
@@ -1578,7 +1641,7 @@ async function autofillCurrentPage() {
         const resolvedFieldKey = answer.fieldKey || "unknown";
         const normalizedAnswer = normalizeValueForFieldKey(resolvedFieldKey, answer.answer);
         if (normalizedAnswer && answer.confidence !== "low" && isSafeValueForFieldKey(resolvedFieldKey, normalizedAnswer)) {
-          fills.push({
+          fillMap.set(answer.index, {
             index: answer.index,
             value: normalizedAnswer,
             confidence: answer.confidence || "medium",
@@ -1591,7 +1654,9 @@ async function autofillCurrentPage() {
     }
   }
 
-  if (!fills.length) {
+  const finalFills = Array.from(fillMap.values()).sort((a, b) => a.index - b.index);
+
+  if (!finalFills.length) {
     renderFields(scanResponse);
     setStatusState("error");
     setStatus("No safe autofill values were generated. Review the highlighted fields for manual mapping.");
@@ -1600,7 +1665,7 @@ async function autofillCurrentPage() {
 
   const fillResponse = await chrome.tabs.sendMessage(tab.id, {
     type: "GRANT_HELPER_AUTOFILL_FIELDS",
-    fills
+    fills: finalFills
   }).catch(() => null);
 
   renderFields(scanResponse);

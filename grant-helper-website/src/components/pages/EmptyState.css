@@ -3,8 +3,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
-  padding: 3rem;
+  min-height: 420px;
+  padding: 4.5rem 2rem 3rem;
   text-align: center;
 }
 
@@ -15,18 +15,21 @@
 }
 
 .empty-state-title {
-  font-size: 1.75rem;
+  font-size: 3rem;
   font-weight: 600;
-  color: #1f2937;
+  letter-spacing: -0.05em;
+  line-height: 0.98;
+  color: var(--ink-950);
   margin: 0 0 1rem 0;
+  max-width: 740px;
 }
 
 .empty-state-description {
   font-size: 1rem;
-  color: #6b7280;
+  color: var(--ink-500);
   margin: 0 0 2rem 0;
-  max-width: 500px;
-  line-height: 1.6;
+  max-width: 620px;
+  line-height: 1.72;
 }
 
 .empty-state-actions {
@@ -37,115 +40,113 @@
 }
 
 .btn-primary {
-  padding: 0.875rem 1.75rem;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  padding: 0.92rem 1.7rem;
+  background: var(--brand-600);
   color: #fff;
   border: none;
   border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.98rem;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 8px 20px rgba(88, 73, 184, 0.16);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 16px 28px rgba(88, 73, 184, 0.22);
 }
 
 .btn-secondary {
-  padding: 0.875rem 1.75rem;
-  background: #fff;
-  color: #374151;
-  border: 2px solid #e5e7eb;
+  padding: 0.92rem 1.7rem;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--ink-700);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.98rem;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
 }
 
 .btn-secondary:hover {
-  border-color: #6366f1;
-  color: #6366f1;
-  background: #f9fafb;
+  transform: translateY(-2px);
+  border-color: var(--brand-500);
+  color: var(--brand-700);
+  background: #fff;
+  box-shadow: 0 14px 26px rgba(120, 111, 202, 0.08);
+}
+
+.btn-arrow {
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.btn-primary:hover .btn-arrow,
+.btn-secondary:hover .btn-arrow {
+  transform: translateX(3px);
+}
+
+.btn-primary--hero,
+.btn-secondary--hero {
+  min-height: 54px;
+  padding-inline: 1.45rem;
 }
 
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-top: 3rem;
-  max-width: 900px;
+  gap: 1.2rem;
+  margin-top: 3.6rem;
+  max-width: 940px;
 }
 
 .feature-card {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.7);
   padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 22px;
+  border: 1px solid var(--line-soft);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.04);
   transition: all 0.2s ease;
+  text-align: left;
 }
 
 .feature-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.06);
+  transform: translateY(-3px);
 }
 
-.feature-icon {
-  font-size: 2.5rem;
+.feature-index {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
   margin-bottom: 1rem;
+  background: var(--brand-tint);
+  color: var(--brand-700);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
 }
 
 .feature-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1f2937;
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink-950);
   margin: 0 0 0.5rem 0;
 }
 
 .feature-text {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--ink-500);
   margin: 0;
-  line-height: 1.5;
-}
-
-@media (prefers-color-scheme: dark) {
-  .empty-state-title {
-    color: #f9fafb;
-  }
-
-  .empty-state-description {
-    color: #9ca3af;
-  }
-
-  .btn-secondary {
-    background: #374151;
-    color: #e5e7eb;
-    border-color: #4b5563;
-  }
-
-  .btn-secondary:hover {
-    background: #4b5563;
-    border-color: #6366f1;
-  }
-
-  .feature-card {
-    background: #1f2937;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  }
-
-  .feature-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  }
-
-  .feature-title {
-    color: #f9fafb;
-  }
-
-  .feature-text {
-    color: #9ca3af;
-  }
+  line-height: 1.65;
 }

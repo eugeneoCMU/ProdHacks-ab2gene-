@@ -1,27 +1,8 @@
 import { useState } from 'react';
-import { supabase } from '../../config/supabase';
+import { isSupabaseConfigured, supabase } from '../../config/supabase';
 import './EmptyState.css';
 
-/**
- * Demo: Manually enter your Google Form ID and entry IDs here.
- * - Form ID: from the form URL .../d/e/FORM_ID/viewform
- * - Entry IDs: from "prefill" link when editing the form, or from the form's HTML (name="entry.XXXXX")
- * - Questions: used by Gemini to generate answers; keys must match GOOGLE_FORM_ENTRY_IDS.
- */
-const GOOGLE_FORM_ID = '1FAIpQLSeqewu_zjiu7TnUiAyRCT57i9lkeRbALArLXi6DdO43OhL5Wg';
-const GOOGLE_FORM_ENTRY_IDS: Record<string, string> = {
-  impact: 'entry.216607139',
-  use_of_funds: 'entry.1232879177',
-  problem_solution: 'entry.76808297',
-  goal: 'entry.344212770',
-};
-
-const GOOGLE_FORM_QUESTIONS: Record<string, string> = {
-  impact: "Please detail your organization's measurable impact over the last 12 months. Provide specific metrics on the demographics and total number of individuals served by your primary program. (Max 200 words)",
-  use_of_funds: "If awarded this $15,000 grant, exactly how will the funds be allocated? Please explain how this aligns with your current operating budget and historical funding. (Max 250 words).",
-  problem_solution: "Describe the specific community need your program addresses. How does your methodology uniquely solve this problem compared to other existing services in the area? (Max 300 words).",
-  goal: "Funding is not guaranteed in perpetuity. What is your organization's long-term sustainability plan to continue this program after this grant period ends? (Max 150 words).",
-};
+const DEMO_FORM_URL = 'https://rdtrbdeo.paperform.co/';
 
 const PROFILE_STORAGE_KEY = 'grantflow.organizationProfile';
 
@@ -42,44 +23,20 @@ export default function WorkspaceView({ userId }: WorkspaceViewProps) {
   };
 
   const handleGenerateAndOpenForm = async () => {
-    if (!GOOGLE_FORM_ID?.trim()) {
-      setError('Please set GOOGLE_FORM_ID in WorkspaceView.tsx for this demo.');
-      return;
-    }
     setError(null);
     setLoading(true);
     try {
       let resolvedUserId = userId;
-      if (!resolvedUserId) {
+      if (!resolvedUserId && isSupabaseConfigured && supabase) {
         const { data: { session } } = await supabase.auth.getSession();
         resolvedUserId = session?.user?.id ?? undefined;
       }
 
-      const res = await fetch('/api/google-form/prefill', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          formId: GOOGLE_FORM_ID,
-          organizationProfile: organizationProfile || undefined,
-          entryIds: GOOGLE_FORM_ENTRY_IDS,
-          questions: GOOGLE_FORM_QUESTIONS,
-          ...(resolvedUserId ? { userId: resolvedUserId } : {}),
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error || `Request failed: ${res.status}`);
+      if (!organizationProfile.trim() && !resolvedUserId) {
+        throw new Error('Upload or sync organization documents before opening the demo form.');
       }
 
-      const { url, answers } = (await res.json()) as { url?: string; answers?: Record<string, string> };
-      if (!url) throw new Error('No pre-fill URL returned');
-
-      if (answers) {
-        console.log('Generated answers:', answers);
-      }
-
-      window.open(url, '_blank', 'noopener,noreferrer');
+      window.open(DEMO_FORM_URL, '_blank', 'noopener,noreferrer');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate application');
     } finally {
@@ -107,7 +64,7 @@ export default function WorkspaceView({ userId }: WorkspaceViewProps) {
       </div>
       {showDemoBox && (
         <div className="demo-grant-box" style={{ marginTop: 20, padding: 20, border: '1px solid #e5e7eb', borderRadius: 12, backgroundColor: '#f9fafb', maxWidth: 400 }}>
-          <p style={{ margin: '0 0 12px 0', fontWeight: 600, color: '#1f2937' }}>Demo grant form</p>
+          <p style={{ margin: '0 0 12px 0', fontWeight: 600, color: '#1f2937' }}>Paperform demo grant</p>
           <button
             type="button"
             className="btn-primary"

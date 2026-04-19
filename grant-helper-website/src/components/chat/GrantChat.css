@@ -13,7 +13,7 @@
 .grant-chat-header {
   position: relative;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-700) 100%);
   color: #fff;
 }
 
@@ -87,7 +87,7 @@
 }
 
 .grant-chat-msg--user .grant-chat-msg-content {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-700) 100%);
   color: #fff;
 }
 
@@ -130,7 +130,7 @@
 
 .grant-chat-input:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: var(--brand-600);
 }
 
 .grant-chat-input:disabled {
@@ -140,7 +140,7 @@
 
 .grant-chat-send {
   padding: 0.75rem 1.25rem;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-700) 100%);
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -158,36 +158,4 @@
 .grant-chat-send:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-@media (prefers-color-scheme: dark) {
-  .grant-chat {
-    background: #1f2937;
-    border-color: #4b5563;
-  }
-
-  .grant-chat-msg--model .grant-chat-msg-content {
-    background: #374151;
-    color: #f3f4f6;
-  }
-
-  .grant-chat-input-row {
-    border-color: #4b5563;
-    background: #111827;
-  }
-
-  .grant-chat-input {
-    background: #1f2937;
-    border-color: #4b5563;
-    color: #f9fafb;
-  }
-
-  .grant-chat-welcome {
-    color: #9ca3af;
-  }
-
-  .grant-chat-error {
-    background: #450a0a;
-    color: #fca5a5;
-  }
 }
