@@ -17,8 +17,32 @@ import multer from 'multer';
 import mammoth from 'mammoth';
 import OpenAI from 'openai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-// Embeddings disabled — @huggingface/transformers + ONNX runtime (338MB) exceeds Vercel's 250MB limit.
-// Text chunking still works; RAG uses full-text search instead of vector similarity.
+import type { FeatureExtractionPipeline, Tensor } from '@huggingface/transformers';
+
+/** Default: ONNX MiniLM (384-d). Override with RAG_EMBEDDING_MODEL. First run downloads model weights. */
+const RAG_EMBEDDING_MODEL =
+  process.env.RAG_EMBEDDING_MODEL?.trim() || 'onnx-community/all-MiniLM-L6-v2-ONNX';
+/** Set RAG_EMBEDDINGS_DISABLED=1 on tiny serverless bundles (e.g. strict size limits); chunk text + insert still works without vectors. */
+const RAG_EMBEDDINGS_DISABLED =
+  process.env.RAG_EMBEDDINGS_DISABLED === '1' || /^true$/i.test(process.env.RAG_EMBEDDINGS_DISABLED ?? '');
+
+let embeddingExtractorPromise: Promise<FeatureExtractionPipeline> | null = null;
+
+function rowsFromEmbeddingTensor(tensor: Tensor): number[][] {
+  const dims = tensor.dims;
+  const nested = tensor.tolist() as unknown;
+  if (dims.length === 1) {
+    const row = nested as number[];
+    return [row.map((x) => Number(x))];
+  }
+  if (dims.length === 2) {
+    const outer = nested as unknown[];
+    return outer.map((row) =>
+      Array.isArray(row) ? row.map((x) => Number(x)) : [Number(row)]
+    );
+  }
+  return [];
+}
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -246,9 +270,64 @@ async function fetchUserDocumentContext(userId: string): Promise<string> {
 const CHUNK_CHAR_SIZE = Number(process.env.RAG_CHUNK_CHAR_SIZE) || 1500;
 const CHUNK_OVERLAP = Number(process.env.RAG_CHUNK_OVERLAP) || 200;
 
-/** Embeddings disabled — returns null. Chunks are stored without vectors. */
-async function embedTextsWithTransformers(_texts: string[]): Promise<number[][] | null> {
-  return null;
+const RAG_EMBEDDING_BATCH_SIZE = Math.max(
+  1,
+  Math.min(32, Number(process.env.RAG_EMBEDDING_BATCH_SIZE) || 8)
+);
+
+async function loadEmbeddingExtractor(): Promise<FeatureExtractionPipeline> {
+  if (embeddingExtractorPromise) return embeddingExtractorPromise;
+  embeddingExtractorPromise = (async () => {
+    const { pipeline } = await import('@huggingface/transformers');
+    console.info(`RAG: loading embedding model "${RAG_EMBEDDING_MODEL}"…`);
+    return pipeline('feature-extraction', RAG_EMBEDDING_MODEL) as Promise<FeatureExtractionPipeline>;
+  })().catch((err) => {
+    embeddingExtractorPromise = null;
+    throw err;
+  });
+  return embeddingExtractorPromise;
+}
+
+/** Mean-pooled, L2-normalized embeddings via Hugging Face Transformers.js (ONNX). Returns null if disabled or model load fails. */
+async function embedTextsWithTransformers(texts: string[]): Promise<number[][] | null> {
+  if (RAG_EMBEDDINGS_DISABLED) return null;
+  if (!texts.length) return [];
+
+  try {
+    const extractor = await loadEmbeddingExtractor();
+    const result: number[][] = texts.map(() => []);
+
+    for (let start = 0; start < texts.length; start += RAG_EMBEDDING_BATCH_SIZE) {
+      const end = Math.min(start + RAG_EMBEDDING_BATCH_SIZE, texts.length);
+      const batchIdx: number[] = [];
+      const batchStr: string[] = [];
+      for (let i = start; i < end; i++) {
+        const t = texts[i]?.trim() ?? '';
+        if (t) {
+          batchIdx.push(i);
+          batchStr.push(t);
+        }
+      }
+      if (!batchStr.length) continue;
+
+      const tensor = await extractor(batchStr, { pooling: 'mean', normalize: true });
+      const rows = rowsFromEmbeddingTensor(tensor);
+      if (rows.length !== batchStr.length) {
+        console.warn(
+          `RAG: embedding batch shape mismatch (got ${rows.length} rows, expected ${batchStr.length})`
+        );
+        return null;
+      }
+      for (let j = 0; j < batchIdx.length; j++) {
+        result[batchIdx[j]] = rows[j] ?? [];
+      }
+    }
+
+    return result;
+  } catch (e) {
+    console.warn('embedTextsWithTransformers:', e);
+    return null;
+  }
 }
 
 /** Sliding-window text chunks for embedding + RAG. */
