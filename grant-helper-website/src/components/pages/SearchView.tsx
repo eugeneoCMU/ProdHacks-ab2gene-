@@ -18,8 +18,18 @@ const STOP_WORDS = new Set([
   'these', 'this', 'those', 'under', 'upon', 'were', 'which', 'with', 'within', 'youth',
   'address', 'street', 'avenue', 'road', 'drive', 'lane', 'court', 'boulevard', 'suite',
   'owner', 'founder', 'registered', 'agent', 'phone', 'email', 'contact', 'maple',
-  'samantha', 'pittsburgh', 'springfield'
+  'samantha', 'pittsburgh', 'springfield', 'dissolution', 'applicable', 'goals',
+  'educational', 'outreach', 'articles', 'incorporated', 'formation', 'certifies',
+  'principal', 'community', 'hands', 'helping'
 ]);
+
+const BROAD_FALLBACK_QUERIES = [
+  'education youth',
+  'mentorship tutoring',
+  'family support',
+  'community services',
+  'after school',
+];
 
 function normalizeText(value: string): string {
   return value
@@ -79,8 +89,45 @@ function extractProfileKeywords(profile: string): string[] {
 }
 
 function buildRecommendedQuery(profile: string): string {
-  const keywords = extractProfileKeywords(profile).slice(0, 4);
-  return keywords.length ? keywords.join(' ') : 'nonprofit education community services';
+  const keywords = extractProfileKeywords(profile)
+    .filter((keyword) => {
+      const normalized = normalizeText(keyword);
+      if (!normalized) {
+        return false;
+      }
+
+      const words = normalized.split(' ').filter(Boolean);
+      return words.some((word) => word.length >= 4 && !STOP_WORDS.has(word));
+    })
+    .slice(0, 3);
+
+  return keywords.length ? keywords.join(' ') : 'tutoring mentorship family support';
+}
+
+function sanitizeSearchQuery(value: string): string {
+  const normalized = normalizeText(value);
+  if (!normalized) {
+    return '';
+  }
+
+  const tokens = normalized
+    .split(' ')
+    .filter((word) => word.length >= 4 && !STOP_WORDS.has(word));
+
+  return Array.from(new Set(tokens)).slice(0, 5).join(' ');
+}
+
+function buildSearchCandidates(rawQuery: string, recommendedQuery: string): string[] {
+  const preferred = sanitizeSearchQuery(rawQuery);
+  const recommended = sanitizeSearchQuery(recommendedQuery);
+
+  return Array.from(
+    new Set([
+      preferred,
+      recommended,
+      ...BROAD_FALLBACK_QUERIES,
+    ].filter(Boolean))
+  );
 }
 
 function scoreOpportunityAgainstProfile(opportunity: GrantsGovOpportunity, profileKeywords: string[]): number {
@@ -210,6 +257,7 @@ export default function SearchView({ organizationProfile = '' }: SearchViewProps
   const [opportunities, setOpportunities] = useState<GrantsGovOpportunity[]>([]);
   const [selectedOpportunity, setSelectedOpportunity] = useState<GrantsGovOpportunity | null>(null);
   const [lastSearchLabel, setLastSearchLabel] = useState('');
+  const [lastAttemptedQuery, setLastAttemptedQuery] = useState('');
   const resultsRef = useRef<HTMLDivElement | null>(null);
 
   const profileKeywords = useMemo(() => extractProfileKeywords(organizationProfile), [organizationProfile]);
@@ -235,21 +283,41 @@ export default function SearchView({ organizationProfile = '' }: SearchViewProps
       return;
     }
 
-    const baseQuery = mode === 'recommended'
+    const rawQuery = mode === 'recommended'
       ? recommendedQuery
       : (query.trim() || recommendedQuery);
+    const candidates = buildSearchCandidates(rawQuery, recommendedQuery);
+    const baseQuery = candidates[0] || 'education youth';
 
     setQuery(baseQuery);
+    setLastAttemptedQuery(baseQuery);
 
     try {
-      const result = await searchOpportunities({
-        query: baseQuery,
-        pagination: { page_offset: 1, page_size: 12 },
-      });
+      let chosenQuery = baseQuery;
+      let sorted: GrantsGovOpportunity[] = [];
 
-      const sorted = sortByProfileFit(result.data ?? [], profileKeywords);
+      for (const candidate of candidates) {
+        const result = await searchOpportunities({
+          query: candidate,
+          pagination: { page_offset: 1, page_size: 12 },
+        });
+
+        const ranked = sortByProfileFit(result.data ?? [], profileKeywords);
+        if (ranked.length) {
+          chosenQuery = candidate;
+          sorted = ranked;
+          break;
+        }
+      }
+
       setOpportunities(sorted);
-      setLastSearchLabel(baseQuery);
+      setLastSearchLabel(chosenQuery);
+      setQuery(chosenQuery);
+      setLastAttemptedQuery(chosenQuery);
+
+      if (!sorted.length) {
+        setError('We could not find live matches right now, so try a broader theme like education, youth, tutoring, or family support.');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Search failed');
     } finally {
@@ -418,6 +486,12 @@ export default function SearchView({ organizationProfile = '' }: SearchViewProps
           </ul>
         </div>
       )}
+
+      {!loading && !opportunities.length && !error && lastAttemptedQuery ? (
+        <div className="search-config-card" role="status">
+          No matches loaded for <strong>{lastAttemptedQuery}</strong> yet. Try simplifying the search to one or two themes.
+        </div>
+      ) : null}
 
       <div className="empty-state-actions">
         <button
