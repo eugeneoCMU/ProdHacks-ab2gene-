@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { supabase } from '../../config/supabase';
 import './AuthPage.css';
 
-type Mode = 'login' | 'register';
+type Mode = 'login' | 'register' | 'forgot';
 
 export default function AuthPage() {
   const [mode, setMode] = useState<Mode>('login');
@@ -32,6 +32,29 @@ export default function AuthPage() {
         setError(signErr.message);
         return;
       }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    resetFeedback();
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setError('Please enter your email address.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { error: resetErr } = await supabase.auth.resetPasswordForEmail(trimmedEmail, {
+        redirectTo: `${window.location.origin}`,
+      });
+      if (resetErr) {
+        setError(resetErr.message);
+        return;
+      }
+      setMessage('Password reset link sent. Check your email.');
     } finally {
       setSubmitting(false);
     }
@@ -82,32 +105,34 @@ export default function AuthPage() {
           <p className="auth-brand-sub">Sign in to manage your nonprofit profile and grants.</p>
         </div>
 
-        <div className="auth-tabs" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'login'}
-            className={`auth-tab ${mode === 'login' ? 'active' : ''}`}
-            onClick={() => {
-              setMode('login');
-              resetFeedback();
-            }}
-          >
-            Log in
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'register'}
-            className={`auth-tab ${mode === 'register' ? 'active' : ''}`}
-            onClick={() => {
-              setMode('register');
-              resetFeedback();
-            }}
-          >
-            Register
-          </button>
-        </div>
+        {mode !== 'forgot' && (
+          <div className="auth-tabs" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === 'login'}
+              className={`auth-tab ${mode === 'login' ? 'active' : ''}`}
+              onClick={() => {
+                setMode('login');
+                resetFeedback();
+              }}
+            >
+              Log in
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === 'register'}
+              className={`auth-tab ${mode === 'register' ? 'active' : ''}`}
+              onClick={() => {
+                setMode('register');
+                resetFeedback();
+              }}
+            >
+              Register
+            </button>
+          </div>
+        )}
 
         {mode === 'login' ? (
           <form className="auth-form" onSubmit={handleLogin}>
@@ -141,6 +166,50 @@ export default function AuthPage() {
             )}
             <button className="btn-primary auth-submit" type="submit" disabled={submitting}>
               {submitting ? 'Signing in…' : 'Log in'}
+            </button>
+            <button
+              type="button"
+              className="auth-forgot-link"
+              onClick={() => { setMode('forgot'); resetFeedback(); }}
+            >
+              Forgot your password?
+            </button>
+          </form>
+        ) : mode === 'forgot' ? (
+          <form className="auth-form" onSubmit={handleForgotPassword}>
+            <p className="auth-forgot-description">
+              Enter your email and we'll send you a link to reset your password.
+            </p>
+            <label className="auth-label">
+              Email
+              <input
+                className="auth-input"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </label>
+            {error && (
+              <p className="auth-error" role="alert">
+                {error}
+              </p>
+            )}
+            {message && (
+              <p className="auth-message" role="status">
+                {message}
+              </p>
+            )}
+            <button className="btn-primary auth-submit" type="submit" disabled={submitting}>
+              {submitting ? 'Sending…' : 'Send reset link'}
+            </button>
+            <button
+              type="button"
+              className="auth-forgot-link"
+              onClick={() => { setMode('login'); resetFeedback(); }}
+            >
+              Back to log in
             </button>
           </form>
         ) : (

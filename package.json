@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@supabase/auth-helpers-react": "^0.15.0",
+    "@supabase/supabase-js": "^2.97.0",
+    "openai": "^6.33.0",
+    "pdf-parse": "^2.4.5",
+    "unpdf": "^1.4.0"
+  }
+}

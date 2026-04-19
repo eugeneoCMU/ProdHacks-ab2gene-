@@ -135,3 +135,49 @@ export async function deleteDocument(documentId: string) {
 
   if (dbError) throw dbError;
 }
+
+export type OrganizationProfileRow = {
+  organization_name: string;
+  organization_profile: string;
+};
+
+export async function fetchOrganizationProfile(
+  userId: string
+): Promise<OrganizationProfileRow | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('organization_name, organization_profile')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+/** Ensures a row exists (e.g. if signup predates the org-profile migration). */
+export async function ensureOrganizationProfileRow(userId: string): Promise<void> {
+  const { data: existing } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (existing) return;
+
+  const { error } = await supabase.from('profiles').insert({
+    id: userId,
+    organization_name: 'My organization',
+    organization_profile: '',
+  });
+
+  if (error && !/duplicate|unique/i.test(error.message)) throw error;
+}
+
+export async function saveOrganizationProfileText(userId: string, text: string): Promise<void> {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ organization_profile: text })
+    .eq('id', userId);
+
+  if (error) throw error;
+}

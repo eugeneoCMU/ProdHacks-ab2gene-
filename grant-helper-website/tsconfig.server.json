@@ -7,7 +7,7 @@
     "types": ["node"],
     "skipLibCheck": true,
     "strict": true,
-    "noEmit": true,
+    "outDir": "dist-server",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

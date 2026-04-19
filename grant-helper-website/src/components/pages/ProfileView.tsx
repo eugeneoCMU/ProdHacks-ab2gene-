@@ -1,25 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { extractDocuments } from '../../api/extractDocuments';
-import { supabase, isSupabaseConfigured, uploadToSupabase, getUserDocuments, deleteDocument } from '../../config/supabase';
+import { lookupEIN } from '../../api/einLookup';
+import { deleteDocument, supabase, uploadToSupabase, saveOrganizationProfileText, fetchOrganizationProfile, getUserDocuments, isSupabaseConfigured } from '../../config/supabase';
 import './EmptyState.css';
 import './ProfileView.css';
 
 const PROFILE_STORAGE_KEY = 'grantflow.organizationProfile';
-const PROFILE_SUMMARY_STORAGE_KEY = 'grantflow.profileSummary';
 const SAVED_DOCUMENTS_STORAGE_KEY = 'grantflow.savedDocuments';
-
-function buildProfileSummary(profile: string) {
-  const trimmed = profile.trim();
-  const preview = trimmed.slice(0, 320);
-  const sentenceCount = trimmed ? trimmed.split(/[.!?]+/).filter(Boolean).length : 0;
-
-  return {
-    preview,
-    characters: trimmed.length,
-    sentences: sentenceCount,
-    updatedAt: new Date().toISOString(),
-  };
-}
 
 function extractOrganizationName(profile: string) {
   const trimmed = profile.trim();
@@ -36,6 +23,13 @@ function extractOrganizationName(profile: string) {
   }
 
   return '';
+}
+
+/** Write profile text + document names to localStorage so the Chrome extension and other views can read them. */
+function syncToLocalStorage(profileText: string, docNames: string[]) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(PROFILE_STORAGE_KEY, profileText);
+  window.localStorage.setItem(SAVED_DOCUMENTS_STORAGE_KEY, JSON.stringify(docNames));
 }
 
 type UploadedFile = {
@@ -145,7 +139,7 @@ const SUCCESS_STORIES = [
 
 interface ProfileViewProps {
   organizationProfile: string;
-  onOrganizationProfileChange: (value: string) => void;
+  onOrganizationProfileChange?: (value: string) => void;
 }
 
 type SavedDocument = {
@@ -177,6 +171,43 @@ export default function ProfileView({ organizationProfile, onOrganizationProfile
     return window.localStorage.getItem('grantflow.userId') || '';
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync saved document names to localStorage whenever they change
+  useEffect(() => {
+    const names = savedDocuments.map((d) => d.filename).filter(Boolean);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(SAVED_DOCUMENTS_STORAGE_KEY, JSON.stringify(names));
+    }
+  }, [savedDocuments]);
+
+  // Hydrate localStorage from Supabase on mount (for returning users)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !supabase) return;
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const userId = session?.user?.id;
+        if (!userId) return;
+        window.localStorage.setItem('grantflow.userId', userId);
+
+        // Load profile from Supabase if localStorage is empty
+        if (!window.localStorage.getItem(PROFILE_STORAGE_KEY)) {
+          const profile = await fetchOrganizationProfile(userId);
+          if (profile?.organization_profile) {
+            window.localStorage.setItem(PROFILE_STORAGE_KEY, profile.organization_profile);
+          }
+        }
+      } catch (e) {
+        console.warn('Could not hydrate localStorage from Supabase:', e);
+      }
+    })();
+  }, []);
+
+  const [showEINModal, setShowEINModal] = useState(false);
+  const [einValue, setEINValue] = useState('');
+  const [einLoading, setEINLoading] = useState(false);
+  const [einError, setEINError] = useState<string | null>(null);
+
 
   const addFiles = useCallback((incoming: FileList | File[]) => {
     const valid = Array.from(incoming).filter((f) =>
@@ -386,6 +417,77 @@ export default function ProfileView({ organizationProfile, onOrganizationProfile
         {saveSuccess && (
           <div className="upload-success" role="status">
             {saveSuccess}
+          </div>
+        )}
+
+        {showEINModal && (
+          <div className="ein-modal-overlay" onClick={() => setShowEINModal(false)}>
+            <div className="ein-modal" onClick={(e) => e.stopPropagation()}>
+              <h3 className="ein-modal-title">Import from EIN</h3>
+              <p className="ein-modal-subtitle">
+                Enter your organization's Employer Identification Number (EIN) to automatically import your public IRS 990 filings and organization profile.
+              </p>
+              <input
+                className="ein-input"
+                type="text"
+                placeholder="XX-XXXXXXX"
+                value={einValue}
+                maxLength={10}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, '');
+                  setEINValue(raw.length > 2 ? `${raw.slice(0, 2)}-${raw.slice(2)}` : raw);
+                  setEINError(null);
+                }}
+              />
+              {einError && <p className="ein-error">{einError}</p>}
+              <div className="ein-modal-actions">
+                <button className="btn-secondary" onClick={() => setShowEINModal(false)} disabled={einLoading}>
+                  Cancel
+                </button>
+                <button
+                  className="btn-primary"
+                  disabled={einLoading || einValue.replace(/\D/g, '').length !== 9}
+                  onClick={async () => {
+                    if (!supabase) return;
+                    setEINLoading(true);
+                    setEINError(null);
+                    try {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      if (!session?.user) {
+                        setEINError('Please sign in before importing via EIN so your data can be saved.');
+                        return;
+                      }
+                      const { orgName, text } = await lookupEIN(einValue);
+
+                      syncToLocalStorage(text, [...savedDocuments.map(d => d.filename), `EIN-${einValue.replace(/\D/g, '')}.txt`].filter(Boolean));
+
+                      const cleanEIN = einValue.replace(/\D/g, '');
+                      const filename = `EIN-${cleanEIN}${orgName ? `-${orgName}` : ''}.txt`;
+                      const einBlob = new File([text], filename, { type: 'text/plain' });
+                      try {
+                        await uploadToSupabase(einBlob, session.user.id);
+                        await loadSavedDocuments();
+                      } catch (uploadErr) {
+                        console.warn('Failed to save EIN data to Supabase:', uploadErr);
+                      }
+
+                      try {
+                        await saveOrganizationProfileText(session.user.id, text);
+                      } catch (saveErr) {
+                        console.warn('Failed to save profile to Supabase:', saveErr);
+                      }
+                      setShowEINModal(false);
+                    } catch (err) {
+                      setEINError(err instanceof Error ? err.message : 'Lookup failed. Check the EIN and try again.');
+                    } finally {
+                      setEINLoading(false);
+                    }
+                  }}
+                >
+                  {einLoading ? 'Importing…' : 'Import'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
         <div className={`profile-landing-grid ${isConnected ? '' : 'profile-landing-grid--solo'}`}>
@@ -731,30 +833,18 @@ export default function ProfileView({ organizationProfile, onOrganizationProfile
                     }
                   }
 
-                  const { text } = await extractDocuments(files.map((f) => f.file));
-                  const extractedText = text.trim();
-                  if (extractedText && typeof window !== 'undefined') {
-                    const existingProfile = window.localStorage.getItem(PROFILE_STORAGE_KEY) || '';
-                    const mergedProfile = [existingProfile.trim(), extractedText]
-                      .filter(Boolean)
-                      .filter((value, index, all) => all.indexOf(value) === index)
-                      .join('\n\n');
-
-                    window.localStorage.setItem(PROFILE_STORAGE_KEY, mergedProfile);
-                    window.localStorage.setItem(
-                      PROFILE_SUMMARY_STORAGE_KEY,
-                      JSON.stringify(buildProfileSummary(mergedProfile))
-                    );
-                    onOrganizationProfileChange(mergedProfile);
-                  } else {
-                    onOrganizationProfileChange(text);
-                  }
+                  const accessToken = session?.access_token;
+                  await extractDocuments(
+                    files.map((f) => f.file),
+                    accessToken ? { accessToken } : undefined
+                  );
 
                   await loadSavedDocuments();
                   setSaveSuccess(`Saved your files and updated your organization profile from ${files.length} document${files.length === 1 ? '' : 's'}.`);
                   if (warnings.length) {
                     setUploadWarning(warnings[0]);
                   }
+                  setFiles([]);
                   setShowUpload(false);
                 } catch (err) {
                   console.warn('Document extraction failed', err);
@@ -764,7 +854,7 @@ export default function ProfileView({ organizationProfile, onOrganizationProfile
                 }
               }}
             >
-              {extracting ? 'Processing…' : 'Build profile'}
+              {extracting ? 'Analyzing with AI…' : '✨ Analyze with AI'}
             </button>
             {extractError && (
               <p className="upload-error" role="alert">
